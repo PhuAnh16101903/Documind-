@@ -29,7 +29,7 @@ export const DocumentReader: React.FC<DocumentReaderProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="w-full max-w-4xl h-[88vh] bg-[#0c111d] border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-        <!-- Top Toolbar -->
+        {/* Top Toolbar */}
         <div className="h-14 border-b border-slate-800 px-5 flex items-center justify-between bg-slate-900/80">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
@@ -73,10 +73,10 @@ export const DocumentReader: React.FC<DocumentReaderProps> = ({
           </div>
         </div>
 
-        <!-- Document Viewer Content Area -->
+        {/* Document Viewer Content Area */}
         <div className="flex-1 overflow-y-auto p-8 flex justify-center bg-slate-950/80">
           <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-2xl space-y-6 text-slate-200 text-xs leading-relaxed font-serif">
-            <!-- Header Paper Simulation -->
+            {/* Header Paper Simulation */}
             <div className="text-center border-b border-slate-800 pb-5 font-sans space-y-1">
               <div className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 font-bold">
                 CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
@@ -88,7 +88,7 @@ export const DocumentReader: React.FC<DocumentReaderProps> = ({
               </div>
             </div>
 
-            <!-- Content Paragraphs -->
+            {/* Content Paragraphs */}
             <div className="space-y-4">
               <div className="font-sans space-y-1">
                 <h3 className="font-bold text-xs text-indigo-400">Chương I. Quy Định Chung</h3>
@@ -97,7 +97,7 @@ export const DocumentReader: React.FC<DocumentReaderProps> = ({
                 </p>
               </div>
 
-              <!-- Active Highlight Section (Citation Target) -->
+              {/* Active Highlight Section (Citation Target) */}
               <div
                 ref={highlightRef}
                 className={`p-4 rounded-xl border transition-all duration-300 space-y-2 ${
@@ -132,7 +132,7 @@ export const DocumentReader: React.FC<DocumentReaderProps> = ({
               </div>
             </div>
 
-            <!-- Signature footer -->
+            {/* Signature footer */}
             <div className="pt-8 border-t border-slate-800 grid grid-cols-2 gap-8 text-center font-sans text-[11px]">
               <div>
                 <p className="font-bold text-slate-300">TRƯỞNG PHÒNG BAN HÀNH</p>

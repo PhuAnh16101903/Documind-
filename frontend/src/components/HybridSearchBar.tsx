@@ -40,7 +40,7 @@ export const HybridSearchBar: React.FC<HybridSearchBarProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
       <div className="w-full max-w-2xl bg-[#0c111d] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
-        <!-- Search Input -->
+        {/* Search Input */}
         <div className="h-14 border-b border-slate-800 px-4 flex items-center gap-3">
           <Search className="w-5 h-5 text-indigo-400" />
           <input
@@ -61,7 +61,7 @@ export const HybridSearchBar: React.FC<HybridSearchBarProps> = ({
           </kbd>
         </div>
 
-        <!-- Search Results List -->
+        {/* Search Results List */}
         <div className="max-h-96 overflow-y-auto p-3 space-y-2">
           {searching && (
             <div className="p-6 text-center text-xs font-mono text-cyan-400 flex items-center justify-center gap-2">

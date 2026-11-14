@@ -61,16 +61,16 @@ export const App: React.FC = () => {
 
   return (
     <div className="h-screen w-screen flex flex-col bg-[#090d16] text-slate-100 overflow-hidden font-sans">
-      <!-- Top Navigation -->
+      {/* Top Navigation */}
       <Header
         user={currentUser}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenSearch={() => setIsSearchOpen(true)}
       />
 
-      <!-- Main Layout Body -->
+      {/* Main Layout Body */}
       <div className="flex-1 flex overflow-hidden">
-        <!-- Sidebar Navigation -->
+        {/* Sidebar Navigation */}
         <Sidebar
           departments={departments}
           selectedDeptId={selectedDeptId}
@@ -79,7 +79,7 @@ export const App: React.FC = () => {
           onSelectTab={(tab) => setActiveTab(tab)}
         />
 
-        <!-- Active View Screen -->
+        {/* Active View Screen */}
         <main className="flex-1 flex overflow-hidden bg-[#090d16] relative">
           {activeTab === 'knowledge' && (
             <KnowledgeExplorer
@@ -97,7 +97,7 @@ export const App: React.FC = () => {
         </main>
       </div>
 
-      <!-- Modals & Overlay Viewers -->
+      {/* Modals & Overlay Viewers */}
       <UploadModal
         isOpen={isUploadOpen}
         departments={departments}

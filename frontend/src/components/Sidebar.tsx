@@ -20,7 +20,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside className="w-64 border-r border-slate-800 bg-[#0c111d] flex flex-col justify-between select-none">
       <div className="p-4 space-y-6">
-        <!-- Main Workspaces -->
+        {/* Main Workspaces */}
         <div className="space-y-1">
           <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2 mb-2">
             KHÔNG GIAN LÀM VIỆC
@@ -63,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        <!-- Departments List -->
+        {/* Departments List */}
         <div className="space-y-1">
           <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2 mb-2 flex items-center justify-between">
             <span>PHÒNG BAN TRUY CẬP</span>
@@ -103,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      <!-- Storage Quota Status -->
+      {/* Storage Quota Status */}
       <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
         <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-1.5">
           <span className="flex items-center gap-1.5">

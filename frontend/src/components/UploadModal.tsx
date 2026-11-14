@@ -67,7 +67,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
         {!isProcessing ? (
           <div className="space-y-4 text-xs">
-            <!-- Drag and Drop Zone -->
+            {/* Drag and Drop Zone */}
             <label className="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-900/40">
               <Upload className="w-8 h-8 text-slate-400 mb-2" />
               <span className="font-semibold text-slate-200">
@@ -87,7 +87,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               />
             </label>
 
-            <!-- Document Details Form -->
+            {/* Document Details Form */}
             <div className="space-y-3">
               <div>
                 <label className="block text-[11px] font-mono text-slate-400 mb-1">TÊN HIỂN THỊ TÀI LIỆU</label>
@@ -143,7 +143,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             </div>
           </div>
         ) : (
-          <!-- Processing Pipeline Step Animator -->
           <div className="py-6 space-y-4">
             <div className="text-center space-y-1">
               <div className="text-xs font-bold text-white tracking-wide">Đang Xử Lý Đường Ống Ingestion</div>

@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onOpenUpload, onOpenSearch
         </div>
       </div>
 
-      <!-- Quick Search Bar (Command Palette Trigger) -->
+      {/* Quick Search Bar (Command Palette Trigger) */}
       <div className="flex-1 max-w-md mx-6 hidden md:block">
         <button
           onClick={onOpenSearch}
@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onOpenUpload, onOpenSearch
         </button>
       </div>
 
-      <!-- Action Buttons & User Profile -->
+      {/* Action Buttons & User Profile */}
       <div className="flex items-center space-x-3">
         <button
           onClick={onOpenUpload}

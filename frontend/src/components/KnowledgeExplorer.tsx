@@ -36,7 +36,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
 
   return (
     <div className="flex-1 overflow-y-auto p-6 space-y-6">
-      <!-- Title & Actions -->
+      {/* Title & Actions */}
       <div className="flex items-center justify-between pb-4 border-b border-slate-800">
         <div>
           <h2 className="text-lg font-bold text-white tracking-wide">Kho Tri Thức Tài Liệu Doanh Nghiệp</h2>
@@ -52,7 +52,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
         </div>
       </div>
 
-      <!-- Document Table -->
+      {/* Document Table */}
       <div className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900/60 shadow-xl">
         <table className="w-full text-left text-xs">
           <thead className="bg-slate-800/80 text-[11px] font-mono uppercase tracking-wider text-slate-300 border-b border-slate-700/60">

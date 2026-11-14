@@ -60,7 +60,7 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-[#090d16] overflow-hidden">
-      <!-- Chat Header -->
+      {/* Chat Header */}
       <div className="h-12 border-b border-slate-800 px-6 flex items-center justify-between bg-slate-900/40 select-none">
         <div className="flex items-center gap-2">
           <Bot className="w-4 h-4 text-cyan-400" />
@@ -75,7 +75,7 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
         </div>
       </div>
 
-      <!-- Messages Area -->
+      {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((msg) => (
           <div
@@ -98,7 +98,7 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
               >
                 <div className="whitespace-pre-wrap">{msg.content}</div>
 
-                <!-- Citations Badges (Verifiable Retrieval) -->
+                {/* Citations Badges (Verifiable Retrieval) */}
                 {msg.citations && msg.citations.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-slate-800/80 space-y-2">
                     <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold flex items-center gap-1">
@@ -150,7 +150,7 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
         )}
       </div>
 
-      <!-- Quick Prompt Suggestions & Input Box -->
+      {/* Quick Prompt Suggestions & Input Box */}
       <div className="p-4 border-t border-slate-800 bg-[#0c111d]">
         <div className="flex items-center gap-2 mb-2.5 overflow-x-auto pb-1 text-[11px]">
           <span className="text-slate-500 font-mono text-[10px] flex items-center gap-1 flex-shrink-0">

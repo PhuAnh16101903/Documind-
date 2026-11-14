@@ -34,7 +34,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      <!-- KPI Grid -->
+      {/* KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
@@ -53,7 +53,7 @@ export const AdminDashboard: React.FC = () => {
         })}
       </div>
 
-      <!-- Audit Logs Table -->
+      {/* Audit Logs Table */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
