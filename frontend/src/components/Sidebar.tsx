@@ -1,5 +1,14 @@
 import React from 'react';
-import { FolderTree, MessageSquareText, ShieldAlert, BarChart3, Database, HardDrive, Users } from 'lucide-react';
+import {
+  FolderTree,
+  MessageSquareText,
+  BarChart3,
+  Database,
+  HardDrive,
+  ShieldCheck,
+  Building,
+  Sparkles,
+} from 'lucide-react';
 import { Department } from '../types';
 
 interface SidebarProps {
@@ -17,103 +26,152 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   onSelectTab,
 }) => {
+  const navItems = [
+    {
+      id: 'knowledge' as const,
+      label: 'Kho Tri Thức & Thư Mục',
+      icon: FolderTree,
+      color: 'text-indigo-400',
+      badge: null,
+    },
+    {
+      id: 'copilot' as const,
+      label: 'AI Copilot & Đối Chiếu',
+      icon: MessageSquareText,
+      color: 'text-cyan-400',
+      badge: 'RAG 2.0',
+    },
+    {
+      id: 'analytics' as const,
+      label: 'Quản Trị & Audit Log',
+      icon: BarChart3,
+      color: 'text-emerald-400',
+      badge: null,
+    },
+  ];
+
   return (
-    <aside className="w-64 border-r border-slate-800 bg-[#0c111d] flex flex-col justify-between select-none">
-      <div className="p-4 space-y-6">
+    <aside className="w-64 border-r border-white/[0.08] bg-[#090e1a]/95 flex flex-col justify-between select-none relative z-20">
+      <div className="p-4 space-y-6 overflow-y-auto">
         {/* Main Workspaces */}
-        <div className="space-y-1">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2 mb-2">
-            KHÔNG GIAN LÀM VIỆC
+        <div className="space-y-1.5">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2.5 mb-2 flex items-center justify-between">
+            <span>KHÔNG GIAN LÀM VIỆC</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
           </div>
 
-          <button
-            onClick={() => onSelectTab('knowledge')}
-            className={`w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-all ${
-              activeTab === 'knowledge'
-                ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-            }`}
-          >
-            <FolderTree className="w-4 h-4 text-indigo-400" />
-            <span>Kho Tri Thức &amp; Thư Mục</span>
-          </button>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => onSelectTab(item.id)}
+                className={`w-full px-3 py-2.5 rounded-xl text-xs font-medium flex items-center justify-between transition-all duration-200 group relative ${
+                  isActive
+                    ? 'bg-gradient-to-r from-indigo-500/15 to-indigo-500/5 text-white font-semibold border border-indigo-500/30 shadow-sm shadow-indigo-500/10'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`p-1.5 rounded-lg transition-colors ${
+                      isActive ? 'bg-indigo-600/30 text-indigo-300' : 'bg-slate-800/60 text-slate-400 group-hover:text-slate-200'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <span>{item.label}</span>
+                </div>
 
-          <button
-            onClick={() => onSelectTab('copilot')}
-            className={`w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-all ${
-              activeTab === 'copilot'
-                ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-            }`}
-          >
-            <MessageSquareText className="w-4 h-4 text-cyan-400" />
-            <span>Hỏi Đáp AI Copilot</span>
-          </button>
+                {item.badge && (
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                    {item.badge}
+                  </span>
+                )}
 
-          <button
-            onClick={() => onSelectTab('analytics')}
-            className={`w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-all ${
-              activeTab === 'analytics'
-                ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4 text-emerald-400" />
-            <span>Dashboard &amp; Audit Log</span>
-          </button>
+                {isActive && (
+                  <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-gradient-to-b from-indigo-400 to-cyan-400 rounded-r-full" />
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Departments List */}
-        <div className="space-y-1">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2 mb-2 flex items-center justify-between">
-            <span>PHÒNG BAN TRUY CẬP</span>
-            <span className="text-cyan-400 font-mono text-[9px] bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-500/30">
+        {/* Departments RBAC Scoped */}
+        <div className="space-y-1.5">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2.5 mb-2 flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <Building className="w-3 h-3 text-slate-400" />
+              <span>PHÒNG BAN TRUY CẬP</span>
+            </span>
+            <span className="text-emerald-400 font-mono text-[9px] bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/30">
               RBAC ACTIVE
             </span>
           </div>
 
           <button
             onClick={() => onSelectDept(null)}
-            className={`w-full px-3 py-1.5 rounded-lg text-xs flex items-center justify-between transition-all ${
+            className={`w-full px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all duration-200 ${
               selectedDeptId === null
-                ? 'bg-slate-800 text-white font-semibold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                ? 'bg-slate-800/90 text-white font-semibold border border-white/10 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
             }`}
           >
-            <span className="flex items-center gap-2">
-              <Database className="w-3.5 h-3.5 text-slate-400" />
+            <span className="flex items-center gap-2.5">
+              <Database className="w-3.5 h-3.5 text-indigo-400" />
               <span>Toàn Bộ Doanh Nghiệp</span>
             </span>
+            <span className="text-[10px] font-mono text-slate-400">ALL</span>
           </button>
 
-          {departments.map((dept) => (
-            <button
-              key={dept.id}
-              onClick={() => onSelectDept(dept.id)}
-              className={`w-full px-3 py-1.5 rounded-lg text-xs flex items-center justify-between transition-all ${
-                selectedDeptId === dept.id
-                  ? 'bg-indigo-950/40 text-indigo-300 border border-indigo-500/30 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              <span className="truncate w-40 text-left">{dept.name}</span>
-              <span className="text-[10px] font-mono text-slate-400">{dept.code}</span>
-            </button>
-          ))}
+          {departments.map((dept) => {
+            const isSelected = selectedDeptId === dept.id;
+            return (
+              <button
+                key={dept.id}
+                onClick={() => onSelectDept(dept.id)}
+                className={`w-full px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all duration-200 ${
+                  isSelected
+                    ? 'bg-indigo-950/40 text-indigo-200 border border-indigo-500/40 font-semibold shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                }`}
+              >
+                <span className="truncate max-w-[130px] text-left">{dept.name}</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800/80 text-slate-400 border border-white/[0.06]">
+                  {dept.code}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Storage Quota Status */}
-      <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
-        <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-1.5">
-          <span className="flex items-center gap-1.5">
-            <HardDrive className="w-3.5 h-3.5 text-slate-400" />
-            <span>DUNG LƯỢNG KHO</span>
-          </span>
-          <span className="text-emerald-400 font-bold">1.4 GB / 10 GB</span>
-        </div>
-        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full" style={{ width: '14%' }}></div>
+      {/* Storage Quota & System Health Card */}
+      <div className="p-4 border-t border-white/[0.08] bg-[#070b14]/70 space-y-3">
+        <div className="p-3 rounded-xl bg-slate-900/60 border border-white/[0.06] space-y-2">
+          <div className="flex items-center justify-between text-[11px] font-mono">
+            <span className="text-slate-400 flex items-center gap-1.5">
+              <HardDrive className="w-3.5 h-3.5 text-indigo-400" />
+              <span>KHO TRI THỨC</span>
+            </span>
+            <span className="text-emerald-400 font-bold">1.4 / 10 GB</span>
+          </div>
+
+          <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden p-[1px]">
+            <div
+              className="h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 rounded-full transition-all duration-500"
+              style={{ width: '14%' }}
+            />
+          </div>
+
+          <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 pt-0.5">
+            <span className="flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              <span>TC-SEC-01 Validated</span>
+            </span>
+            <span className="text-slate-400">14% Sử dụng</span>
+          </div>
         </div>
       </div>
     </aside>

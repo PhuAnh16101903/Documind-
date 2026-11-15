@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { X, Upload, CheckCircle2, Clock, FileText, AlertCircle } from 'lucide-react';
+import {
+  X,
+  Upload,
+  CheckCircle2,
+  Clock,
+  FileText,
+  AlertCircle,
+  Sparkles,
+  Calendar,
+  Shield,
+  Layers,
+} from 'lucide-react';
 import { Department } from '../types';
 
 interface UploadModalProps {
@@ -18,6 +29,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [deptId, setDeptId] = useState<number>(departments[0]?.id || 1);
+  const [effectiveDate, setEffectiveDate] = useState('2026-01-01');
+  const [expirationDate, setExpirationDate] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -25,18 +38,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   if (!isOpen) return null;
 
   const steps = [
-    'Kiểm tra định dạng & SHA-256 Checksum',
-    'Trích xuất văn bản & cấu trúc bảng biểu',
-    'Phân đoạn ngữ nghĩa (Semantic Chunking)',
-    'Sinh Vector Embeddings (Gemini Embeddings)',
-    'Lập chỉ mục Hybrid Search & Kích hoạt RAG',
+    { name: 'Xác thực định dạng & Sinh SHA-256 Checksum', desc: 'Kiểm tra tệp tin hợp lệ và không trùng lặp' },
+    { name: 'Trích xuất nội dung đa định dạng & Cấu trúc bảng', desc: 'Xử lý cấu trúc đoạn văn, tiêu đề điều khoản' },
+    { name: 'Phân đoạn ngữ nghĩa (Semantic Chunking)', desc: 'Cắt đoạn theo cấu trúc ngữ cảnh' },
+    { name: 'Sinh Dense Vector Embeddings (Gemini API)', desc: 'Tạo vector 768 chiều biểu diễn ngữ nghĩa' },
+    { name: 'Lập chỉ mục Hybrid Search & Kích hoạt RAG', desc: 'Ghi chỉ mục BM25 và Vector Database' },
   ];
 
   const handleStartUpload = () => {
     if (!file || !title) return;
     setIsProcessing(true);
 
-    // Simulate real Ingestion Pipeline progress
     let step = 0;
     const interval = setInterval(() => {
       step++;
@@ -49,31 +61,43 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           onClose();
         }, 800);
       }
-    }, 600);
+    }, 650);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-[#0c111d] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden p-6 space-y-5">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-          <div className="flex items-center gap-2">
-            <Upload className="w-5 h-5 text-indigo-400" />
-            <h3 className="text-sm font-bold text-white">Upload &amp; Lập Chỉ Mục Tài Liệu Mới</h3>
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+      <div className="w-full max-w-xl bg-[#090e1a] border border-white/[0.12] rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-7 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <Upload className="w-5 h-5 text-indigo-400" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white">Upload &amp; Lập Chỉ Mục Tài Liệu</h3>
+              <p className="text-[11px] text-slate-400">Quy trình nạp tự động vào kho tri thức doanh nghiệp</p>
+            </div>
           </div>
-          <button onClick={onClose} disabled={isProcessing} className="p-1 rounded text-slate-400 hover:text-white">
+          <button
+            onClick={onClose}
+            disabled={isProcessing}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {!isProcessing ? (
           <div className="space-y-4 text-xs">
-            {/* Drag and Drop Zone */}
-            <label className="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-900/40">
-              <Upload className="w-8 h-8 text-slate-400 mb-2" />
-              <span className="font-semibold text-slate-200">
+            {/* Drag & Drop Zone */}
+            <label className="border-2 border-dashed border-white/[0.12] hover:border-indigo-500/60 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all bg-slate-900/40 hover:bg-slate-900/70 group">
+              <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-400 group-hover:scale-110 transition-transform mb-2">
+                <Upload className="w-6 h-6" />
+              </div>
+              <span className="font-semibold text-slate-200 text-center">
                 {file ? file.name : 'Kéo thả file PDF, Word (.docx), Excel (.xlsx) vào đây'}
               </span>
-              <span className="text-[10px] text-slate-500 mt-1">Dung lượng tối đa 100MB</span>
+              <span className="text-[10px] text-slate-400 mt-1">Dung lượng tối đa 100MB • Tự động phân tích</span>
               <input
                 type="file"
                 accept=".pdf,.docx,.doc,.xlsx,.xls,.txt,.md"
@@ -88,87 +112,125 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             </label>
 
             {/* Document Details Form */}
-            <div className="space-y-3">
+            <div className="space-y-3.5">
               <div>
-                <label className="block text-[11px] font-mono text-slate-400 mb-1">TÊN HIỂN THỊ TÀI LIỆU</label>
+                <label className="block text-[11px] font-mono text-slate-400 mb-1">
+                  TIÊU ĐỀ VĂN BẢN CHÍNH THỨC
+                </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ví dụ: Quy chế công tác phí quý 4..."
-                  className="w-full h-9 px-3 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full h-10 px-3.5 rounded-xl bg-slate-900/80 border border-white/[0.08] text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors"
                 />
               </div>
 
-              <div>
-                <label className="block text-[11px] font-mono text-slate-400 mb-1">PHÒNG BAN QUẢN LÝ (RBAC)</label>
-                <select
-                  value={deptId}
-                  onChange={(e) => setDeptId(Number(e.target.value))}
-                  className="w-full h-9 px-3 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500"
-                >
-                  {departments.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name} ({d.code})
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-mono text-slate-400 mb-1">
+                    PHÒNG BAN QUẢN LÝ
+                  </label>
+                  <select
+                    value={deptId}
+                    onChange={(e) => setDeptId(Number(e.target.value))}
+                    className="w-full h-10 px-3 rounded-xl bg-slate-900/80 border border-white/[0.08] text-xs text-white focus:outline-none focus:border-indigo-500"
+                  >
+                    {departments.map((dept) => (
+                      <option key={dept.id} value={dept.id}>
+                        {dept.name} ({dept.code})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono text-slate-400 mb-1">
+                    NGÀY CÓ HIỆU LỰC
+                  </label>
+                  <input
+                    type="date"
+                    value={effectiveDate}
+                    onChange={(e) => setEffectiveDate(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl bg-slate-900/80 border border-white/[0.08] text-xs text-white focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-1">
+              {/* Public toggle */}
+              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900/40 border border-white/[0.06]">
+                <div className="space-y-0.5">
+                  <div className="font-semibold text-slate-200 text-xs">Phạm vi công khai toàn doanh nghiệp</div>
+                  <div className="text-[10px] text-slate-400">
+                    Cho phép mọi phòng ban tra cứu mà không bị chặn bởi RBAC
+                  </div>
+                </div>
                 <input
                   type="checkbox"
-                  id="chkPublic"
                   checked={isPublic}
                   onChange={(e) => setIsPublic(e.target.checked)}
-                  className="rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-0"
+                  className="w-4 h-4 rounded text-indigo-600 bg-slate-900 border-white/20 focus:ring-0"
                 />
-                <label htmlFor="chkPublic" className="text-slate-300 text-xs cursor-pointer">
-                  Tài liệu dùng chung (Cho phép mọi phòng ban tra cứu)
-                </label>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
-              <button onClick={onClose} className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">
-                Hủy
-              </button>
+            {/* Submit Button */}
+            <div className="pt-2">
               <button
                 onClick={handleStartUpload}
                 disabled={!file || !title}
-                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold shadow-md shadow-indigo-600/30"
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 disabled:opacity-40 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25 active:scale-95 transition-all text-xs"
               >
-                Bắt Đầu Nạp Vào Kho Tri Thức
+                <Sparkles className="w-4 h-4" />
+                <span>Bắt Đầu Lập Chỉ Mục Tự Động</span>
               </button>
             </div>
           </div>
         ) : (
-          <div className="py-6 space-y-4">
+          /* Ingestion Pipeline Visualizer */
+          <div className="py-4 space-y-4 font-mono">
             <div className="text-center space-y-1">
-              <div className="text-xs font-bold text-white tracking-wide">Đang Xử Lý Đường Ống Ingestion</div>
-              <p className="text-[11px] font-mono text-slate-400">File: {file?.name}</p>
+              <h4 className="text-sm font-bold text-white">Pipeline Nạp Dữ Liệu &amp; Đánh Chỉ Mục</h4>
+              <p className="text-[11px] text-slate-400 font-sans">
+                Đang xử lý: <strong className="text-indigo-300">{title}</strong>
+              </p>
             </div>
 
             <div className="space-y-2.5 pt-2">
-              {steps.map((st, i) => (
-                <div
-                  key={i}
-                  className={`p-2.5 rounded-lg border text-xs flex items-center justify-between transition-all ${
-                    i < currentStep
-                      ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-300'
-                      : i === currentStep
-                      ? 'bg-indigo-950/40 border-indigo-500/60 text-indigo-300 animate-pulse'
-                      : 'bg-slate-900/40 border-slate-800/80 text-slate-500'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="font-mono text-[10px]">#{i + 1}</span>
-                    <span>{st}</span>
-                  </span>
-                  {i < currentStep && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
-                  {i === currentStep && <Clock className="w-3.5 h-3.5 text-indigo-400 animate-spin" />}
-                </div>
-              ))}
+              {steps.map((st, idx) => {
+                const isDone = currentStep > idx;
+                const isCurrent = currentStep === idx;
+                return (
+                  <div
+                    key={idx}
+                    className={`p-3 rounded-xl border transition-all text-xs flex items-center justify-between ${
+                      isDone
+                        ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300'
+                        : isCurrent
+                        ? 'bg-indigo-950/40 border-indigo-500/50 text-indigo-200'
+                        : 'bg-slate-900/30 border-white/[0.04] text-slate-500'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {isDone ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                      ) : isCurrent ? (
+                        <div className="w-4 h-4 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin flex-shrink-0" />
+                      ) : (
+                        <div className="w-4 h-4 rounded-full border border-slate-700 flex-shrink-0" />
+                      )}
+                      <div>
+                        <div className="font-semibold">{st.name}</div>
+                        <div className="text-[10px] opacity-75 font-sans">{st.desc}</div>
+                      </div>
+                    </div>
+
+                    <span className="text-[10px]">
+                      {isDone ? 'HOÀN THÀNH' : isCurrent ? 'ĐANG XỬ LÝ...' : 'CHỜ'}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
