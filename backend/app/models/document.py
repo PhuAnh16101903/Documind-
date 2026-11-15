@@ -39,8 +39,14 @@ class Document(Base):
     ingestion_status = Column(Enum(IngestionStatus), default=IngestionStatus.QUEUED, nullable=False)
     error_message = Column(Text, nullable=True)
     
-    is_public = Column(Boolean, default=False) # Shared across all departments if true
+    is_public = Column(Boolean, default=False)
     current_version = Column(Integer, default=1)
+
+    # BA v2.0: Temporal Validity & Lifecycle Management
+    effective_date = Column(DateTime, default=datetime.utcnow, nullable=False)
+    expiration_date = Column(DateTime, nullable=True) # None = Indefinite validity
+    is_superseded = Column(Boolean, default=False, nullable=False) # Replaced by newer policy
+    superseded_by_id = Column(Integer, ForeignKey("documents.id", ondelete="SET NULL"), nullable=True)
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -48,7 +54,7 @@ class Document(Base):
     # Relationships
     department = relationship("Department", back_populates="documents")
     folder = relationship("Folder", back_populates="documents")
-    versions = relationship("DocumentVersion", back_populates="document", cascade="all, delete-orphan")
+    versions = relationship("DocumentVersion", back_populates="document", foreign_keys="DocumentVersion.document_id", cascade="all, delete-orphan")
     chunks = relationship("Chunk", back_populates="document", cascade="all, delete-orphan")
 
 class DocumentVersion(Base):
@@ -65,5 +71,5 @@ class DocumentVersion(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
-    document = relationship("Document", back_populates="versions")
+    document = relationship("Document", back_populates="versions", foreign_keys=[document_id])
     chunks = relationship("Chunk", back_populates="version", cascade="all, delete-orphan")

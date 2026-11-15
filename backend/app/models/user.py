@@ -26,6 +26,10 @@ class User(Base):
     status = Column(Enum(AccountStatus), default=AccountStatus.ACTIVE, nullable=False)
     department_id = Column(Integer, ForeignKey("departments.id", ondelete="SET NULL"), nullable=True)
     role = Column(Enum(SystemRole), default=SystemRole.EMPLOYEE, nullable=False)
+    
+    # BA v2.0: Instant Permission Cache Invalidation
+    permission_version = Column(Integer, default=1, nullable=False)
+
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

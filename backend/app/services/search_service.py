@@ -4,11 +4,18 @@ from typing import List, Dict, Any, Optional
 from rank_bm25 import BM25Okapi
 from app.config import settings
 
+VIETNAMESE_STOP_WORDS = {
+    "của", "và", "các", "có", "được", "trong", "là", "cho", "về", "như", "thế", "nào",
+    "một", "những", "này", "khi", "để", "ra", "với", "tại", "năm", "nay", "hãy", "gì",
+    "bị", "bởi", "do", "từ", "lại", "đã", "sẽ", "đang"
+}
+
 class HybridSearchService:
     @staticmethod
     def tokenize(text: str) -> List[str]:
-        """Simple whitespace & punctuation tokenizer for BM25"""
-        return re.findall(r"\w+", text.lower())
+        """Simple whitespace & punctuation tokenizer for BM25 with stop words filtered"""
+        tokens = re.findall(r"\w+", text.lower())
+        return [t for t in tokens if t not in VIETNAMESE_STOP_WORDS and len(t) > 1]
 
     @staticmethod
     def compute_cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
@@ -56,13 +63,24 @@ class HybridSearchService:
             v_score = overlap / max(1, len(tokenized_query))
             vector_scores.append(v_score)
 
-        # 3. Combine scores
+        # 3. Combine scores with Term Match Ratio Threshold (BA v2.0 Anti-Drift)
         ranked = []
+        unique_query_terms = set(tokenized_query)
+        
         for i, c in enumerate(candidates):
+            candidate_terms = set(corpus[i])
+            overlap_terms = unique_query_terms.intersection(candidate_terms)
+            term_match_ratio = len(overlap_terms) / max(1, len(unique_query_terms))
+
+            # If less than 30% of significant query terms appear in the chunk, damp score
+            if term_match_ratio < 0.30:
+                continue
+
             final_score = alpha * vector_scores[i] + (1 - alpha) * bm25_norm_scores[i]
-            if final_score > 0.05: # Relevance cutoff
+            if final_score > 0.25: # Strict Grounding threshold
                 item = c.copy()
                 item["score"] = round(float(final_score), 4)
+                item["term_match_ratio"] = round(term_match_ratio, 2)
                 ranked.append(item)
 
         # Sort descending by score
