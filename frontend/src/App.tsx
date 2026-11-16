@@ -60,7 +60,12 @@ export const App: React.FC = () => {
     : documents;
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-slate-100 text-slate-900 overflow-hidden font-sans selection:bg-indigo-500/20 selection:text-indigo-900">
+    <div className="h-screen w-screen flex flex-col bg-slate-100 text-slate-900 overflow-hidden font-sans selection:bg-indigo-500/20 selection:text-indigo-900 relative">
+      {/* Floating Gentle Ambient Light Orbs */}
+      <div className="ambient-orb-indigo" />
+      <div className="ambient-orb-cyan" />
+      <div className="ambient-orb-rose" />
+
       {/* Top Header */}
       <Header
         user={currentUser}

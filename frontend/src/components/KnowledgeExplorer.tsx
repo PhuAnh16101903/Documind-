@@ -39,6 +39,49 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
 
   const activeTheme = THEMES[currentTheme];
 
+  const getCardTheme = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'pdf':
+        return {
+          stripe: 'from-rose-500 via-pink-500 to-rose-400',
+          bg: 'bg-gradient-to-b from-rose-50/40 via-white to-white',
+          hoverBorder: 'hover:border-rose-400 hover:shadow-lg hover:shadow-rose-500/10',
+          iconBox: 'bg-gradient-to-br from-rose-50 to-pink-100 text-rose-600 border border-rose-200/80',
+          versionBadge: 'bg-rose-50 text-rose-700 border border-rose-200',
+          titleHover: 'group-hover:text-rose-600',
+        };
+      case 'docx':
+      case 'doc':
+        return {
+          stripe: 'from-blue-500 via-indigo-500 to-cyan-400',
+          bg: 'bg-gradient-to-b from-blue-50/40 via-white to-white',
+          hoverBorder: 'hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/10',
+          iconBox: 'bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-600 border border-blue-200/80',
+          versionBadge: 'bg-blue-50 text-blue-700 border border-blue-200',
+          titleHover: 'group-hover:text-blue-600',
+        };
+      case 'xlsx':
+      case 'xls':
+        return {
+          stripe: 'from-emerald-500 via-teal-500 to-emerald-400',
+          bg: 'bg-gradient-to-b from-emerald-50/40 via-white to-white',
+          hoverBorder: 'hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-500/10',
+          iconBox: 'bg-gradient-to-br from-emerald-50 to-teal-100 text-emerald-600 border border-emerald-200/80',
+          versionBadge: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+          titleHover: 'group-hover:text-emerald-600',
+        };
+      default:
+        return {
+          stripe: 'from-purple-500 via-indigo-500 to-purple-400',
+          bg: 'bg-gradient-to-b from-purple-50/40 via-white to-white',
+          hoverBorder: 'hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/10',
+          iconBox: 'bg-gradient-to-br from-purple-50 to-indigo-100 text-purple-600 border border-purple-200/80',
+          versionBadge: 'bg-purple-50 text-purple-700 border border-purple-200',
+          titleHover: 'group-hover:text-purple-600',
+        };
+    }
+  };
+
   const getFileIcon = (type: string) => {
     switch (type.toLowerCase()) {
       case 'pdf':
@@ -69,7 +112,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
   });
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-5 bg-slate-50">
+    <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-5 bg-slate-50/80 relative">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
@@ -77,7 +120,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
             <h2 className="text-lg font-bold text-slate-900 tracking-tight">
               Kho Tri Thức Tài Liệu
             </h2>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-slate-200/80 text-slate-700 border border-slate-300 font-semibold">
+            <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold shadow-2xs">
               {filteredDocs.length} tài liệu
             </span>
           </div>
@@ -92,10 +135,10 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
           <div className="flex items-center p-0.5 rounded-lg bg-slate-200/80 border border-slate-300">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-md transition-colors ${
+              className={`p-1.5 rounded-md transition-all duration-200 ${
                 viewMode === 'grid'
-                  ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-white text-indigo-600 shadow-2xs font-semibold scale-100'
+                  : 'text-slate-500 hover:text-slate-900 hover:scale-105'
               }`}
               title="Xem dạng Lưới"
             >
@@ -103,10 +146,10 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`p-1.5 rounded-md transition-colors ${
+              className={`p-1.5 rounded-md transition-all duration-200 ${
                 viewMode === 'table'
-                  ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-white text-indigo-600 shadow-2xs font-semibold scale-100'
+                  : 'text-slate-500 hover:text-slate-900 hover:scale-105'
               }`}
               title="Xem dạng Bảng"
             >
@@ -116,10 +159,10 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
 
           <button
             onClick={() => setIsDiffOpen(true)}
-            className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 text-xs font-semibold border border-slate-300 hover:border-slate-400 transition-colors flex items-center gap-1.5 shadow-2xs"
+            className="group px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 text-xs font-semibold border border-indigo-200 hover:border-indigo-300 transition-all duration-200 flex items-center gap-1.5 shadow-2xs hover:scale-105 active:scale-95"
             title="So sánh thay đổi giữa 2 phiên bản tài liệu"
           >
-            <GitCompare className="w-3.5 h-3.5 text-indigo-600" />
+            <GitCompare className="w-3.5 h-3.5 text-indigo-600 group-hover:rotate-180 transition-transform duration-500" />
             <span>So Sánh Phiên Bản</span>
           </button>
         </div>
@@ -134,84 +177,100 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
             placeholder="Lọc nhanh theo tên tài liệu..."
-            className="w-full h-8 pl-8 pr-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 transition-colors"
+            className="w-full h-8 pl-8 pr-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 transition-all"
           />
         </div>
 
         <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto">
-          {['all', 'pdf', 'docx', 'xlsx'].map((type) => (
-            <button
-              key={type}
-              onClick={() => setFilterType(type)}
-              className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors ${
-                filterType === type
-                  ? 'bg-indigo-600 text-white font-semibold shadow-2xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
-              }`}
-            >
-              {type === 'all' ? 'Tất cả' : type.toUpperCase()}
-            </button>
-          ))}
+          {['all', 'pdf', 'docx', 'xlsx'].map((type) => {
+            const isSelected = filterType === type;
+            let activeStyle = 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-sm shadow-indigo-200';
+            let hoverStyle = 'hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200';
+            if (type === 'pdf') hoverStyle = 'hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 border border-slate-200';
+            if (type === 'docx') hoverStyle = 'hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-slate-600 border border-slate-200';
+            if (type === 'xlsx') hoverStyle = 'hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 text-slate-600 border border-slate-200';
+
+            return (
+              <button
+                key={type}
+                onClick={() => setFilterType(type)}
+                className={`px-3 py-1 rounded-lg text-xs font-mono transition-all duration-200 hover:scale-105 active:scale-95 ${
+                  isSelected ? activeStyle : `bg-slate-50 ${hoverStyle}`
+                }`}
+              >
+                {type === 'all' ? 'Tất cả' : type.toUpperCase()}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Content Area: Grid / Table */}
       {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredDocs.map((doc) => (
-            <div
-              key={doc.id}
-              onClick={() => onSelectDocument(doc)}
-              className="bg-white hover:border-indigo-300 hover:shadow-md border border-slate-200 rounded-xl p-5 cursor-pointer relative group flex flex-col justify-between transition-all"
-            >
-              <div>
-                <div className="flex items-start justify-between mb-3.5">
-                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    {getFileIcon(doc.file_type)}
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-semibold">
-                      v{doc.current_version}.0
-                    </span>
-                    {doc.is_public && (
-                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
-                        Nội bộ
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredDocs.map((doc) => {
+            const cardTheme = getCardTheme(doc.file_type);
+            return (
+              <div
+                key={doc.id}
+                onClick={() => onSelectDocument(doc)}
+                className={`${cardTheme.bg} ${cardTheme.hoverBorder} border border-slate-200 rounded-xl p-5 cursor-pointer relative group flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 overflow-hidden`}
+              >
+                {/* Colorful Top Accent Stripe */}
+                <div className={`h-1.5 w-full bg-gradient-to-r ${cardTheme.stripe} rounded-t-xl absolute top-0 left-0 transition-opacity duration-300 opacity-80 group-hover:opacity-100`} />
+
+                <div>
+                  <div className="flex items-start justify-between mb-3.5 pt-1">
+                    <div className={`p-2.5 rounded-xl ${cardTheme.iconBox} group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-2xs`}>
+                      {getFileIcon(doc.file_type)}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold shadow-2xs ${cardTheme.versionBadge}`}>
+                        v{doc.current_version}.0
                       </span>
-                    )}
+                      {doc.is_public && (
+                        <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold shadow-2xs">
+                          Nội bộ
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <h3 className={`font-bold text-sm text-slate-900 ${cardTheme.titleHover} transition-colors line-clamp-2 leading-snug`}>
+                    {doc.title}
+                  </h3>
+                  <p className="text-[11px] font-mono text-slate-500 mt-1 truncate">
+                    {doc.file_name}
+                  </p>
+
+                  {/* Temporal validity badge */}
+                  <div className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-500">
+                    <Calendar className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-500 transition-colors" />
+                    <span>Hiệu lực: <strong className="text-slate-700">2026 – Hiện hành</strong></span>
                   </div>
                 </div>
 
-                <h3 className="font-bold text-sm text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug">
-                  {doc.title}
-                </h3>
-                <p className="text-[11px] font-mono text-slate-500 mt-1 truncate">
-                  {doc.file_name}
-                </p>
-
-                {/* Temporal validity badge */}
-                <div className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-500">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Hiệu lực: <strong className="text-slate-700">2026 – Hiện hành</strong></span>
-                </div>
-              </div>
-
-              <div className="pt-3.5 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="text-[11px] font-mono text-slate-500 font-medium">
-                  {formatFileSize(doc.file_size_bytes)}
-                </span>
-
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    <span>Đã chỉ mục</span>
+                <div className="pt-3.5 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="text-[11px] font-mono text-slate-500 font-medium">
+                    {formatFileSize(doc.file_size_bytes)}
                   </span>
-                  <div className="p-1 rounded text-slate-400 group-hover:text-indigo-600 transition-colors">
-                    <Eye className="w-4 h-4" />
+
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold shadow-2xs">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                      </span>
+                      <span>Đã chỉ mục</span>
+                    </span>
+                    <div className="p-1.5 rounded-lg bg-slate-100 text-slate-400 group-hover:bg-indigo-600 group-hover:text-white group-hover:scale-110 transition-all duration-300 shadow-2xs">
+                      <Eye className="w-3.5 h-3.5" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">

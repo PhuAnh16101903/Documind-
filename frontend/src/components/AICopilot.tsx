@@ -150,29 +150,46 @@ ${
   };
 
   const promptSuggestions = [
-    { label: 'Quy chế làm việc Remote (HR)', query: 'Quy chế làm việc từ xa tối đa mấy ngày một tuần?' },
-    { label: 'Hạn mức công tác phí (Tài chính)', query: 'Hạn mức tiền phòng khách sạn khi đi công tác là bao nhiêu?' },
-    { label: 'Tiêu chuẩn bảo mật API (Kỹ thuật)', query: 'Tiêu chuẩn kiến trúc bảo mật Microservices quy định gì?' },
+    {
+      label: 'Quy chế làm việc Remote (HR)',
+      query: 'Quy chế làm việc từ xa tối đa mấy ngày một tuần?',
+      hoverColor: 'hover:border-rose-400 hover:bg-rose-50 hover:text-rose-700',
+    },
+    {
+      label: 'Hạn mức công tác phí (Tài chính)',
+      query: 'Hạn mức tiền phòng khách sạn khi đi công tác là bao nhiêu?',
+      hoverColor: 'hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-700',
+    },
+    {
+      label: 'Tiêu chuẩn bảo mật API (Kỹ thuật)',
+      query: 'Tiêu chuẩn kiến trúc bảo mật Microservices quy định gì?',
+      hoverColor: 'hover:border-sky-400 hover:bg-sky-50 hover:text-sky-700',
+    },
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-slate-50 overflow-hidden relative">
+    <div className="flex-1 flex flex-col h-full bg-slate-50/80 overflow-hidden relative">
       {/* Top Banner Toolbar */}
       <div className="h-12 border-b border-slate-200 px-5 flex items-center justify-between bg-white select-none z-10 shadow-2xs">
         <div className="flex items-center gap-2.5">
-          <Sparkles className="w-4 h-4 text-indigo-600" />
+          <div className="p-1 rounded-md bg-indigo-50 text-indigo-600">
+            <Sparkles className="w-4 h-4 text-indigo-600 animate-pulse-subtle" />
+          </div>
           <span className="text-xs font-bold text-slate-900">
             AI Copilot
           </span>
-          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-mono font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-mono font-bold shadow-2xs">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
             <span>Sẵn sàng</span>
           </span>
         </div>
 
         <button
           onClick={handleResetChat}
-          className="text-slate-600 hover:text-slate-900 text-xs flex items-center gap-1.5 px-2.5 py-1 rounded-md hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-colors font-medium"
+          className="text-slate-600 hover:text-slate-900 text-xs flex items-center gap-1.5 px-2.5 py-1 rounded-md hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
           title="Làm mới phiên hội thoại"
         >
           <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
@@ -187,10 +204,10 @@ ${
           return (
             <div
               key={msg.id}
-              className={`flex items-start gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
+              className={`flex items-start gap-3 ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}
             >
               {!isUser && (
-                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white flex-shrink-0 mt-0.5 shadow-2xs">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white flex-shrink-0 mt-0.5 shadow-md shadow-indigo-500/20">
                   <Sparkles className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -318,7 +335,7 @@ ${
             <button
               key={idx}
               onClick={() => handleSend(item.query)}
-              className="px-2.5 py-1 rounded-lg border border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700 hover:text-slate-900 whitespace-nowrap transition-colors text-xs font-medium shadow-2xs"
+              className={`px-3 py-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 whitespace-nowrap transition-all duration-200 hover:scale-105 active:scale-95 text-xs font-medium shadow-2xs ${item.hoverColor}`}
             >
               {item.label}
             </button>
@@ -338,7 +355,7 @@ ${
           <button
             onClick={() => handleSend()}
             disabled={!input.trim() || loading || isStreaming}
-            className="h-10 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors active:scale-95 shadow-sm"
+            className="h-10 px-4 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-md shadow-indigo-500/20"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Gửi</span>

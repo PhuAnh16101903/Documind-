@@ -125,16 +125,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
+          const bgGradients = [
+            'from-indigo-50/50 via-white to-white hover:border-indigo-300 hover:shadow-indigo-500/10',
+            'from-cyan-50/50 via-white to-white hover:border-cyan-300 hover:shadow-cyan-500/10',
+            'from-emerald-50/50 via-white to-white hover:border-emerald-300 hover:shadow-emerald-500/10',
+            'from-purple-50/50 via-white to-white hover:border-purple-300 hover:shadow-purple-500/10',
+          ];
           return (
             <div
               key={idx}
-              className="bg-white border border-slate-200 rounded-xl p-5 space-y-3 relative group transition-all shadow-2xs"
+              className={`bg-gradient-to-br ${bgGradients[idx % 4]} border border-slate-200 rounded-xl p-5 space-y-3 relative group transition-all duration-300 hover:-translate-y-1 hover:shadow-lg shadow-2xs`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-semibold">
                   {kpi.label}
                 </span>
-                <div className={`p-2 rounded-lg ${kpi.bgGlow} ${kpi.color}`}>
+                <div className={`p-2 rounded-lg ${kpi.bgGlow} ${kpi.color} group-hover:scale-110 transition-transform duration-300`}>
                   <Icon className="w-4 h-4" />
                 </div>
               </div>
