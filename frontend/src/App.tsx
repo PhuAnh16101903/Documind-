@@ -60,7 +60,7 @@ export const App: React.FC = () => {
     : documents;
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="h-screen w-screen flex flex-col bg-slate-100 text-slate-900 overflow-hidden font-sans selection:bg-indigo-500/20 selection:text-indigo-900">
       {/* Top Header */}
       <Header
         user={currentUser}
@@ -81,7 +81,7 @@ export const App: React.FC = () => {
         />
 
         {/* Active View Screen */}
-        <main className="flex-1 flex overflow-hidden bg-slate-950">
+        <main className="flex-1 flex overflow-hidden bg-slate-100">
           {activeTab === 'knowledge' && (
             <KnowledgeExplorer
               documents={filteredDocs}

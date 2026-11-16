@@ -101,24 +101,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
     filterAction === 'ALL' ? auditLogs : auditLogs.filter((log) => log.action === filterAction);
 
   return (
-    <div className={`flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 ${activeTheme.bgClass} transition-colors duration-300`}>
+    <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 bg-slate-50">
       {/* Header */}
-      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b ${activeTheme.borderClass}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h2 className={`text-xl font-extrabold text-white tracking-tight ${activeTheme.fontHeading}`}>
+          <h2 className="text-lg font-bold text-slate-900 tracking-tight">
             Bảng Điều Khiển Quản Trị &amp; Audit Log
           </h2>
-          <p className="text-xs text-slate-400 mt-1 font-medium">
+          <p className="text-xs text-slate-500 mt-1">
             Theo dõi hiệu suất khai thác tri thức, tình trạng chỉ mục và nhật ký bảo mật hệ thống
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
-          <span className="text-[10px] font-mono px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
+          <span className="text-[10px] font-mono px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-2 font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
             <span>AI Indexing Engine: 100% OPERATIONAL</span>
           </span>
         </div>
@@ -131,19 +128,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
           return (
             <div
               key={idx}
-              className={`${activeTheme.cardClass} rounded-2xl p-5 space-y-3 relative group transition-all duration-200`}
+              className="bg-white border border-slate-200 rounded-xl p-5 space-y-3 relative group transition-all shadow-2xs"
             >
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-semibold">
                   {kpi.label}
                 </span>
-                <div className={`p-2 rounded-xl ${kpi.bgGlow} ${kpi.color}`}>
+                <div className={`p-2 rounded-lg ${kpi.bgGlow} ${kpi.color}`}>
                   <Icon className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-white tracking-tight">{kpi.val}</div>
-              <div className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="text-3xl font-extrabold text-slate-900 tracking-tight">{kpi.val}</div>
+              <div className="text-[11px] font-mono text-emerald-600 flex items-center gap-1.5 font-medium">
+                <Zap className="w-3.5 h-3.5 text-emerald-500" />
                 <span>{kpi.change}</span>
               </div>
             </div>
@@ -153,41 +150,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
 
       {/* System Health Overview Card */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-white/[0.08] space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2 shadow-2xs">
+          <div className="flex items-center justify-between text-xs font-semibold text-slate-900">
             <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>RBAC Policy Enforcer</span>
             </span>
-            <span className="text-emerald-400 font-mono text-[10px]">Strict Mode</span>
+            <span className="text-emerald-700 font-mono text-[10px] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 font-medium">Strict Mode</span>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-slate-500">
             Kiểm tra quyền truy cập ở cấp độ thư mục và tài liệu trước mọi truy vấn Hybrid Search.
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-white/[0.08] space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2 shadow-2xs">
+          <div className="flex items-center justify-between text-xs font-semibold text-slate-900">
             <span className="flex items-center gap-1.5">
-              <Lock className="w-4 h-4 text-cyan-400" />
+              <Lock className="w-4 h-4 text-indigo-600" />
               <span>Indirect Injection Defense</span>
             </span>
-            <span className="text-cyan-400 font-mono text-[10px]">Protected</span>
+            <span className="text-indigo-700 font-mono text-[10px] bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200 font-medium">Protected</span>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-slate-500">
             Cô lập context với delimiter XML &lt;untrusted_retrieved_context&gt; và Output Guardrail regex.
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-white/[0.08] space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2 shadow-2xs">
+          <div className="flex items-center justify-between text-xs font-semibold text-slate-900">
             <span className="flex items-center gap-1.5">
-              <Activity className="w-4 h-4 text-purple-400" />
+              <Activity className="w-4 h-4 text-blue-600" />
               <span>Temporal Validity Filter</span>
             </span>
-            <span className="text-purple-400 font-mono text-[10px]">Active</span>
+            <span className="text-blue-700 font-mono text-[10px] bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 font-medium">Active</span>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-slate-500">
             Loại bỏ tài liệu đã hết hiệu lực (expired) hoặc đã bị thay thế (superseded) khỏi context.
           </p>
         </div>
@@ -196,8 +193,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
       {/* Audit Logs Table */}
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-indigo-400" />
+          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-indigo-600" />
             <span>Nhật Ký Hoạt Động &amp; Bảo Mật (Audit Log Trail)</span>
           </h3>
 
@@ -207,10 +204,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
               <button
                 key={act}
                 onClick={() => setFilterAction(act)}
-                className={`px-2.5 py-1 rounded-lg transition-all ${
+                className={`px-2.5 py-1 rounded-lg transition-colors ${
                   filterAction === act
-                    ? `${activeTheme.activePillClass} font-bold`
-                    : 'bg-slate-900 text-slate-400 hover:text-white border border-white/[0.06]'
+                    ? 'bg-indigo-600 text-white font-semibold shadow-2xs'
+                    : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
                 }`}
               >
                 {act}
@@ -219,37 +216,46 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
           </div>
         </div>
 
-        <div className={`border ${activeTheme.borderClass} rounded-2xl overflow-hidden bg-slate-900/60 shadow-xl`}>
-          <table className="w-full text-left text-xs font-mono">
-            <thead className="bg-slate-800/80 text-[10px] uppercase tracking-wider text-slate-300 border-b border-white/[0.06]">
+        <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 text-[11px] font-mono uppercase tracking-wider text-slate-600 border-b border-slate-200">
               <tr>
-                <th className="p-4 pl-5">Thời Gian</th>
-                <th className="p-4">Người Dùng</th>
-                <th className="p-4">Hành Động</th>
-                <th className="p-4">Tài Nguyên</th>
-                <th className="p-4">Ghi Chú</th>
-                <th className="p-4 text-right pr-5">Trạng Thái</th>
+                <th className="p-3.5 pl-4">Thời Gian</th>
+                <th className="p-3.5">Người Dùng</th>
+                <th className="p-3.5">Hành Động</th>
+                <th className="p-3.5">Tài Nguyên</th>
+                <th className="p-3.5">Trạng Thái</th>
+                <th className="p-3.5 pr-4">Ghi Chú</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04] text-slate-300 text-[11px]">
+            <tbody className="divide-y divide-slate-100 text-slate-700">
               {filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="p-4 pl-5 text-slate-400">{log.time}</td>
-                  <td className="p-4 font-semibold text-slate-200">{log.user}</td>
-                  <td className="p-4 text-indigo-300 font-semibold">{log.action}</td>
-                  <td className="p-4 text-slate-300 truncate max-w-xs">{log.resource}</td>
-                  <td className="p-4 text-slate-400 font-sans text-xs">{log.note}</td>
-                  <td className="p-4 text-right pr-5">
-                    {log.status === 'SUCCESS' ? (
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-[10px] font-semibold">
-                        SUCCESS
-                      </span>
-                    ) : (
-                      <span className="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/20 text-[10px] font-bold">
-                        ACCESS DENIED
-                      </span>
-                    )}
+                <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="p-3.5 pl-4 font-mono text-[11px] text-slate-500">{log.time}</td>
+                  <td className="p-3.5 font-medium text-slate-900">{log.user}</td>
+                  <td className="p-3.5 font-mono text-[11px]">
+                    <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                      {log.action}
+                    </span>
                   </td>
+                  <td className="p-3.5 font-mono text-[11px] text-slate-600">{log.resource}</td>
+                  <td className="p-3.5">
+                    <span
+                      className={`inline-flex items-center gap-1 font-mono text-[10px] px-2 py-0.5 rounded font-semibold ${
+                        log.status === 'SUCCESS'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-700 border border-rose-200'
+                      }`}
+                    >
+                      {log.status === 'SUCCESS' ? (
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                      ) : (
+                        <Lock className="w-3 h-3 text-rose-600" />
+                      )}
+                      <span>{log.status}</span>
+                    </span>
+                  </td>
+                  <td className="p-3.5 pr-4 text-slate-500 text-[11px]">{log.note}</td>
                 </tr>
               ))}
             </tbody>
