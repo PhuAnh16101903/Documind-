@@ -12,9 +12,16 @@ import {
   Filter,
   Zap,
 } from 'lucide-react';
+import { UIThemeId } from '../types';
+import { THEMES } from '../theme/themes';
 
-export const AdminDashboard: React.FC = () => {
+interface AdminDashboardProps {
+  currentTheme: UIThemeId;
+}
+
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) => {
   const [filterAction, setFilterAction] = useState<string>('ALL');
+  const activeTheme = THEMES[currentTheme];
 
   const kpis = [
     {
@@ -94,11 +101,11 @@ export const AdminDashboard: React.FC = () => {
     filterAction === 'ALL' ? auditLogs : auditLogs.filter((log) => log.action === filterAction);
 
   return (
-    <div className="flex-1 overflow-y-auto p-7 space-y-6 bg-[#080c16]">
+    <div className={`flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 ${activeTheme.bgClass} transition-colors duration-300`}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-white/[0.08]">
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b ${activeTheme.borderClass}`}>
         <div>
-          <h2 className="text-xl font-extrabold text-white tracking-tight">
+          <h2 className={`text-xl font-extrabold text-white tracking-tight ${activeTheme.fontHeading}`}>
             Bảng Điều Khiển Quản Trị &amp; Audit Log
           </h2>
           <p className="text-xs text-slate-400 mt-1 font-medium">
@@ -124,7 +131,7 @@ export const AdminDashboard: React.FC = () => {
           return (
             <div
               key={idx}
-              className="glass-card rounded-2xl p-5 space-y-3 relative group"
+              className={`${activeTheme.cardClass} rounded-2xl p-5 space-y-3 relative group transition-all duration-200`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
@@ -202,7 +209,7 @@ export const AdminDashboard: React.FC = () => {
                 onClick={() => setFilterAction(act)}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
                   filterAction === act
-                    ? 'bg-indigo-600 text-white font-bold'
+                    ? `${activeTheme.activePillClass} font-bold`
                     : 'bg-slate-900 text-slate-400 hover:text-white border border-white/[0.06]'
                 }`}
               >
@@ -212,7 +219,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="border border-white/[0.08] rounded-2xl overflow-hidden bg-slate-900/60 shadow-xl">
+        <div className={`border ${activeTheme.borderClass} rounded-2xl overflow-hidden bg-slate-900/60 shadow-xl`}>
           <table className="w-full text-left text-xs font-mono">
             <thead className="bg-slate-800/80 text-[10px] uppercase tracking-wider text-slate-300 border-b border-white/[0.06]">
               <tr>

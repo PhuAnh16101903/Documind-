@@ -7,9 +7,9 @@ import {
   HardDrive,
   ShieldCheck,
   Building,
-  Sparkles,
 } from 'lucide-react';
-import { Department } from '../types';
+import { Department, UIThemeId } from '../types';
+import { THEMES } from '../theme/themes';
 
 interface SidebarProps {
   departments: Department[];
@@ -17,6 +17,7 @@ interface SidebarProps {
   onSelectDept: (id: number | null) => void;
   activeTab: 'knowledge' | 'copilot' | 'analytics';
   onSelectTab: (tab: 'knowledge' | 'copilot' | 'analytics') => void;
+  currentTheme: UIThemeId;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -25,7 +26,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectDept,
   activeTab,
   onSelectTab,
+  currentTheme,
 }) => {
+  const activeTheme = THEMES[currentTheme];
+
   const navItems = [
     {
       id: 'knowledge' as const,
@@ -51,13 +55,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="w-64 border-r border-white/[0.08] bg-[#090e1a]/95 flex flex-col justify-between select-none relative z-20">
+    <aside className={`w-64 border-r ${activeTheme.borderClass} ${activeTheme.surfaceClass} flex flex-col justify-between select-none relative z-20 transition-colors duration-300`}>
       <div className="p-4 space-y-6 overflow-y-auto">
         {/* Main Workspaces */}
         <div className="space-y-1.5">
           <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2.5 mb-2 flex items-center justify-between">
             <span>KHÔNG GIAN LÀM VIỆC</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+            <span
+              className="w-1.5 h-1.5 rounded-full animate-pulse"
+              style={{ backgroundColor: activeTheme.accentColor }}
+            />
           </div>
 
           {navItems.map((item) => {
@@ -69,14 +76,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => onSelectTab(item.id)}
                 className={`w-full px-3 py-2.5 rounded-xl text-xs font-medium flex items-center justify-between transition-all duration-200 group relative ${
                   isActive
-                    ? 'bg-gradient-to-r from-indigo-500/15 to-indigo-500/5 text-white font-semibold border border-indigo-500/30 shadow-sm shadow-indigo-500/10'
+                    ? `${activeTheme.activePillClass} font-semibold shadow-sm`
                     : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={`p-1.5 rounded-lg transition-colors ${
-                      isActive ? 'bg-indigo-600/30 text-indigo-300' : 'bg-slate-800/60 text-slate-400 group-hover:text-slate-200'
+                      isActive ? 'bg-white/10 text-white' : 'bg-slate-800/60 text-slate-400 group-hover:text-slate-200'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -85,13 +92,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
 
                 {item.badge && (
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
                     {item.badge}
                   </span>
                 )}
 
                 {isActive && (
-                  <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-gradient-to-b from-indigo-400 to-cyan-400 rounded-r-full" />
+                  <div
+                    className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full"
+                    style={{ backgroundColor: activeTheme.accentColor }}
+                  />
                 )}
               </button>
             );
@@ -119,7 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }`}
           >
             <span className="flex items-center gap-2.5">
-              <Database className="w-3.5 h-3.5 text-indigo-400" />
+              <Database className="w-3.5 h-3.5 text-slate-400" />
               <span>Toàn Bộ Doanh Nghiệp</span>
             </span>
             <span className="text-[10px] font-mono text-slate-400">ALL</span>
@@ -133,7 +143,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => onSelectDept(dept.id)}
                 className={`w-full px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all duration-200 ${
                   isSelected
-                    ? 'bg-indigo-950/40 text-indigo-200 border border-indigo-500/40 font-semibold shadow-sm'
+                    ? `${activeTheme.activePillClass} font-semibold shadow-sm`
                     : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
                 }`}
               >
@@ -148,8 +158,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Storage Quota & System Health Card */}
-      <div className="p-4 border-t border-white/[0.08] bg-[#070b14]/70 space-y-3">
-        <div className="p-3 rounded-xl bg-slate-900/60 border border-white/[0.06] space-y-2">
+      <div className={`p-4 border-t ${activeTheme.borderClass} bg-black/20 space-y-3`}>
+        <div className={`p-3 rounded-xl ${activeTheme.cardClass} space-y-2`}>
           <div className="flex items-center justify-between text-[11px] font-mono">
             <span className="text-slate-400 flex items-center gap-1.5">
               <HardDrive className="w-3.5 h-3.5 text-indigo-400" />
@@ -160,8 +170,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden p-[1px]">
             <div
-              className="h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 rounded-full transition-all duration-500"
-              style={{ width: '14%' }}
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: '14%',
+                backgroundColor: activeTheme.accentColor,
+              }}
             />
           </div>
 

@@ -68,3 +68,23 @@ export interface SearchResult {
   snippet: string;
   score: number;
 }
+
+export type UIThemeId = 'evondev' | 'impeccable' | 'huashu' | 'vibe' | 'promax';
+
+export interface UIThemeInfo {
+  id: UIThemeId;
+  name: string;
+  author: string;
+  stars?: string;
+  tagline: string;
+  badge: string;
+  accentColor: string;
+  bgClass: string;
+  surfaceClass: string;
+  cardClass: string;
+  borderClass: string;
+  buttonClass: string;
+  activePillClass: string;
+  fontHeading: string;
+}
+

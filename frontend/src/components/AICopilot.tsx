@@ -11,14 +11,21 @@ import {
   Layers,
   FileCheck2,
 } from 'lucide-react';
-import { ChatMessage, Citation } from '../types';
+import { ChatMessage, Citation, UIThemeId } from '../types';
+import { THEMES } from '../theme/themes';
 import { ApiService } from '../services/api';
 
 interface AICopilotProps {
   onCitationClick: (citation: Citation) => void;
+  currentTheme: UIThemeId;
 }
 
-export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
+export const AICopilot: React.FC<AICopilotProps> = ({
+  onCitationClick,
+  currentTheme,
+}) => {
+  const activeTheme = THEMES[currentTheme];
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
@@ -85,20 +92,25 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#080c16] overflow-hidden relative">
+    <div className={`flex-1 flex flex-col h-full ${activeTheme.bgClass} overflow-hidden relative transition-colors duration-300`}>
       {/* Background ambient lighting */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 left-1/4 w-96 h-96 bg-cyan-600/5 rounded-full blur-3xl pointer-events-none" />
+      <div
+        className="absolute top-0 right-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-20 transition-all duration-500"
+        style={{ backgroundColor: activeTheme.accentColor }}
+      />
 
       {/* Top Banner Toolbar */}
-      <div className="h-14 border-b border-white/[0.08] px-6 flex items-center justify-between bg-slate-900/50 backdrop-blur-md select-none z-10">
+      <div className={`h-14 border-b ${activeTheme.borderClass} px-6 flex items-center justify-between ${activeTheme.surfaceClass} select-none z-10`}>
         <div className="flex items-center gap-3">
-          <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-            <Sparkles className="w-4 h-4 text-cyan-400" />
+          <div
+            className="p-1.5 rounded-lg flex items-center justify-center text-white"
+            style={{ backgroundColor: `${activeTheme.accentColor}25` }}
+          >
+            <Sparkles className="w-4 h-4" style={{ color: activeTheme.accentColor }} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-white tracking-wide">
+              <span className={`text-xs font-bold text-white tracking-wide ${activeTheme.fontHeading}`}>
                 AI Copilot &amp; Verifiable Retrieval
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
@@ -130,7 +142,10 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
               className={`flex items-start gap-3.5 ${isUser ? 'justify-end' : 'justify-start'}`}
             >
               {!isUser && (
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/25 flex-shrink-0 mt-0.5">
+                <div
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-md flex-shrink-0 mt-0.5"
+                  style={{ backgroundColor: activeTheme.accentColor }}
+                >
                   <Sparkles className="w-4 h-4 text-white" />
                 </div>
               )}
@@ -139,8 +154,8 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
                 <div
                   className={`relative group rounded-2xl p-4.5 text-xs leading-relaxed transition-all duration-200 ${
                     isUser
-                      ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/20'
-                      : 'glass-card border-white/[0.08] text-slate-200 shadow-xl'
+                      ? `${activeTheme.buttonClass} shadow-lg`
+                      : `${activeTheme.cardClass} text-slate-200 shadow-xl`
                   }`}
                 >
                   {/* Copy Button */}
@@ -180,7 +195,7 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
                           <button
                             key={cite.citation_index}
                             onClick={() => onCitationClick(cite)}
-                            className="p-3 rounded-xl bg-slate-900/90 hover:bg-indigo-950/40 border border-amber-500/30 hover:border-amber-400 text-left transition-all group flex flex-col justify-between"
+                            className="p-3 rounded-xl bg-slate-900/90 hover:bg-amber-950/30 border border-amber-500/30 hover:border-amber-400 text-left transition-all group flex flex-col justify-between"
                           >
                             <div>
                               <div className="flex items-center justify-between gap-1.5 mb-1.5">
@@ -203,7 +218,7 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
                               )}
                             </div>
 
-                            <div className="mt-2 text-[10px] text-indigo-400 font-mono flex items-center justify-end gap-1">
+                            <div className="mt-2 text-[10px] text-amber-400 font-mono flex items-center justify-end gap-1">
                               <span>Mở văn bản gốc</span>
                               <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                             </div>
@@ -220,7 +235,7 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
               </div>
 
               {isUser && (
-                <div className="w-8 h-8 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-xs font-bold text-indigo-300 flex-shrink-0 mt-0.5 shadow-sm">
+                <div className="w-8 h-8 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-200 flex-shrink-0 mt-0.5 shadow-sm">
                   U
                 </div>
               )}
@@ -230,10 +245,13 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
 
         {loading && (
           <div className="flex items-center gap-3.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white animate-pulse">
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center text-white animate-pulse"
+              style={{ backgroundColor: activeTheme.accentColor }}
+            >
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <div className="p-3.5 rounded-2xl glass-card text-xs font-mono text-cyan-300 flex items-center gap-2.5">
+            <div className={`p-3.5 rounded-2xl ${activeTheme.cardClass} text-xs font-mono text-cyan-300 flex items-center gap-2.5`}>
               <div className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
               <span>Đang truy xuất Hybrid Search &amp; đối chiếu trích dẫn nguồn...</span>
             </div>
@@ -242,17 +260,17 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
       </div>
 
       {/* Suggestions & Input Area */}
-      <div className="p-4 border-t border-white/[0.08] bg-[#090e1a]/95 backdrop-blur-xl z-10 space-y-3">
+      <div className={`p-4 border-t ${activeTheme.borderClass} ${activeTheme.surfaceClass} z-10 space-y-3`}>
         {/* Chips */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 text-[11px]">
           <span className="text-slate-400 font-mono text-[10px] flex items-center gap-1 flex-shrink-0">
-            <HelpCircle className="w-3 h-3 text-indigo-400" /> Gợi ý nhanh:
+            <HelpCircle className="w-3 h-3 text-slate-400" /> Gợi ý nhanh:
           </span>
           {promptSuggestions.map((item, idx) => (
             <button
               key={idx}
               onClick={() => handleSend(item.query)}
-              className="px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/[0.08] hover:border-indigo-500/40 whitespace-nowrap transition-all duration-200 active:scale-95 text-xs font-medium"
+              className="px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/[0.08] hover:border-white/20 whitespace-nowrap transition-all duration-200 active:scale-95 text-xs font-medium"
             >
               {item.label}
             </button>
@@ -267,12 +285,12 @@ export const AICopilot: React.FC<AICopilotProps> = ({ onCitationClick }) => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Hỏi bất kỳ điều gì dựa trên kho tri thức tài liệu nội bộ..."
-            className="flex-1 h-11 px-4 rounded-xl bg-slate-900/80 border border-white/[0.08] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/40 transition-all font-sans"
+            className="flex-1 h-11 px-4 rounded-xl bg-slate-900/80 border border-white/[0.08] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-white/20 transition-all font-sans"
           />
           <button
             onClick={() => handleSend()}
             disabled={!input.trim() || loading}
-            className="h-11 px-5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-indigo-600/30 active:scale-95 transition-all"
+            className={`h-11 px-5 rounded-xl disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-2 shadow-md active:scale-95 transition-all ${activeTheme.buttonClass}`}
           >
             <Send className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Truy Vấn</span>

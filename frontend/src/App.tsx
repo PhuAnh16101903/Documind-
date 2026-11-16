@@ -7,8 +7,10 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { UploadModal } from './components/UploadModal';
 import { HybridSearchBar } from './components/HybridSearchBar';
 import { DocumentReader } from './components/DocumentReader';
+import { ThemePillBar } from './components/ThemePillBar';
 import { ApiService, MockData } from './services/api';
-import { Department, Document, Citation } from './types';
+import { Department, Document, Citation, UIThemeId } from './types';
+import { THEMES } from './theme/themes';
 
 export const App: React.FC = () => {
   const [currentUser] = useState(MockData.currentUser);
@@ -17,11 +19,16 @@ export const App: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>(MockData.documents);
   const [activeTab, setActiveTab] = useState<'knowledge' | 'copilot' | 'analytics'>('knowledge');
 
+  // Dynamic Theme state: Evondev | Impeccable | Huashu | Vibe | ProMax
+  const [currentTheme, setCurrentTheme] = useState<UIThemeId>('evondev');
+
   // Modals state
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [activeCitation, setActiveCitation] = useState<Citation | null>(null);
+
+  const activeTheme = THEMES[currentTheme];
 
   useEffect(() => {
     // Keyboard shortcut Ctrl+K / Cmd+K for Universal Hybrid Search
@@ -60,12 +67,20 @@ export const App: React.FC = () => {
     : documents;
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-[#080c16] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
-      {/* Top Navigation */}
+    <div className={`h-screen w-screen flex flex-col ${activeTheme.bgClass} text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors duration-300`}>
+      {/* Top Header */}
       <Header
         user={currentUser}
+        currentTheme={currentTheme}
+        onSelectTheme={setCurrentTheme}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenSearch={() => setIsSearchOpen(true)}
+      />
+
+      {/* 5-Theme Quick Pill Strip & Inspector Trigger */}
+      <ThemePillBar
+        currentTheme={currentTheme}
+        onSelectTheme={setCurrentTheme}
       />
 
       {/* Main Layout Body */}
@@ -77,23 +92,30 @@ export const App: React.FC = () => {
           onSelectDept={(id) => setSelectedDeptId(id)}
           activeTab={activeTab}
           onSelectTab={(tab) => setActiveTab(tab)}
+          currentTheme={currentTheme}
         />
 
         {/* Active View Screen */}
-        <main className="flex-1 flex overflow-hidden bg-[#080c16] relative">
+        <main className={`flex-1 flex overflow-hidden ${activeTheme.bgClass} relative transition-colors duration-300`}>
           {activeTab === 'knowledge' && (
             <KnowledgeExplorer
               documents={filteredDocs}
               onSelectDocument={(doc) => setSelectedDoc(doc)}
               onOpenUpload={() => setIsUploadOpen(true)}
+              currentTheme={currentTheme}
             />
           )}
 
           {activeTab === 'copilot' && (
-            <AICopilot onCitationClick={handleCitationClick} />
+            <AICopilot
+              onCitationClick={handleCitationClick}
+              currentTheme={currentTheme}
+            />
           )}
 
-          {activeTab === 'analytics' && <AdminDashboard />}
+          {activeTab === 'analytics' && (
+            <AdminDashboard currentTheme={currentTheme} />
+          )}
         </main>
       </div>
 
