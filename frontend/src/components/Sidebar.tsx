@@ -4,12 +4,10 @@ import {
   MessageSquareText,
   BarChart3,
   Database,
-  HardDrive,
-  ShieldCheck,
   Building,
+  HardDrive,
 } from 'lucide-react';
 import { Department, UIThemeId } from '../types';
-import { THEMES } from '../theme/themes';
 
 interface SidebarProps {
   departments: Department[];
@@ -17,7 +15,7 @@ interface SidebarProps {
   onSelectDept: (id: number | null) => void;
   activeTab: 'knowledge' | 'copilot' | 'analytics';
   onSelectTab: (tab: 'knowledge' | 'copilot' | 'analytics') => void;
-  currentTheme: UIThemeId;
+  currentTheme?: UIThemeId;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -26,45 +24,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectDept,
   activeTab,
   onSelectTab,
-  currentTheme,
 }) => {
-  const activeTheme = THEMES[currentTheme];
-
   const navItems = [
     {
       id: 'knowledge' as const,
-      label: 'Kho Tri Thức & Thư Mục',
+      label: 'Kho Tri Thức',
       icon: FolderTree,
-      color: 'text-indigo-400',
-      badge: null,
     },
     {
       id: 'copilot' as const,
-      label: 'AI Copilot & Đối Chiếu',
+      label: 'AI Copilot',
       icon: MessageSquareText,
-      color: 'text-cyan-400',
-      badge: 'RAG 2.0',
     },
     {
       id: 'analytics' as const,
-      label: 'Quản Trị & Audit Log',
+      label: 'Nhật Ký & Quản Trị',
       icon: BarChart3,
-      color: 'text-emerald-400',
-      badge: null,
     },
   ];
 
   return (
-    <aside className={`w-64 border-r ${activeTheme.borderClass} ${activeTheme.surfaceClass} flex flex-col justify-between select-none relative z-20 transition-colors duration-300`}>
-      <div className="p-4 space-y-6 overflow-y-auto">
+    <aside className="w-56 border-r border-slate-800 bg-slate-950 flex flex-col justify-between select-none z-20">
+      <div className="p-3 space-y-5 overflow-y-auto">
         {/* Main Workspaces */}
-        <div className="space-y-1.5">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2.5 mb-2 flex items-center justify-between">
-            <span>KHÔNG GIAN LÀM VIỆC</span>
-            <span
-              className="w-1.5 h-1.5 rounded-full animate-pulse"
-              style={{ backgroundColor: activeTheme.accentColor }}
-            />
+        <div className="space-y-1">
+          <div className="text-[11px] font-semibold text-slate-400 px-2.5 mb-1.5 uppercase tracking-wider">
+            Không Gian
           </div>
 
           {navItems.map((item) => {
@@ -74,65 +59,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => onSelectTab(item.id)}
-                className={`w-full px-3 py-2.5 rounded-xl text-xs font-medium flex items-center justify-between transition-all duration-200 group relative ${
+                className={`w-full px-2.5 py-2 rounded-lg text-xs font-medium flex items-center gap-2.5 transition-colors ${
                   isActive
-                    ? `${activeTheme.activePillClass} font-semibold shadow-sm`
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                    ? 'bg-indigo-600 text-white'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`p-1.5 rounded-lg transition-colors ${
-                      isActive ? 'bg-white/10 text-white' : 'bg-slate-800/60 text-slate-400 group-hover:text-slate-200'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <span>{item.label}</span>
-                </div>
-
-                {item.badge && (
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
-                    {item.badge}
-                  </span>
-                )}
-
-                {isActive && (
-                  <div
-                    className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full"
-                    style={{ backgroundColor: activeTheme.accentColor }}
-                  />
-                )}
+                <Icon className="w-4 h-4" />
+                <span>{item.label}</span>
               </button>
             );
           })}
         </div>
 
         {/* Departments RBAC Scoped */}
-        <div className="space-y-1.5">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2.5 mb-2 flex items-center justify-between">
-            <span className="flex items-center gap-1.5">
-              <Building className="w-3 h-3 text-slate-400" />
-              <span>PHÒNG BAN TRUY CẬP</span>
-            </span>
-            <span className="text-emerald-400 font-mono text-[9px] bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/30">
-              RBAC ACTIVE
-            </span>
+        <div className="space-y-1">
+          <div className="text-[11px] font-semibold text-slate-400 px-2.5 mb-1.5 uppercase tracking-wider flex items-center justify-between">
+            <span>Phòng Ban</span>
           </div>
 
           <button
             onClick={() => onSelectDept(null)}
-            className={`w-full px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all duration-200 ${
+            className={`w-full px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
               selectedDeptId === null
-                ? 'bg-slate-800/90 text-white font-semibold border border-white/10 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                ? 'bg-slate-900 text-white font-medium border border-slate-800'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
             }`}
           >
-            <span className="flex items-center gap-2.5">
-              <Database className="w-3.5 h-3.5 text-slate-400" />
-              <span>Toàn Bộ Doanh Nghiệp</span>
+            <span className="flex items-center gap-2">
+              <Database className="w-3.5 h-3.5 text-slate-500" />
+              <span>Toàn Doanh Nghiệp</span>
             </span>
-            <span className="text-[10px] font-mono text-slate-400">ALL</span>
           </button>
 
           {departments.map((dept) => {
@@ -141,14 +98,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={dept.id}
                 onClick={() => onSelectDept(dept.id)}
-                className={`w-full px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all duration-200 ${
+                className={`w-full px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
                   isSelected
-                    ? `${activeTheme.activePillClass} font-semibold shadow-sm`
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                    ? 'bg-slate-900 text-white font-medium border border-slate-800'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
                 }`}
               >
-                <span className="truncate max-w-[130px] text-left">{dept.name}</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800/80 text-slate-400 border border-white/[0.06]">
+                <span className="truncate text-left">{dept.name}</span>
+                <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-slate-900 text-slate-500">
                   {dept.code}
                 </span>
               </button>
@@ -157,34 +114,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* Storage Quota & System Health Card */}
-      <div className={`p-4 border-t ${activeTheme.borderClass} bg-black/20 space-y-3`}>
-        <div className={`p-3 rounded-xl ${activeTheme.cardClass} space-y-2`}>
-          <div className="flex items-center justify-between text-[11px] font-mono">
-            <span className="text-slate-400 flex items-center gap-1.5">
-              <HardDrive className="w-3.5 h-3.5 text-indigo-400" />
-              <span>KHO TRI THỨC</span>
-            </span>
-            <span className="text-emerald-400 font-bold">1.4 / 10 GB</span>
-          </div>
-
-          <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden p-[1px]">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: '14%',
-                backgroundColor: activeTheme.accentColor,
-              }}
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 pt-0.5">
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3 text-emerald-400" />
-              <span>TC-SEC-01 Validated</span>
-            </span>
-            <span className="text-slate-400">14% Sử dụng</span>
-          </div>
+      {/* Storage Quota */}
+      <div className="p-3 border-t border-slate-800 space-y-2">
+        <div className="flex items-center justify-between text-[11px] text-slate-400">
+          <span className="flex items-center gap-1.5">
+            <HardDrive className="w-3.5 h-3.5 text-slate-500" />
+            <span>Dung lượng</span>
+          </span>
+          <span className="text-slate-300 font-mono text-[10px]">1.4 / 10 GB</span>
+        </div>
+        <div className="w-full h-1 bg-slate-900 rounded-full overflow-hidden">
+          <div className="h-full bg-indigo-500 rounded-full w-[14%]" />
         </div>
       </div>
     </aside>

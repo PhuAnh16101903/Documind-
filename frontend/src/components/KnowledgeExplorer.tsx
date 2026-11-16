@@ -69,94 +69,87 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
   });
 
   return (
-    <div className={`flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 ${activeTheme.bgClass} transition-colors duration-300`}>
+    <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-5 bg-slate-950">
       {/* Page Header */}
-      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b ${activeTheme.borderClass}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
           <div className="flex items-center gap-2.5">
-            <h2 className={`text-xl font-extrabold text-white tracking-tight ${activeTheme.fontHeading}`}>
-              Kho Tri Thức Tài Liệu Doanh Nghiệp
+            <h2 className="text-lg font-bold text-white tracking-tight">
+              Kho Tri Thức Tài Liệu
             </h2>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/20">
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-slate-850 text-slate-400 border border-slate-800">
               {filteredDocs.length} tài liệu
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1 font-medium">
-            Tài liệu đã lập chỉ mục Hybrid Search &amp; phân đoạn ngữ nghĩa, sẵn sàng truy xuất có kiểm chứng
+          <p className="text-xs text-slate-400 mt-1">
+            Quản lý tài liệu đã lập chỉ mục Hybrid Search &amp; phân đoạn văn bản cho AI Copilot
           </p>
         </div>
 
         {/* Action Controls & View Switcher */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {/* View Mode Toggle */}
-          <div className="flex items-center p-1 rounded-xl bg-slate-900/80 border border-white/[0.08]">
+          <div className="flex items-center p-0.5 rounded-lg bg-slate-900 border border-slate-800">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-lg transition-all ${
+              className={`p-1.5 rounded-md transition-colors ${
                 viewMode === 'grid'
-                  ? 'bg-white/15 text-white shadow-sm'
+                  ? 'bg-slate-800 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
-              title="Xem dạng Bento Cards"
+              title="Xem dạng Lưới"
             >
-              <Grid className="w-4 h-4" />
+              <Grid className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`p-1.5 rounded-lg transition-all ${
+              className={`p-1.5 rounded-md transition-colors ${
                 viewMode === 'table'
-                  ? 'bg-white/15 text-white shadow-sm'
+                  ? 'bg-slate-800 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
               title="Xem dạng Bảng"
             >
-              <List className="w-4 h-4" />
+              <List className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <button
             onClick={() => setIsDiffOpen(true)}
-            className="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 active:scale-95 transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-850 text-slate-300 text-xs font-medium border border-slate-800 hover:border-slate-700 transition-colors flex items-center gap-1.5"
             title="So sánh thay đổi giữa 2 phiên bản tài liệu"
           >
-            <GitCompare className="w-4 h-4 text-cyan-400" />
-            <span className="hidden md:inline">So Sánh Phiên Bản (Diff)</span>
-          </button>
-
-          <button
-            onClick={onOpenUpload}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center gap-2 ${activeTheme.buttonClass}`}
-          >
-            <span>Thêm Tài Liệu Mới</span>
+            <GitCompare className="w-3.5 h-3.5 text-indigo-400" />
+            <span>So Sánh Phiên Bản</span>
           </button>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-2xl border border-white/[0.06]">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+        <div className="relative w-full sm:w-72">
+          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
-            placeholder="Lọc tài liệu theo tên hoặc mã..."
-            className="w-full h-9 pl-9 pr-3 rounded-xl bg-slate-950/70 border border-white/[0.08] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-white/20 transition-colors"
+            placeholder="Lọc nhanh theo tên tài liệu..."
+            className="w-full h-8 pl-8 pr-3 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-slate-700 transition-colors"
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto">
+        <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto">
           {['all', 'pdf', 'docx', 'xlsx'].map((type) => (
             <button
               key={type}
               onClick={() => setFilterType(type)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-all ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
                 filterType === type
-                  ? `${activeTheme.activePillClass} font-bold`
-                  : 'bg-slate-950/60 text-slate-400 hover:text-slate-200 border border-white/[0.06]'
+                  ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/40 font-medium'
+                  : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800/80'
               }`}
             >
-              {type === 'all' ? 'Tất cả định dạng' : type.toUpperCase()}
+              {type === 'all' ? 'Tất cả' : type.toUpperCase()}
             </button>
           ))}
         </div>
@@ -164,56 +157,56 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
 
       {/* Content Area: Grid / Table */}
       {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredDocs.map((doc) => (
             <div
               key={doc.id}
               onClick={() => onSelectDocument(doc)}
-              className={`${activeTheme.cardClass} rounded-2xl p-5 cursor-pointer relative group flex flex-col justify-between transition-all duration-200`}
+              className="bg-slate-900/70 hover:bg-slate-850/90 border border-slate-800 hover:border-slate-700 rounded-xl p-4 cursor-pointer relative group flex flex-col justify-between transition-colors shadow-sm"
             >
               <div>
-                <div className="flex items-start justify-between mb-3.5">
-                  <div className="p-3 rounded-2xl bg-gradient-to-tr from-pink-500/20 via-purple-500/20 to-cyan-500/20 border border-pink-500/30 group-hover:border-cyan-400 transition-colors shadow-md shadow-pink-500/10">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="p-2 rounded-lg bg-slate-800 border border-slate-700/60">
                     {getFileIcon(doc.file_type)}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
                       v{doc.current_version}.0
                     </span>
                     {doc.is_public && (
-                      <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm shadow-cyan-500/20">
-                        Public Enterprise
+                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800/60">
+                        Nội bộ
                       </span>
                     )}
                   </div>
                 </div>
 
-                <h3 className="font-black text-sm text-white group-hover:text-pink-300 transition-colors line-clamp-2 leading-snug">
+                <h3 className="font-semibold text-xs sm:text-sm text-slate-200 group-hover:text-indigo-300 transition-colors line-clamp-2 leading-snug">
                   {doc.title}
                 </h3>
-                <p className="text-[11px] font-mono text-cyan-300/80 mt-1 truncate">
+                <p className="text-[11px] font-mono text-slate-500 mt-1 truncate">
                   {doc.file_name}
                 </p>
 
                 {/* Temporal validity badge */}
-                <div className="mt-3 flex items-center gap-1.5 text-[10px] font-mono text-amber-300/90 font-semibold">
-                  <Calendar className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Hiệu lực: <strong className="text-amber-200">2026 – Hiện hành</strong></span>
+                <div className="mt-2.5 flex items-center gap-1.5 text-[10px] text-slate-400">
+                  <Calendar className="w-3 h-3 text-slate-500" />
+                  <span>Hiệu lực: <strong className="text-slate-300">2026 – Hiện hành</strong></span>
                 </div>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-white/[0.08] flex items-center justify-between text-xs">
-                <span className="text-[11px] font-mono text-slate-300 font-semibold">
+              <div className="pt-3 mt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                <span className="text-[11px] font-mono text-slate-400">
                   {formatFileSize(doc.file_size_bytes)}
                 </span>
 
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 shadow-sm shadow-emerald-500/20 font-bold">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>RAG Ready</span>
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span>Đã chỉ mục</span>
                   </span>
-                  <div className="p-2 rounded-xl bg-pink-500/20 text-pink-300 group-hover:bg-pink-500 group-hover:text-white transition-all shadow-sm">
-                    <Eye className="w-4 h-4" />
+                  <div className="p-1 rounded text-slate-500 group-hover:text-slate-300 transition-colors">
+                    <Eye className="w-3.5 h-3.5" />
                   </div>
                 </div>
               </div>
@@ -221,7 +214,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
           ))}
         </div>
       ) : (
-        <div className={`border ${activeTheme.borderClass} rounded-2xl overflow-hidden bg-slate-900/60 shadow-xl`}>
+        <div className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900/60">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-800/80 text-[11px] font-mono uppercase tracking-wider text-slate-300 border-b border-white/[0.06]">
               <tr>

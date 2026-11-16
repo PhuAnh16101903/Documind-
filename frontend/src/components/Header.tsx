@@ -1,126 +1,80 @@
 import React from 'react';
-import { Search, Upload, Shield, Sparkles, Activity, Layers, Palette } from 'lucide-react';
-import { User, UIThemeId } from '../types';
-import { ThemeSwitcher } from './ThemeSwitcher';
-import { THEMES } from '../theme/themes';
+import { Search, Upload, Shield, Brain } from 'lucide-react';
+import { User } from '../types';
 
 interface HeaderProps {
   user: User;
-  currentTheme: UIThemeId;
-  onSelectTheme: (themeId: UIThemeId) => void;
   onOpenUpload: () => void;
   onOpenSearch: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   user,
-  currentTheme,
-  onSelectTheme,
   onOpenUpload,
   onOpenSearch,
 }) => {
-  const activeTheme = THEMES[currentTheme];
-
   return (
-    <header className={`h-16 border-b ${activeTheme.borderClass} ${activeTheme.surfaceClass} px-5 sm:px-6 flex items-center justify-between z-30 relative select-none transition-colors duration-300`}>
-      {/* Top subtle glow line */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[1.5px] transition-all duration-300"
-        style={{
-          background: `linear-gradient(to right, transparent, ${activeTheme.accentColor}80, transparent)`,
-        }}
-      />
-
+    <header className="h-14 border-b border-slate-800 bg-slate-950/95 backdrop-blur px-5 sm:px-6 flex items-center justify-between z-30 select-none">
       {/* Brand & Identity */}
-      <div className="flex items-center space-x-3.5">
-        <div className="relative group">
-          <div
-            className="absolute -inset-0.5 rounded-xl blur opacity-50 group-hover:opacity-100 transition duration-300"
-            style={{ backgroundColor: activeTheme.accentColor }}
-          />
-          <div
-            className="relative w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white shadow-lg transition-all duration-300"
-            style={{ backgroundColor: activeTheme.accentColor }}
-          >
-            <Sparkles className="w-4 h-4 text-white animate-pulse-subtle" />
-          </div>
+      <div className="flex items-center space-x-3">
+        <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-sm">
+          <Brain className="w-4 h-4" />
         </div>
 
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="font-black text-lg tracking-tight text-gradient-vibrant drop-shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-base tracking-tight text-white">
               DocuMind
             </span>
-            <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 text-pink-300 border border-pink-400/40 shadow-sm shadow-pink-500/20">
-              v2.0 Enterprise
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+              Enterprise
             </span>
-            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-[10px] font-mono text-emerald-300 shadow-sm shadow-emerald-500/20">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-              </span>
-              <span className="font-bold">VERIFIED RAG ACTIVE</span>
-            </div>
           </div>
-          <p className="text-[11px] text-slate-300 hidden xl:block tracking-normal font-medium">
-            Kho Tri Thức Doanh Nghiệp &amp; Hệ Thống Truy Xuất AI Có Kiểm Chứng
-          </p>
         </div>
       </div>
 
       {/* Quick Search Bar (Command Palette Trigger) */}
-      <div className="flex-1 max-w-sm lg:max-w-md mx-4 lg:mx-6 hidden md:block">
+      <div className="flex-1 max-w-md mx-6 hidden md:block">
         <button
           onClick={onOpenSearch}
-          className="w-full h-9 px-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-white/[0.08] hover:border-white/20 text-xs text-slate-400 flex items-center justify-between transition-all duration-200 group shadow-inner"
+          className="w-full h-8 px-3 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-slate-700 text-xs text-slate-400 flex items-center justify-between transition-colors group"
         >
-          <div className="flex items-center gap-2.5">
-            <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-colors" />
-            <span className="group-hover:text-slate-300 transition-colors truncate">
-              Tìm theo từ khóa hoặc ý nghĩa (Hybrid Search)...
+          <div className="flex items-center gap-2">
+            <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-300" />
+            <span className="group-hover:text-slate-300 truncate">
+              Tìm kiếm tài liệu & quy định (Ctrl + K)...
             </span>
           </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <kbd className="text-[10px] font-mono bg-slate-800/90 px-1.5 py-0.5 rounded-md text-slate-400 border border-white/[0.08]">
-              Ctrl + K
-            </kbd>
-          </div>
+          <kbd className="text-[10px] font-mono bg-slate-850 px-1.5 py-0.5 rounded text-slate-400 border border-slate-750">
+            Ctrl K
+          </kbd>
         </button>
       </div>
 
-      {/* UI Theme Switcher & Actions */}
+      {/* Primary Actions & User Info */}
       <div className="flex items-center space-x-3">
-        {/* Dynamic Theme Switcher Dropdown */}
-        <ThemeSwitcher
-          currentTheme={currentTheme}
-          onSelectTheme={onSelectTheme}
-        />
-
         <button
           onClick={onOpenUpload}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 active:scale-95 transition-all duration-200 ${activeTheme.buttonClass}`}
+          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1.5 transition-colors shadow-sm active:scale-95"
         >
           <Upload className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline font-medium">Upload File</span>
+          <span>Tải Lên</span>
         </button>
 
-        <div className="h-5 w-px bg-white/[0.08]" />
+        <div className="h-4 w-px bg-slate-800" />
 
-        {/* User Badge */}
+        {/* User Info */}
         <div className="flex items-center space-x-2.5">
-          <div className="relative">
-            <div className="w-8 h-8 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-200 shadow-sm">
-              {user.full_name[0]}
-            </div>
-            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-slate-950" />
+          <div className="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-semibold text-slate-300">
+            {user.full_name[0]}
           </div>
 
-          <div className="hidden 2xl:block text-left">
-            <div className="text-xs font-semibold text-slate-200 leading-tight">
+          <div className="hidden sm:block text-left">
+            <div className="text-xs font-medium text-slate-200 leading-tight">
               {user.full_name}
             </div>
-            <div className="text-[10px] font-mono text-cyan-400 flex items-center gap-1 mt-0.5">
-              <Shield className="w-2.5 h-2.5 text-cyan-400" />
+            <div className="text-[10px] text-slate-400 flex items-center gap-1">
+              <Shield className="w-2.5 h-2.5 text-indigo-400" />
               <span>{user.role}</span>
             </div>
           </div>
