@@ -169,19 +169,24 @@ ${
 
   const promptSuggestions = [
     {
-      label: 'Quy chế làm việc Remote (HR)',
-      query: 'Quy chế làm việc từ xa tối đa mấy ngày một tuần?',
-      hoverColor: 'hover:border-rose-400 hover:text-rose-300',
+      label: '📍 Tệp này ở đâu?',
+      query: 'Tệp Quy chế làm việc từ xa nằm ở đâu, thuộc thư mục nào?',
+      hoverColor: 'hover:border-cyan-400 hover:text-cyan-300',
     },
     {
-      label: 'Hạn mức công tác phí (FIN)',
-      query: 'Hạn mức tiền phòng khách sạn khi đi công tác là bao nhiêu?',
+      label: '📑 Nằm ở mục nào, trang mấy?',
+      query: 'Quy định hạn mức tiền phòng khách sạn nằm ở mục nào, chương nào?',
       hoverColor: 'hover:border-emerald-400 hover:text-emerald-300',
     },
     {
-      label: 'Tiêu chuẩn bảo mật (TECH)',
-      query: 'Tiêu chuẩn kiến trúc bảo mật Microservices quy định gì?',
-      hoverColor: 'hover:border-cyan-400 hover:text-cyan-300',
+      label: '📋 Nội dung như thế nào?',
+      query: 'Nội dung quy chế làm việc từ xa 2026 ntn?',
+      hoverColor: 'hover:border-purple-400 hover:text-purple-300',
+    },
+    {
+      label: '⚠️ Hỏi ngoài phạm vi',
+      query: 'Cách nấu phở bò gia truyền ngon nhất?',
+      hoverColor: 'hover:border-rose-400 hover:text-rose-300',
     },
   ];
 

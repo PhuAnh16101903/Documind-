@@ -3,15 +3,18 @@ import {
   X,
   Upload,
   CheckCircle2,
-  Clock,
   FileText,
-  AlertCircle,
   Sparkles,
   Calendar,
-  Shield,
   Layers,
+  Trash2,
+  FileSpreadsheet,
+  FileCode,
+  FileCheck,
+  FolderOpen,
 } from 'lucide-react';
-import { Department } from '../types';
+import { Department, Document } from '../types';
+import { MockData } from '../services/api';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -26,56 +29,107 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   onClose,
   onUploadSuccess,
 }) => {
-  const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
   const [deptId, setDeptId] = useState<number>(departments[0]?.id || 1);
   const [effectiveDate, setEffectiveDate] = useState('2026-01-01');
-  const [expirationDate, setExpirationDate] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [processedCount, setProcessedCount] = useState(0);
+  const [currentStepName, setCurrentStepName] = useState('');
 
   if (!isOpen) return null;
 
-  const steps = [
-    { name: 'Xác thực định dạng & Sinh SHA-256 Checksum', desc: 'Kiểm tra tệp tin hợp lệ và không trùng lặp' },
-    { name: 'Trích xuất nội dung đa định dạng & Cấu trúc bảng', desc: 'Xử lý cấu trúc đoạn văn, tiêu đề điều khoản' },
-    { name: 'Phân đoạn ngữ nghĩa (Semantic Chunking)', desc: 'Cắt đoạn theo cấu trúc ngữ cảnh' },
-    { name: 'Sinh Dense Vector Embeddings (Gemini API)', desc: 'Tạo vector 768 chiều biểu diễn ngữ nghĩa' },
-    { name: 'Lập chỉ mục Hybrid Search & Kích hoạt RAG', desc: 'Ghi chỉ mục BM25 và Vector Database' },
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const selected = Array.from(e.target.files);
+      setFiles((prev) => [...prev, ...selected]);
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  };
+
+  const getFileIcon = (fileName: string) => {
+    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+      return <FileSpreadsheet className="w-4 h-4 text-emerald-600" />;
+    }
+    if (fileName.endsWith('.json') || fileName.endsWith('.md')) {
+      return <FileCode className="w-4 h-4 text-purple-600" />;
+    }
+    return <FileText className="w-4 h-4 text-indigo-600" />;
+  };
+
+  const pipelineSteps = [
+    'Xác thực SHA-256 Checksum & Khử trùng lặp',
+    'Trích xuất văn bản, bảng biểu & Mục lục cấu trúc',
+    'Phân đoạn ngữ nghĩa (Semantic Chunking theo Heading)',
+    'Sinh Vector Embeddings 768D (Gemini API)',
+    'Lập chỉ mục Hybrid BM25 & Kích hoạt RAG Grounding',
   ];
 
-  const handleStartUpload = () => {
-    if (!file || !title) return;
+  const handleStartBatchUpload = async () => {
+    if (files.length === 0) return;
     setIsProcessing(true);
+    setProcessedCount(0);
 
-    let step = 0;
-    const interval = setInterval(() => {
-      step++;
-      setCurrentStep(step);
-      if (step >= steps.length) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setIsProcessing(false);
-          onUploadSuccess();
-          onClose();
-        }, 800);
+    for (let fIdx = 0; fIdx < files.length; fIdx++) {
+      const currentFile = files[fIdx];
+      for (let sIdx = 0; sIdx < pipelineSteps.length; sIdx++) {
+        setCurrentStepName(`[${fIdx + 1}/${files.length}] ${currentFile.name}: ${pipelineSteps[sIdx]}`);
+        await new Promise((r) => setTimeout(r, 220));
       }
-    }, 650);
+
+      // Add to mock documents store
+      const ext = currentFile.name.split('.').pop() || 'pdf';
+      const newDoc: Document = {
+        id: Date.now() + fIdx,
+        title: currentFile.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' '),
+        file_name: currentFile.name,
+        file_type: ext,
+        file_size_bytes: currentFile.size || 850000,
+        department_id: deptId,
+        approval_status: 'APPROVED',
+        ingestion_status: 'INDEXED',
+        is_public: isPublic,
+        current_version: 1,
+        created_at: new Date().toISOString(),
+      };
+      MockData.documents.unshift(newDoc);
+      setProcessedCount(fIdx + 1);
+    }
+
+    await new Promise((r) => setTimeout(r, 400));
+    setIsProcessing(false);
+    onUploadSuccess();
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-      <div className="w-full max-w-xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-7 space-y-6">
+    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+      <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-7 space-y-5">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="flex items-center justify-between pb-3.5 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
               <Upload className="w-5 h-5 text-indigo-600" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Upload &amp; Lập Chỉ Mục Tài Liệu</h3>
-              <p className="text-[11px] text-slate-500">Quy trình nạp tự động vào kho tri thức doanh nghiệp</p>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-slate-900">Upload & Lập Chỉ Mục Đa Tài Liệu</h3>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">
+                  Batch Multi-File Ingestion
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Cho phép chọn hoặc kéo thả nhiều tệp cùng lúc (PDF, Word, Excel, Markdown)
+              </p>
             </div>
           </div>
           <button
@@ -89,148 +143,158 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
         {!isProcessing ? (
           <div className="space-y-4 text-xs">
-            {/* Drag & Drop Zone */}
-            <label className="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all bg-slate-50 hover:bg-indigo-50/30 group">
+            {/* Multi-file Drag & Drop Zone */}
+            <label className="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-5 flex flex-col items-center justify-center cursor-pointer transition-all bg-slate-50/70 hover:bg-indigo-50/30 group">
               <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform mb-2">
-                <Upload className="w-6 h-6" />
+                <FolderOpen className="w-6 h-6" />
               </div>
               <span className="font-semibold text-slate-800 text-center">
-                {file ? file.name : 'Kéo thả file PDF, Word (.docx), Excel (.xlsx) vào đây'}
+                Nhấp để chọn hoặc kéo thả nhiều tài liệu vào đây
               </span>
-              <span className="text-[10px] text-slate-500 mt-1">Dung lượng tối đa 100MB • Tự động phân tích</span>
+              <span className="text-[11px] text-slate-500 mt-1">
+                Hỗ trợ tải lên nhiều file cùng lúc • PDF, DOCX, XLSX, TXT, MD (Tối đa 100MB/tệp)
+              </span>
               <input
                 type="file"
+                multiple
                 accept=".pdf,.docx,.doc,.xlsx,.xls,.txt,.md"
                 className="hidden"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    setFile(e.target.files[0]);
-                    if (!title) setTitle(e.target.files[0].name.replace(/\.[^/.]+$/, ''));
-                  }
-                }}
+                onChange={handleFileChange}
               />
             </label>
 
-            {/* Document Details Form */}
-            <div className="space-y-3.5">
+            {/* Selected Files List */}
+            {files.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 font-semibold px-1">
+                  <span>DANH SÁCH TÀI LIỆU ĐÃ CHỌN ({files.length} TỆP)</span>
+                  <button
+                    type="button"
+                    onClick={() => setFiles([])}
+                    className="text-rose-600 hover:underline font-sans text-xs"
+                  >
+                    Xóa tất cả
+                  </button>
+                </div>
+                <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1 border border-slate-200 rounded-xl p-2 bg-slate-50/50">
+                  {files.map((f, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 hover:border-indigo-300 transition-colors text-xs"
+                    >
+                      <div className="flex items-center gap-2 overflow-hidden mr-2">
+                        {getFileIcon(f.name)}
+                        <span className="font-medium text-slate-800 truncate">{f.name}</span>
+                        <span className="text-[10px] text-slate-400 font-mono flex-shrink-0">
+                          ({formatFileSize(f.size)})
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFile(i)}
+                        className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors flex-shrink-0"
+                        title="Bỏ tệp này"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Document Ingestion Settings */}
+            <div className="grid grid-cols-2 gap-3 pt-1">
               <div>
                 <label className="block text-[11px] font-mono text-slate-600 mb-1 font-semibold">
-                  TIÊU ĐỀ VĂN BẢN CHÍNH THỨC
+                  PHÒNG BAN QUẢN LÝ TÀI LIỆU
+                </label>
+                <select
+                  value={deptId}
+                  onChange={(e) => setDeptId(Number(e.target.value))}
+                  className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 font-medium"
+                >
+                  {departments.map((dept) => (
+                    <option key={dept.id} value={dept.id}>
+                      {dept.name} ({dept.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono text-slate-600 mb-1 font-semibold">
+                  NGÀY BẮT ĐẦU CÓ HIỆU LỰC
                 </label>
                 <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ví dụ: Quy chế công tác phí quý 4..."
-                  className="w-full h-10 px-3.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 transition-colors"
+                  type="date"
+                  value={effectiveDate}
+                  onChange={(e) => setEffectiveDate(e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 font-medium"
                 />
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-mono text-slate-600 mb-1 font-semibold">
-                    PHÒNG BAN QUẢN LÝ
-                  </label>
-                  <select
-                    value={deptId}
-                    onChange={(e) => setDeptId(Number(e.target.value))}
-                    className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500"
-                  >
-                    {departments.map((dept) => (
-                      <option key={dept.id} value={dept.id}>
-                        {dept.name} ({dept.code})
-                      </option>
-                    ))}
-                  </select>
+            {/* Public toggle */}
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="space-y-0.5">
+                <div className="font-semibold text-slate-900 text-xs">
+                  Phạm vi áp dụng toàn doanh nghiệp
                 </div>
-
-                <div>
-                  <label className="block text-[11px] font-mono text-slate-600 mb-1 font-semibold">
-                    NGÀY CÓ HIỆU LỰC
-                  </label>
-                  <input
-                    type="date"
-                    value={effectiveDate}
-                    onChange={(e) => setEffectiveDate(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500"
-                  />
+                <div className="text-[10px] text-slate-500">
+                  Mọi nhân viên ở tất cả phòng ban đều có quyền tra cứu tài liệu này
                 </div>
               </div>
-
-              {/* Public toggle */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="space-y-0.5">
-                  <div className="font-semibold text-slate-900 text-xs">Phạm vi công khai toàn doanh nghiệp</div>
-                  <div className="text-[10px] text-slate-500">
-                    Cho phép mọi phòng ban tra cứu mà không bị chặn bởi RBAC
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={isPublic}
-                  onChange={(e) => setIsPublic(e.target.checked)}
-                  className="w-4 h-4 rounded text-indigo-600 bg-white border-slate-300 focus:ring-0"
-                />
-              </div>
+              <input
+                type="checkbox"
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.target.checked)}
+                className="w-4 h-4 rounded text-indigo-600 bg-white border-slate-300 focus:ring-0 cursor-pointer"
+              />
             </div>
 
             {/* Submit Button */}
             <div className="pt-2">
               <button
-                onClick={handleStartUpload}
-                disabled={!file || !title}
-                className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-xs"
+                onClick={handleStartBatchUpload}
+                disabled={files.length === 0}
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-40 text-white font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-xs"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Bắt Đầu Lập Chỉ Mục Tự Động</span>
+                <span>
+                  {files.length > 0
+                    ? `Bắt Đầu Lập Chỉ Mục Tự Động (${files.length} Tài Liệu)`
+                    : 'Vui Lòng Chọn Tệp Để Lập Chỉ Mục'}
+                </span>
               </button>
             </div>
           </div>
         ) : (
-          /* Ingestion Pipeline Visualizer */
-          <div className="py-4 space-y-4 font-mono">
+          /* Multi-file Ingestion Progress */
+          <div className="py-4 space-y-4">
             <div className="text-center space-y-1">
-              <h4 className="text-sm font-bold text-slate-900">Pipeline Nạp Dữ Liệu &amp; Đánh Chỉ Mục</h4>
-              <p className="text-[11px] text-slate-600 font-sans">
-                Đang xử lý: <strong className="text-indigo-600">{title}</strong>
+              <h4 className="text-sm font-bold text-slate-900">
+                Đang Xử Lý Pipeline Lập Chỉ Mục Hàng Loạt
+              </h4>
+              <p className="text-xs text-indigo-600 font-semibold">
+                Đã xử lý {processedCount} / {files.length} tài liệu
               </p>
             </div>
 
-            <div className="space-y-2.5 pt-2">
-              {steps.map((st, idx) => {
-                const isDone = currentStep > idx;
-                const isCurrent = currentStep === idx;
-                return (
-                  <div
-                    key={idx}
-                    className={`p-3 rounded-xl border transition-all text-xs flex items-center justify-between ${
-                      isDone
-                        ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                        : isCurrent
-                        ? 'bg-indigo-50 border-indigo-200 text-indigo-900'
-                        : 'bg-slate-50 border-slate-200 text-slate-400'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      {isDone ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                      ) : isCurrent ? (
-                        <div className="w-4 h-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin flex-shrink-0" />
-                      ) : (
-                        <div className="w-4 h-4 rounded-full border border-slate-300 flex-shrink-0" />
-                      )}
-                      <div>
-                        <div className="font-semibold">{st.name}</div>
-                        <div className="text-[10px] opacity-80 font-sans">{st.desc}</div>
-                      </div>
-                    </div>
+            {/* Progress bar */}
+            <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-indigo-600 to-emerald-500 h-2.5 rounded-full transition-all duration-300"
+                style={{ width: `${Math.round((processedCount / files.length) * 100)}%` }}
+              />
+            </div>
 
-                    <span className="text-[10px] font-semibold">
-                      {isDone ? 'HOÀN THÀNH' : isCurrent ? 'ĐANG XỬ LÝ...' : 'CHỜ'}
-                    </span>
-                  </div>
-                );
-              })}
+            <div className="p-3.5 rounded-xl bg-slate-900 text-slate-100 font-mono text-[11px] space-y-2">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <div className="w-3.5 h-3.5 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" />
+                <span className="font-bold">ĐANG THỰC HIỆN:</span>
+              </div>
+              <div className="text-slate-300 break-words">{currentStepName}</div>
             </div>
           </div>
         )}
