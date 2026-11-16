@@ -1,6 +1,7 @@
 import re
 import math
-from typing import List, Dict, Any, Optional
+import time
+from typing import List, Dict, Any, Optional, Tuple
 from rank_bm25 import BM25Okapi
 from app.config import settings
 
@@ -10,7 +11,17 @@ VIETNAMESE_STOP_WORDS = {
     "bị", "bởi", "do", "từ", "lại", "đã", "sẽ", "đang"
 }
 
+# L1 In-Memory High-Speed Cache for Hybrid Search
+_HYBRID_SEARCH_CACHE: Dict[str, Tuple[float, List[Dict[str, Any]]]] = {}
+CACHE_TTL_SECONDS = 300  # 5 minutes TTL
+
 class HybridSearchService:
+    @staticmethod
+    def clear_cache():
+        """Clear search cache when documents are uploaded or updated"""
+        global _HYBRID_SEARCH_CACHE
+        _HYBRID_SEARCH_CACHE.clear()
+
     @staticmethod
     def tokenize(text: str) -> List[str]:
         """Simple whitespace & punctuation tokenizer for BM25 with stop words filtered"""
@@ -38,16 +49,29 @@ class HybridSearchService:
         top_k: int = settings.TOP_K_CHUNKS
     ) -> List[Dict[str, Any]]:
         """
-        Combine BM25 keyword score and Semantic Vector score:
+        Combine BM25 keyword score and Semantic Vector score with L1 Query Caching:
         Final_Score = alpha * Vector_Score + (1 - alpha) * BM25_Score
         """
         if not candidates:
             return []
 
+        # L1 In-Memory Cache Lookup (Sub-millisecond retrieval)
+        norm_q = query.strip().lower()
+        cache_key = f"{norm_q}::{len(candidates)}::{alpha}::{top_k}"
+        now = time.time()
+        
+        if cache_key in _HYBRID_SEARCH_CACHE:
+            ts, cached_result = _HYBRID_SEARCH_CACHE[cache_key]
+            if now - ts < CACHE_TTL_SECONDS:
+                return [c.copy() for c in cached_result]
+
         # 1. BM25 Scoring
         corpus = [cls.tokenize(c["content"]) for c in candidates]
         tokenized_query = cls.tokenize(query)
         
+        if not tokenized_query:
+            return []
+
         bm25 = BM25Okapi(corpus)
         bm25_raw_scores = bm25.get_scores(tokenized_query)
         
@@ -58,7 +82,6 @@ class HybridSearchService:
         # 2. Vector Scoring (Mock semantic similarity if embeddings not computed)
         vector_scores = []
         for idx, c in enumerate(candidates):
-            # Check overlap of word stems / keywords as semantic surrogate
             overlap = len(set(tokenized_query).intersection(set(corpus[idx])))
             v_score = overlap / max(1, len(tokenized_query))
             vector_scores.append(v_score)
@@ -77,7 +100,7 @@ class HybridSearchService:
                 continue
 
             final_score = alpha * vector_scores[i] + (1 - alpha) * bm25_norm_scores[i]
-            if final_score > 0.25: # Strict Grounding threshold
+            if final_score > 0.25:  # Strict Grounding threshold
                 item = c.copy()
                 item["score"] = round(float(final_score), 4)
                 item["term_match_ratio"] = round(term_match_ratio, 2)
@@ -85,4 +108,8 @@ class HybridSearchService:
 
         # Sort descending by score
         ranked.sort(key=lambda x: x["score"], reverse=True)
-        return ranked[:top_k]
+        final_top = ranked[:top_k]
+
+        # Store in L1 cache
+        _HYBRID_SEARCH_CACHE[cache_key] = (now, final_top)
+        return final_top

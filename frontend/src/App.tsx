@@ -19,8 +19,8 @@ export const App: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>(MockData.documents);
   const [activeTab, setActiveTab] = useState<'knowledge' | 'copilot' | 'analytics'>('knowledge');
 
-  // Dynamic Theme state: Evondev | Impeccable | Huashu | Vibe | ProMax
-  const [currentTheme, setCurrentTheme] = useState<UIThemeId>('evondev');
+  // Dynamic Theme state: Harmonic (Màu sắc & Dịu mắt) | Evondev | Impeccable | Huashu | Vibe | ProMax
+  const [currentTheme, setCurrentTheme] = useState<UIThemeId>('harmonic');
 
   // Modals state
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -67,7 +67,12 @@ export const App: React.FC = () => {
     : documents;
 
   return (
-    <div className={`h-screen w-screen flex flex-col ${activeTheme.bgClass} text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors duration-300`}>
+    <div className={`h-screen w-screen flex flex-col ${activeTheme.bgClass} text-slate-100 overflow-hidden font-sans selection:bg-pink-500/30 selection:text-pink-200 transition-colors duration-300 relative`}>
+      {/* Animated Vibrant Ambient Glow Background Blobs */}
+      <div className="ambient-glow-pink" />
+      <div className="ambient-glow-cyan" />
+      <div className="ambient-glow-purple" />
+
       {/* Top Header */}
       <Header
         user={currentUser}

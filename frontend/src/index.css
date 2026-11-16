@@ -7,7 +7,7 @@
     color-scheme: dark;
   }
   body {
-    background-color: #080c16;
+    background-color: #0b0f19;
     color: #f1f5f9;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -16,56 +16,61 @@
   }
 }
 
-/* Glassmorphism surfaces following Impeccable & Pro Max craft standards */
+/* Soothing Ambient Lights (Non-glare, eye-comfortable 8% opacity) */
+.ambient-glow-pink {
+  position: absolute;
+  top: -5%;
+  right: 15%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-glow-cyan {
+  position: absolute;
+  bottom: 5%;
+  left: 20%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.07) 0%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-glow-purple {
+  display: none;
+}
+
+/* Crisp, clean, structural cards (Zero blur haze, high contrast reading) */
 .glass-panel {
-  background: rgba(13, 19, 34, 0.75);
+  background: rgba(15, 23, 42, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card {
-  background: rgba(19, 27, 46, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #111827;
+  border: 1px solid #1f2937;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  background: rgba(26, 36, 61, 0.75);
-  border-color: rgba(99, 102, 241, 0.35);
+  background: #162032;
+  border-color: rgba(99, 102, 241, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 12px rgba(99, 102, 241, 0.15);
 }
 
-.bento-highlight {
-  position: relative;
-  overflow: hidden;
-}
-
-.bento-highlight::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 150px;
-  height: 150px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* Subtle border gradient */
-.gradient-border {
-  position: relative;
-  background: linear-gradient(to right, rgba(99, 102, 241, 0.4), rgba(6, 182, 212, 0.4), rgba(168, 85, 247, 0.4));
-  padding: 1px;
-  border-radius: 1rem;
-}
-
-.gradient-border-inner {
-  background: #0d1322;
-  border-radius: calc(1rem - 1px);
+/* Elegant gradient text with high contrast */
+.text-gradient-vibrant {
+  background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 70%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Custom Scrollbars */
@@ -77,26 +82,26 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: #334155;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: #475569;
 }
 
-/* Verifiable Citation Target Spotlight Animation */
+/* Citation Target Spotlight - Soothing Warm Amber (Zero eye strain) */
 @keyframes citation-glow {
   0%, 100% {
-    background-color: rgba(245, 158, 11, 0.15);
-    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.4), 0 0 20px rgba(245, 158, 11, 0.25);
+    background-color: rgba(245, 158, 11, 0.12);
+    box-shadow: 0 0 0 1.5px rgba(245, 158, 11, 0.5), 0 4px 15px rgba(0, 0, 0, 0.3);
   }
   50% {
-    background-color: rgba(245, 158, 11, 0.3);
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.7), 0 0 35px rgba(245, 158, 11, 0.45);
+    background-color: rgba(245, 158, 11, 0.2);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.75), 0 6px 20px rgba(245, 158, 11, 0.15);
   }
 }
 
 .citation-target {
-  animation: citation-glow 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: citation-glow 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   border-radius: 0.75rem;
 }

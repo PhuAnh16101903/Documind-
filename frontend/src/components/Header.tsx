@@ -48,21 +48,21 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="font-extrabold text-base tracking-tight text-white">
+            <span className="font-black text-lg tracking-tight text-gradient-vibrant drop-shadow-sm">
               DocuMind
             </span>
-            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-white/10 text-slate-200 border border-white/20 shadow-sm">
+            <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 text-pink-300 border border-pink-400/40 shadow-sm shadow-pink-500/20">
               v2.0 Enterprise
             </span>
-            <div className="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-400">
-              <span className="relative flex h-1.5 w-1.5">
+            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-[10px] font-mono text-emerald-300 shadow-sm shadow-emerald-500/20">
+              <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
               </span>
-              <span>RAG ACTIVE</span>
+              <span className="font-bold">VERIFIED RAG ACTIVE</span>
             </div>
           </div>
-          <p className="text-[11px] text-slate-400 hidden xl:block tracking-normal font-medium">
+          <p className="text-[11px] text-slate-300 hidden xl:block tracking-normal font-medium">
             Kho Tri Thức Doanh Nghiệp &amp; Hệ Thống Truy Xuất AI Có Kiểm Chứng
           </p>
         </div>

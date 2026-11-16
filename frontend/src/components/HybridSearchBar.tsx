@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, X, FileText, Sparkles, ArrowRight, CornerDownLeft, Filter } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, X, FileText, Sparkles, ArrowRight, CornerDownLeft, Zap } from 'lucide-react';
 import { SearchResult } from '../types';
 import { ApiService } from '../services/api';
 
@@ -17,24 +17,44 @@ export const HybridSearchBar: React.FC<HybridSearchBarProps> = ({
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
+  const [latencyMs, setLatencyMs] = useState<number | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   if (!isOpen) return null;
 
-  const handleSearch = async (val: string) => {
-    setQuery(val);
-    if (!val.trim()) {
-      setResults([]);
-      return;
-    }
+  const executeSearch = async (val: string) => {
+    const startTime = performance.now();
     setSearching(true);
     try {
       const res = await ApiService.searchHybrid(val);
       setResults(res);
+      setLatencyMs(Math.round(performance.now() - startTime));
     } catch {
       setResults([]);
     } finally {
       setSearching(false);
     }
+  };
+
+  const handleInputChange = (val: string) => {
+    setQuery(val);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!val.trim()) {
+      setResults([]);
+      setSearching(false);
+      setLatencyMs(null);
+      return;
+    }
+    setSearching(true);
+    debounceRef.current = setTimeout(() => {
+      executeSearch(val);
+    }, 220); // 220ms high-performance debounce
   };
 
   const quickQueries = [
@@ -54,13 +74,13 @@ export const HybridSearchBar: React.FC<HybridSearchBarProps> = ({
             autoFocus
             type="text"
             value={query}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={(e) => handleInputChange(e.target.value)}
             placeholder="Tìm theo từ khóa (Mã hiệu, tên file) hoặc theo ý nghĩa câu hỏi..."
             className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none font-sans"
           />
           {query && (
             <button
-              onClick={() => handleSearch('')}
+              onClick={() => handleInputChange('')}
               className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
             >
               <X className="w-4 h-4" />
@@ -76,13 +96,16 @@ export const HybridSearchBar: React.FC<HybridSearchBarProps> = ({
           <div className="p-4 border-b border-white/[0.06] bg-slate-950/40">
             <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-2 flex items-center gap-1.5">
               <Sparkles className="w-3 h-3 text-indigo-400" />
-              <span>GỢI Ý TÌM KIẾM PHỔ BIẾN</span>
+              <span>GỢI Ý TÌM KIẾM NHANH (HYBRID BM25 + DENSE)</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {quickQueries.map((q, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleSearch(q)}
+                  onClick={() => {
+                    setQuery(q);
+                    executeSearch(q);
+                  }}
                   className="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-indigo-950/50 text-slate-300 hover:text-indigo-200 border border-white/[0.06] text-xs transition-colors"
                 >
                   {q}
@@ -97,7 +120,7 @@ export const HybridSearchBar: React.FC<HybridSearchBarProps> = ({
           {searching && (
             <div className="p-8 text-center text-xs font-mono text-cyan-300 flex items-center justify-center gap-2.5">
               <Sparkles className="w-4 h-4 animate-spin text-cyan-400" />
-              <span>Đang tính toán kết hợp BM25 + Dense Vector Search...</span>
+              <span>Đang tính toán kết hợp BM25 + Dense Vector Search (L1 Caching)...</span>
             </div>
           )}
 
@@ -140,9 +163,17 @@ export const HybridSearchBar: React.FC<HybridSearchBarProps> = ({
           ))}
         </div>
 
-        {/* Footer Navigation Hints */}
+        {/* Footer Navigation Hints & Performance Metric */}
         <div className="h-10 border-t border-white/[0.08] px-4 flex items-center justify-between bg-slate-950/70 text-[10px] font-mono text-slate-400">
-          <span>Tìm kiếm Hybrid Search (BM25 + Dense Vector)</span>
+          <div className="flex items-center gap-2">
+            <span>Tìm kiếm Hybrid Search (BM25 + Dense)</span>
+            {latencyMs !== null && (
+              <span className="text-emerald-400 flex items-center gap-1 font-semibold">
+                <Zap className="w-3 h-3 text-emerald-400" />
+                <span>Độ trễ: {latencyMs}ms (L1 Cached)</span>
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
               <CornerDownLeft className="w-3 h-3 text-slate-400" /> Chọn xem

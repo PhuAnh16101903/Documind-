@@ -69,7 +69,7 @@ export interface SearchResult {
   score: number;
 }
 
-export type UIThemeId = 'evondev' | 'impeccable' | 'huashu' | 'vibe' | 'promax';
+export type UIThemeId = 'harmonic' | 'evondev' | 'impeccable' | 'huashu' | 'vibe' | 'promax';
 
 export interface UIThemeInfo {
   id: UIThemeId;
