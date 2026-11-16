@@ -46,31 +46,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const getDeptBadge = (code: string) => {
     switch (code) {
       case 'HR':
-        return 'bg-rose-50 text-rose-700 border-rose-200';
+        return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
       case 'FIN':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
       case 'TECH':
-        return 'bg-sky-50 text-sky-700 border-sky-200';
+        return 'bg-sky-500/20 text-sky-300 border-sky-500/40';
       default:
-        return 'bg-purple-50 text-purple-700 border-purple-200';
+        return 'bg-purple-500/20 text-purple-300 border-purple-500/40';
     }
   };
 
   return (
-    <aside className="w-60 border-r border-slate-200 bg-white flex flex-col justify-between select-none z-20">
+    <aside className="w-60 border-r border-slate-800 bg-[#0a0f1d] flex flex-col justify-between select-none z-20 text-slate-300 shadow-lg">
       <div className="p-3.5 space-y-6 overflow-y-auto">
         {/* Main Workspaces */}
-        <div className="space-y-1">
-          <div className="text-[11px] font-bold text-slate-500 px-2.5 mb-2 uppercase tracking-wider">
-            Không Gian
+        <div className="space-y-1.5">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2.5 mb-2 flex items-center justify-between">
+            <span>KHÔNG GIAN</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
           </div>
 
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
-            let iconColor = 'text-indigo-600';
-            if (item.id === 'copilot') iconColor = 'text-purple-600';
-            if (item.id === 'analytics') iconColor = 'text-emerald-600';
+            let iconColor = 'text-indigo-400';
+            if (item.id === 'copilot') iconColor = 'text-purple-400';
+            if (item.id === 'analytics') iconColor = 'text-emerald-400';
 
             return (
               <button
@@ -78,11 +79,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => onSelectTab(item.id)}
                 className={`w-full px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2.5 transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
                   isActive
-                    ? 'bg-gradient-to-r from-indigo-50 to-violet-50 text-indigo-700 font-bold border border-indigo-200 shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold shadow-md shadow-indigo-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/70'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? iconColor : 'text-slate-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : iconColor}`} />
                 <span>{item.label}</span>
               </button>
             );
@@ -90,21 +91,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Departments RBAC Scoped */}
-        <div className="space-y-1">
-          <div className="text-[11px] font-bold text-slate-500 px-2.5 mb-2 uppercase tracking-wider flex items-center justify-between">
-            <span>Phòng Ban</span>
+        <div className="space-y-1.5">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2.5 mb-2 flex items-center justify-between">
+            <span>PHÒNG BAN (RBAC)</span>
+            <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+              ACTIVE
+            </span>
           </div>
 
           <button
             onClick={() => onSelectDept(null)}
             className={`w-full px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-all duration-200 hover:translate-x-1 ${
               selectedDeptId === null
-                ? 'bg-indigo-50 text-indigo-700 font-bold border border-indigo-200 shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-slate-800/90 text-white font-bold border border-slate-700 shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
             }`}
           >
             <span className="flex items-center gap-2">
-              <Database className="w-3.5 h-3.5 text-indigo-500" />
+              <Database className="w-3.5 h-3.5 text-indigo-400" />
               <span>Toàn Doanh Nghiệp</span>
             </span>
           </button>
@@ -118,8 +122,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => onSelectDept(dept.id)}
                 className={`w-full px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-all duration-200 hover:translate-x-1 ${
                   isSelected
-                    ? 'bg-indigo-50 text-indigo-700 font-bold border border-indigo-200 shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'bg-slate-800/90 text-white font-bold border border-slate-700 shadow-sm'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                 }`}
               >
                 <span className="truncate text-left">{dept.name}</span>
@@ -133,15 +137,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Storage Quota */}
-      <div className="p-3.5 border-t border-slate-200 bg-slate-50/70 space-y-2">
-        <div className="flex items-center justify-between text-[11px] text-slate-600">
+      <div className="p-3.5 border-t border-slate-800 bg-slate-950/60 space-y-2">
+        <div className="flex items-center justify-between text-[11px] text-slate-400">
           <span className="flex items-center gap-1.5 font-medium">
-            <HardDrive className="w-3.5 h-3.5 text-indigo-500" />
+            <HardDrive className="w-3.5 h-3.5 text-indigo-400" />
             <span>Dung lượng</span>
           </span>
-          <span className="text-slate-900 font-mono text-[11px] font-semibold">1.4 / 10 GB</span>
+          <span className="text-slate-200 font-mono text-[11px] font-semibold">1.4 / 10 GB</span>
         </div>
-        <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
           <div className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full w-[14%]" />
         </div>
       </div>

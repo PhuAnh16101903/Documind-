@@ -17,6 +17,10 @@ export const App: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>(MockData.documents);
   const [activeTab, setActiveTab] = useState<'knowledge' | 'copilot' | 'analytics'>('knowledge');
 
+  // AI Docked Panel State
+  const [isAIPanelOpen, setIsAIPanelOpen] = useState(true);
+  const [presetAIPrompt, setPresetAIPrompt] = useState<string | null>(null);
+
   // Modals state
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -71,6 +75,8 @@ export const App: React.FC = () => {
         user={currentUser}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenSearch={() => setIsSearchOpen(true)}
+        isAIPanelOpen={isAIPanelOpen}
+        onToggleAIPanel={() => setIsAIPanelOpen((prev) => !prev)}
       />
 
       {/* Main Layout Body */}
@@ -88,12 +94,28 @@ export const App: React.FC = () => {
         {/* Active View Screen */}
         <main className="flex-1 flex overflow-hidden bg-slate-100">
           {activeTab === 'knowledge' && (
-            <KnowledgeExplorer
-              documents={filteredDocs}
-              onSelectDocument={(doc) => setSelectedDoc(doc)}
-              onOpenUpload={() => setIsUploadOpen(true)}
-              currentTheme="harmonic"
-            />
+            <div className="flex-1 flex overflow-hidden">
+              <KnowledgeExplorer
+                documents={filteredDocs}
+                onSelectDocument={(doc) => setSelectedDoc(doc)}
+                onOpenUpload={() => setIsUploadOpen(true)}
+                onAskAI={(doc) => {
+                  setPresetAIPrompt(`Tóm tắt các quy định chính và trích dẫn điều khoản trong tài liệu "${doc.title}"`);
+                  setIsAIPanelOpen(true);
+                }}
+                currentTheme="harmonic"
+              />
+              {isAIPanelOpen && (
+                <AICopilot
+                  isDocked={true}
+                  onClose={() => setIsAIPanelOpen(false)}
+                  presetPrompt={presetAIPrompt}
+                  onClearPresetPrompt={() => setPresetAIPrompt(null)}
+                  onCitationClick={handleCitationClick}
+                  currentTheme="harmonic"
+                />
+              )}
+            </div>
           )}
 
           {activeTab === 'copilot' && (
