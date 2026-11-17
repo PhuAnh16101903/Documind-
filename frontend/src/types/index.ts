@@ -7,6 +7,10 @@ export interface User {
   full_name: string;
   role: SystemRole;
   department_id: number | null;
+  department_name?: string;
+  department_code?: string;
+  security_level?: 'LEVEL_3_ADMIN' | 'LEVEL_2_MANAGER' | 'LEVEL_1_STAFF';
+  token?: string;
 }
 
 export interface Department {
@@ -43,10 +47,15 @@ export interface Citation {
   citation_index: number;
   document_id: number;
   document_title: string;
+  file_type?: string;
   page_number?: number | null;
   heading?: string | null;
   sheet_name?: string | null;
   exact_quoted_text: string;
+  confidence_score?: number; // e.g. 0.984
+  department_code?: string;
+  department_name?: string;
+  checksum_sha256?: string;
 }
 
 export interface ChatMessage {
@@ -55,6 +64,7 @@ export interface ChatMessage {
   content: string;
   citations?: Citation[];
   timestamp: string;
+  is_security_alert?: boolean;
 }
 
 export interface SearchResult {
@@ -87,4 +97,3 @@ export interface UIThemeInfo {
   activePillClass: string;
   fontHeading: string;
 }
-

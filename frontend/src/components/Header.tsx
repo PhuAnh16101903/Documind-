@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Upload, Shield, Brain, Sparkles } from 'lucide-react';
+import { Search, Upload, Shield, Brain, Sparkles, KeyRound, Lock, CheckCircle2 } from 'lucide-react';
 import { User } from '../types';
 
 interface HeaderProps {
@@ -8,6 +8,7 @@ interface HeaderProps {
   onOpenSearch: () => void;
   isAIPanelOpen: boolean;
   onToggleAIPanel: () => void;
+  onOpenAuthModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,6 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSearch,
   isAIPanelOpen,
   onToggleAIPanel,
+  onOpenAuthModal,
 }) => {
   return (
     <header className="h-14 border-b border-slate-800 bg-[#0a0f1d] px-5 sm:px-6 flex items-center justify-between z-30 select-none shadow-md">
@@ -33,6 +35,17 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-300 border border-indigo-400/30 font-bold shadow-2xs">
               Enterprise AI
             </span>
+            {user.role === 'ADMIN' ? (
+              <span className="hidden lg:inline-flex items-center gap-1 text-[9px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/30">
+                <Shield className="w-2.5 h-2.5 text-rose-400" />
+                <span>ADMIN FULL-ACCESS</span>
+              </span>
+            ) : (
+              <span className="hidden lg:inline-flex items-center gap-1 text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
+                <span>RBAC: {user.department_name?.split(' ')[0] || 'DEPT'}</span>
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -82,22 +95,27 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="h-4 w-px bg-slate-800" />
 
-        {/* User Info */}
-        <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-lg bg-indigo-950 border border-indigo-700/50 flex items-center justify-center text-xs font-bold text-indigo-300 shadow-2xs">
+        {/* Authenticated Corporate Identity Badge (Click to open IAM SSO) */}
+        <button
+          onClick={onOpenAuthModal}
+          className="flex items-center space-x-2.5 p-1 rounded-lg hover:bg-slate-800/80 border border-transparent hover:border-slate-700 transition-all text-left group"
+          title="Định danh doanh nghiệp & Phân quyền bảo mật (Nhấp để quản lý phiên)"
+        >
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 border border-indigo-400/40 flex items-center justify-center text-xs font-bold text-white shadow-2xs group-hover:scale-105 transition-transform">
             {user.full_name[0]}
           </div>
 
           <div className="hidden sm:block text-left">
-            <div className="text-xs font-semibold text-slate-200 leading-tight">
-              {user.full_name}
+            <div className="text-xs font-semibold text-slate-200 leading-tight group-hover:text-white transition-colors flex items-center gap-1.5">
+              <span>{user.full_name}</span>
+              <KeyRound className="w-2.5 h-2.5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
             </div>
-            <div className="text-[10px] text-indigo-400 flex items-center gap-1">
+            <div className="text-[10px] text-indigo-400 flex items-center gap-1 font-mono">
               <Shield className="w-2.5 h-2.5 text-indigo-400" />
-              <span>{user.role}</span>
+              <span>{user.role === 'ADMIN' ? 'ADMIN (Level 3)' : (user.department_name || user.role)}</span>
             </div>
           </div>
-        </div>
+        </button>
       </div>
     </header>
   );

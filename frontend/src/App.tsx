@@ -7,11 +7,12 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { UploadModal } from './components/UploadModal';
 import { HybridSearchBar } from './components/HybridSearchBar';
 import { DocumentReader } from './components/DocumentReader';
-import { ApiService, MockData } from './services/api';
-import { Department, Document, Citation } from './types';
+import { CorporateAuthModal } from './components/CorporateAuthModal';
+import { ApiService, MockCorporateUsers, MockData } from './services/api';
+import { Department, Document, Citation, User } from './types';
 
 export const App: React.FC = () => {
-  const [currentUser] = useState(MockData.currentUser);
+  const [currentUser, setCurrentUser] = useState<User>(MockCorporateUsers[0]);
   const [departments, setDepartments] = useState<Department[]>(MockData.departments);
   const [selectedDeptId, setSelectedDeptId] = useState<number | null>(null);
   const [documents, setDocuments] = useState<Document[]>(MockData.documents);
@@ -24,6 +25,7 @@ export const App: React.FC = () => {
   // Modals state
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [activeCitation, setActiveCitation] = useState<Citation | null>(null);
 
@@ -36,6 +38,7 @@ export const App: React.FC = () => {
       }
       if (e.key === 'Escape') {
         setIsSearchOpen(false);
+        setIsAuthModalOpen(false);
         setSelectedDoc(null);
         setActiveCitation(null);
       }
@@ -55,13 +58,22 @@ export const App: React.FC = () => {
   };
 
   const handleUploadSuccess = async () => {
-    const updatedDocs = await ApiService.getDocuments(selectedDeptId || undefined);
+    const updatedDocs = await ApiService.getDocuments(selectedDeptId || undefined, currentUser);
     setDocuments(updatedDocs);
   };
 
-  const filteredDocs = selectedDeptId
+  // 1. Filter by selected department in sidebar
+  const deptFiltered = selectedDeptId
     ? documents.filter((d) => d.department_id === selectedDeptId || d.is_public)
     : documents;
+
+  // 2. Automatically enforce RBAC security boundary based on logged-in currentUser
+  const filteredDocs =
+    currentUser.role === 'ADMIN'
+      ? deptFiltered
+      : deptFiltered.filter(
+          (d) => d.is_public || d.department_id === currentUser.department_id
+        );
 
   return (
     <div className="h-screen w-screen flex flex-col bg-slate-100 text-slate-900 overflow-hidden font-sans selection:bg-indigo-500/20 selection:text-indigo-900 relative">
@@ -77,6 +89,7 @@ export const App: React.FC = () => {
         onOpenSearch={() => setIsSearchOpen(true)}
         isAIPanelOpen={isAIPanelOpen}
         onToggleAIPanel={() => setIsAIPanelOpen((prev) => !prev)}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
       />
 
       {/* Main Layout Body */}
@@ -113,6 +126,7 @@ export const App: React.FC = () => {
                   onClearPresetPrompt={() => setPresetAIPrompt(null)}
                   onCitationClick={handleCitationClick}
                   currentTheme="harmonic"
+                  currentUser={currentUser}
                 />
               )}
             </div>
@@ -122,6 +136,7 @@ export const App: React.FC = () => {
             <AICopilot
               onCitationClick={handleCitationClick}
               currentTheme="harmonic"
+              currentUser={currentUser}
             />
           )}
 
@@ -132,6 +147,13 @@ export const App: React.FC = () => {
       </div>
 
       {/* Modals & Overlay Viewers */}
+      <CorporateAuthModal
+        isOpen={isAuthModalOpen}
+        currentUser={currentUser}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSelectUser={(u) => setCurrentUser(u)}
+      />
+
       <UploadModal
         isOpen={isUploadOpen}
         departments={departments}
