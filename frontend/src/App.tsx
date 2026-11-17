@@ -7,12 +7,18 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { UploadModal } from './components/UploadModal';
 import { HybridSearchBar } from './components/HybridSearchBar';
 import { DocumentReader } from './components/DocumentReader';
-import { CorporateAuthModal } from './components/CorporateAuthModal';
+import { SettingsModal } from './components/SettingsModal';
+import { AuthPage } from './components/AuthPage';
 import { ApiService, MockCorporateUsers, MockData } from './services/api';
 import { Department, Document, Citation, User } from './types';
 
 export const App: React.FC = () => {
+  // Authentication & Users state
+  const [registeredUsers, setRegisteredUsers] = useState<User[]>(MockCorporateUsers);
   const [currentUser, setCurrentUser] = useState<User>(MockCorporateUsers[0]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+
+  // Departments & Documents state
   const [departments, setDepartments] = useState<Department[]>(MockData.departments);
   const [selectedDeptId, setSelectedDeptId] = useState<number | null>(null);
   const [documents, setDocuments] = useState<Document[]>(MockData.documents);
@@ -25,7 +31,7 @@ export const App: React.FC = () => {
   // Modals state
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [activeCitation, setActiveCitation] = useState<Citation | null>(null);
 
@@ -38,7 +44,7 @@ export const App: React.FC = () => {
       }
       if (e.key === 'Escape') {
         setIsSearchOpen(false);
-        setIsAuthModalOpen(false);
+        setIsSettingsOpen(false);
         setSelectedDoc(null);
         setActiveCitation(null);
       }
@@ -62,6 +68,28 @@ export const App: React.FC = () => {
     setDocuments(updatedDocs);
   };
 
+  const handleLoginSuccess = (user: User) => {
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    // Auto select department view if regular employee
+    if (user.role !== 'ADMIN' && user.department_id) {
+      setSelectedDeptId(user.department_id);
+    } else {
+      setSelectedDeptId(null);
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setSelectedDoc(null);
+    setActiveCitation(null);
+    setIsSettingsOpen(false);
+  };
+
+  const handleRegisterUser = (newUser: User) => {
+    setRegisteredUsers((prev) => [...prev, newUser]);
+  };
+
   // 1. Filter by selected department in sidebar
   const deptFiltered = selectedDeptId
     ? documents.filter((d) => d.department_id === selectedDeptId || d.is_public)
@@ -74,6 +102,18 @@ export const App: React.FC = () => {
       : deptFiltered.filter(
           (d) => d.is_public || d.department_id === currentUser.department_id
         );
+
+  // If not authenticated, show Enterprise Login & Register Page
+  if (!isAuthenticated) {
+    return (
+      <AuthPage
+        onLoginSuccess={handleLoginSuccess}
+        departments={departments}
+        availableUsers={registeredUsers}
+        onRegisterUser={handleRegisterUser}
+      />
+    );
+  }
 
   return (
     <div className="h-screen w-screen flex flex-col bg-slate-100 text-slate-900 overflow-hidden font-sans selection:bg-indigo-500/20 selection:text-indigo-900 relative">
@@ -89,7 +129,8 @@ export const App: React.FC = () => {
         onOpenSearch={() => setIsSearchOpen(true)}
         isAIPanelOpen={isAIPanelOpen}
         onToggleAIPanel={() => setIsAIPanelOpen((prev) => !prev)}
-        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Layout Body */}
@@ -147,11 +188,12 @@ export const App: React.FC = () => {
       </div>
 
       {/* Modals & Overlay Viewers */}
-      <CorporateAuthModal
-        isOpen={isAuthModalOpen}
+      <SettingsModal
+        isOpen={isSettingsOpen}
         currentUser={currentUser}
-        onClose={() => setIsAuthModalOpen(false)}
-        onSelectUser={(u) => setCurrentUser(u)}
+        onClose={() => setIsSettingsOpen(false)}
+        onLogout={handleLogout}
+        onUpdateUser={(u) => setCurrentUser(u)}
       />
 
       <UploadModal

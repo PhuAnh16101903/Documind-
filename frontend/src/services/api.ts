@@ -28,6 +28,7 @@ export const MockCorporateUsers: User[] = [
     department_code: 'ALL',
     security_level: 'LEVEL_3_ADMIN',
     token: 'jwt-auth-token-admin-sysarch-2026',
+    password: 'password123',
   },
   {
     id: 2,
@@ -40,6 +41,7 @@ export const MockCorporateUsers: User[] = [
     department_code: 'HR',
     security_level: 'LEVEL_1_STAFF',
     token: 'jwt-auth-token-hr-specialist-2026',
+    password: 'password123',
   },
   {
     id: 3,
@@ -52,6 +54,7 @@ export const MockCorporateUsers: User[] = [
     department_code: 'FIN',
     security_level: 'LEVEL_1_STAFF',
     token: 'jwt-auth-token-fin-accountant-2026',
+    password: 'password123',
   },
   {
     id: 4,
@@ -64,6 +67,7 @@ export const MockCorporateUsers: User[] = [
     department_code: 'TECH',
     security_level: 'LEVEL_1_STAFF',
     token: 'jwt-auth-token-tech-lead-2026',
+    password: 'password123',
   },
 ];
 

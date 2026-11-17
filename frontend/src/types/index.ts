@@ -11,6 +11,7 @@ export interface User {
   department_code?: string;
   security_level?: 'LEVEL_3_ADMIN' | 'LEVEL_2_MANAGER' | 'LEVEL_1_STAFF';
   token?: string;
+  password?: string;
 }
 
 export interface Department {
