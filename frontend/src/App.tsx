@@ -18,6 +18,20 @@ export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User>(MockCorporateUsers[0]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
 
+  // Theme state: 'light' | 'dark' (Default to light matching reference images)
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('documind_theme');
+    return saved === 'dark' || saved === 'light' ? saved : 'light';
+  });
+
+  const toggleTheme = () => {
+    setThemeMode((prev) => {
+      const next = prev === 'light' ? 'dark' : 'light';
+      localStorage.setItem('documind_theme', next);
+      return next;
+    });
+  };
+
   // Departments & Documents state
   const [departments, setDepartments] = useState<Department[]>(MockData.departments);
   const [selectedDeptId, setSelectedDeptId] = useState<number | null>(null);
@@ -103,26 +117,37 @@ export const App: React.FC = () => {
           (d) => d.is_public || d.department_id === currentUser.department_id
         );
 
-  // If not authenticated, show Enterprise Login & Register Page
+  // If not authenticated, show Enterprise Login & Register Page with animated aquatic cube
   if (!isAuthenticated) {
     return (
-      <AuthPage
-        onLoginSuccess={handleLoginSuccess}
-        departments={departments}
-        availableUsers={registeredUsers}
-        onRegisterUser={handleRegisterUser}
-      />
+      <div className={themeMode === 'dark' ? 'dark' : ''}>
+        <AuthPage
+          onLoginSuccess={handleLoginSuccess}
+          departments={departments}
+          availableUsers={registeredUsers}
+          onRegisterUser={handleRegisterUser}
+          themeMode={themeMode}
+          onToggleTheme={toggleTheme}
+          onOpenSearch={() => setIsSearchOpen(true)}
+        />
+        <HybridSearchBar
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          onSelectResult={handleSelectResult}
+        />
+      </div>
     );
   }
 
-  return (
-    <div className="h-screen w-screen flex flex-col bg-slate-100 text-slate-900 overflow-hidden font-sans selection:bg-indigo-500/20 selection:text-indigo-900 relative">
-      {/* Floating Gentle Ambient Light Orbs */}
-      <div className="ambient-orb-indigo" />
-      <div className="ambient-orb-cyan" />
-      <div className="ambient-orb-rose" />
+  const isLight = themeMode === 'light';
 
-      {/* Top Header */}
+  return (
+    <div
+      className={`h-screen w-screen flex flex-col overflow-hidden font-sans selection:bg-indigo-500/20 selection:text-indigo-900 relative transition-colors duration-200 ${
+        themeMode === 'dark' ? 'dark bg-[#060c18] text-slate-100' : 'bg-[#f4f7fb] text-slate-900'
+      }`}
+    >
+      {/* Top Header matching Reference Image 1 Breadcrumb + Tools */}
       <Header
         user={currentUser}
         onOpenUpload={() => setIsUploadOpen(true)}
@@ -131,22 +156,27 @@ export const App: React.FC = () => {
         onToggleAIPanel={() => setIsAIPanelOpen((prev) => !prev)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onLogout={handleLogout}
+        themeMode={themeMode}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Main Layout Body */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar Navigation */}
+        {/* Sidebar Navigation matching Reference Image 1 */}
         <Sidebar
           departments={departments}
           selectedDeptId={selectedDeptId}
           onSelectDept={(id) => setSelectedDeptId(id)}
           activeTab={activeTab}
           onSelectTab={(tab) => setActiveTab(tab)}
-          currentTheme="harmonic"
+          user={currentUser}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          onLogout={handleLogout}
+          themeMode={themeMode}
         />
 
         {/* Active View Screen */}
-        <main className="flex-1 flex overflow-hidden bg-slate-100">
+        <main className="flex-1 flex overflow-hidden relative">
           {activeTab === 'knowledge' && (
             <div className="flex-1 flex overflow-hidden">
               <KnowledgeExplorer
@@ -158,6 +188,7 @@ export const App: React.FC = () => {
                   setIsAIPanelOpen(true);
                 }}
                 currentTheme="harmonic"
+                themeMode={themeMode}
               />
               {isAIPanelOpen && (
                 <AICopilot
@@ -185,6 +216,28 @@ export const App: React.FC = () => {
             <AdminDashboard currentTheme="harmonic" />
           )}
         </main>
+      </div>
+
+      {/* Floating Shortcut Pill "Đi đến... Ctrl / ⌘ K" matching Reference Image 1 & 2 */}
+      <div
+        className={`fixed bottom-5 z-40 transition-all duration-300 ${
+          isAIPanelOpen && activeTab === 'knowledge' ? 'right-[405px]' : 'right-6'
+        }`}
+      >
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className={`h-10 px-4 rounded-xl border text-xs font-semibold flex items-center gap-2 shadow-lg hover:border-indigo-500 hover:scale-105 active:scale-95 transition-all ${
+            isLight
+              ? 'bg-white/95 text-slate-800 border-slate-300'
+              : 'bg-slate-900/95 text-slate-200 border-slate-700'
+          }`}
+          title="Tìm kiếm nhanh các mục (Ctrl + K)"
+        >
+          <span>Đi đến...</span>
+          <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700">
+            Ctrl / ⌘ K
+          </kbd>
+        </button>
       </div>
 
       {/* Modals & Overlay Viewers */}

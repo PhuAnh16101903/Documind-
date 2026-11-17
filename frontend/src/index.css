@@ -123,3 +123,67 @@
   animation: float-gentle 22s ease-in-out infinite;
   z-index: 0;
 }
+
+/* 3D Glass Cube & Underwater Light Rays Keyframes */
+@keyframes aquatic-ray {
+  0%, 100% {
+    opacity: 0.35;
+    transform: rotate(-15deg) translateY(0px) scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: rotate(-12deg) translateY(-25px) scale(1.05);
+  }
+}
+
+@keyframes fish-swim {
+  0% {
+    transform: translate(0, 0) scaleX(1);
+  }
+  48% {
+    transform: translate(140px, -30px) scaleX(1);
+  }
+  50% {
+    transform: translate(140px, -30px) scaleX(-1);
+  }
+  98% {
+    transform: translate(0, 0) scaleX(-1);
+  }
+  100% {
+    transform: translate(0, 0) scaleX(1);
+  }
+}
+
+@keyframes float-cube {
+  0%, 100% {
+    transform: translateY(0px) rotateX(15deg) rotateY(-18deg);
+  }
+  50% {
+    transform: translateY(-16px) rotateX(20deg) rotateY(-12deg);
+  }
+}
+
+.cube-3d-wrap {
+  perspective: 1000px;
+}
+
+.cube-3d-element {
+  transform-style: preserve-3d;
+  animation: float-cube 8s ease-in-out infinite;
+}
+
+.aquatic-beam-1 {
+  animation: aquatic-ray 7s ease-in-out infinite;
+}
+
+.aquatic-beam-2 {
+  animation: aquatic-ray 9s ease-in-out 1.5s infinite;
+}
+
+.fish-swim-1 {
+  animation: fish-swim 14s ease-in-out infinite;
+}
+
+.fish-swim-2 {
+  animation: fish-swim 18s ease-in-out 3s infinite reverse;
+}
