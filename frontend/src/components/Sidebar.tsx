@@ -3,16 +3,14 @@ import {
   FolderTree,
   MessageSquareText,
   BarChart3,
-  GitCompare,
   Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Building,
   Brain,
-  Shield,
 } from 'lucide-react';
 import { Department, UIThemeId, User } from '../types';
+import { Language, translations } from '../services/i18n';
 
 interface SidebarProps {
   departments: Department[];
@@ -25,6 +23,7 @@ interface SidebarProps {
   onLogout: () => void;
   currentTheme?: UIThemeId;
   themeMode?: 'light' | 'dark';
+  lang?: Language;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -37,28 +36,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenSettings,
   onLogout,
   themeMode = 'light',
+  lang = 'vi',
 }) => {
+  const t = translations[lang];
   const [isCollapsed, setIsCollapsed] = useState(false);
-
   const isLight = themeMode === 'light';
 
   const navItems = [
     {
       id: 'knowledge' as const,
-      label: 'Kho Tri Thức & Quy Chế',
-      shortLabel: 'Kho Tri Thức',
+      label: t.navKnowledge,
       icon: FolderTree,
     },
     {
       id: 'copilot' as const,
-      label: 'AI Copilot & Đối Chiếu',
-      shortLabel: 'AI Copilot',
+      label: t.navCopilot,
       icon: MessageSquareText,
     },
     {
       id: 'analytics' as const,
-      label: 'Nhật Ký & Dashboard',
-      shortLabel: 'Dashboard',
+      label: t.navAnalytics,
       icon: BarChart3,
     },
   ];
@@ -78,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`border-r select-none z-20 flex flex-col justify-between transition-all duration-300 relative ${
+      className={`border-r select-none z-20 flex flex-col justify-between transition-all duration-300 relative font-sans ${
         isCollapsed ? 'w-16' : 'w-64'
       } ${
         isLight
@@ -94,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             ? 'bg-white border-slate-300 text-slate-600 hover:text-slate-900'
             : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
         }`}
-        title={isCollapsed ? 'Mở rộng thanh menu' : 'Thu gọn thanh menu'}
+        title={isCollapsed ? t.expandSidebar : t.collapseSidebar}
       >
         {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
       </button>
@@ -107,10 +104,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {!isCollapsed && (
           <div className="min-w-0">
             <div className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white truncate">
-              DocuMind Enterprise
+              {t.appName}
             </div>
             <div className="text-[10px] text-slate-500 font-mono truncate">
-              Đại học KTQD (NEU)
+              {t.subBrand}
             </div>
           </div>
         )}
@@ -144,11 +141,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </div>
 
-        {/* Departments RBAC Filter */}
+        {/* Departments Section */}
         {!isCollapsed && (
           <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800/80">
             <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-2 flex items-center justify-between">
-              <span>PHÒNG BAN (RBAC)</span>
+              <span>{t.deptSection}</span>
               <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
                 ACTIVE
               </span>
@@ -166,13 +163,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                <span>Tất cả phòng ban</span>
+                <span>{t.allDepts}</span>
               </div>
               <span className="text-[10px] font-mono opacity-60">All</span>
             </button>
 
             {departments.map((dept) => {
               const isSelected = selectedDeptId === dept.id;
+              // Clean dept name in current language without parentheses
+              const cleanDeptName =
+                lang === 'en' && dept.name_en
+                  ? dept.name_en
+                  : dept.name.replace(/\s*\(.*?\)\s*/g, '');
+
               return (
                 <button
                   key={dept.id}
@@ -185,7 +188,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                   }`}
                 >
-                  <span className="truncate">{dept.name.split(' (')[0]}</span>
+                  <span className="truncate">{cleanDeptName}</span>
                   <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${getDeptBadge(dept.code)}`}>
                     {dept.code}
                   </span>
@@ -206,13 +209,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ? 'text-slate-700 hover:bg-slate-100'
               : 'text-slate-300 hover:bg-slate-800'
           }`}
-          title="Cài đặt hệ thống"
+          title={t.settings}
         >
           <Settings className="w-4 h-4 text-slate-500 flex-shrink-0" />
-          {!isCollapsed && <span>Cài đặt</span>}
+          {!isCollapsed && <span>{t.settings}</span>}
         </button>
 
-        {/* User Card matching Image 1 (avatar with letter p in blue circle) */}
+        {/* User Card matching Image 1 */}
         <div
           className={`p-2.5 rounded-2xl flex items-center gap-2.5 transition-all ${
             isLight ? 'bg-slate-100/90' : 'bg-slate-800/80'
@@ -227,7 +230,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {user.full_name}
               </div>
               <div className="text-[10px] text-slate-500 font-mono truncate">
-                {user.role === 'ADMIN' ? 'Quản trị viên' : user.department_code || 'Nhân viên'}
+                {user.role === 'ADMIN'
+                  ? lang === 'vi' ? 'Quản trị viên' : 'Administrator'
+                  : (lang === 'en' && user.department_name_en ? user.department_name_en : user.department_name || user.department_code || 'Staff')}
               </div>
             </div>
           )}
@@ -237,10 +242,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={onLogout}
           className="w-full px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2.5 transition-colors"
-          title="Đăng xuất"
+          title={t.logout}
         >
           <LogOut className="w-4 h-4 flex-shrink-0" />
-          {!isCollapsed && <span>Đăng xuất</span>}
+          {!isCollapsed && <span>{t.logout}</span>}
         </button>
       </div>
     </aside>

@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import {
   X,
-  Settings,
-  Shield,
-  ShieldCheck,
   User as UserIcon,
-  Key,
-  Sliders,
-  Bell,
-  LogOut,
-  Save,
-  Check,
   Building,
+  Mail,
+  Phone,
+  Calendar,
+  MapPin,
+  Shield,
+  CheckCircle2,
+  Save,
+  LogOut,
+  Check,
+  BadgeCheck,
 } from 'lucide-react';
 import { User } from '../types';
+import { Language, translations } from '../services/i18n';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -21,6 +23,7 @@ interface SettingsModalProps {
   onClose: () => void;
   onLogout: () => void;
   onUpdateUser: (updated: User) => void;
+  lang?: Language;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -29,11 +32,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
   onLogout,
   onUpdateUser,
+  lang = 'vi',
 }) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'ai'>('profile');
+  const t = translations[lang];
   const [fullName, setFullName] = useState(currentUser.full_name);
-  const [strictGrounding, setStrictGrounding] = useState(true);
-  const [zeroTrustScope, setZeroTrustScope] = useState(true);
+  const [phone, setPhone] = useState('0982 456 789');
+  const [jobTitle, setJobTitle] = useState(
+    currentUser.role === 'ADMIN'
+      ? lang === 'vi' ? 'Kiến trúc sư hệ thống cấp cao' : 'Lead System Architect'
+      : lang === 'vi' ? 'Chuyên viên quản lý tri thức' : 'Knowledge Operations Specialist'
+  );
+  const [workplace, setWorkplace] = useState(
+    lang === 'vi' ? 'Tòa nhà điều hành Hà Nội' : 'Hanoi Headquarters Tower'
+  );
   const [isSaved, setIsSaved] = useState(false);
 
   if (!isOpen) return null;
@@ -48,214 +59,215 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setTimeout(() => setIsSaved(false), 2000);
   };
 
+  const employeeCode = `EMP-2026-0${currentUser.id}84`;
+  const joinDate = '15/01/2024';
+
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in font-sans">
-      <div className="w-full max-w-xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in font-sans"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
-              <Settings className="w-5 h-5 text-indigo-600" />
+        <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#0066cc] text-white flex items-center justify-center font-bold text-sm shadow-md">
+              {currentUser.full_name ? currentUser.full_name[0] : 'U'}
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Cài Đặt Hệ Thống &amp; Tài Khoản</h3>
-              <p className="text-[11px] text-slate-500 font-mono">
-                {currentUser.full_name} · {currentUser.department_name || 'Admin'}
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  {t.settingsTitle}
+                </h3>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                  <BadgeCheck className="w-3 h-3 text-emerald-500" />
+                  <span>{t.accountActiveVal}</span>
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-mono">
+                {currentUser.department_name || (lang === 'vi' ? 'Hội đồng Quản trị' : 'Board of Directors')}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/80 dark:hover:bg-slate-800 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Tab navigation */}
-        <div className="flex items-center gap-2 px-5 pt-3 border-b border-slate-200 text-xs font-semibold bg-white">
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`pb-2.5 px-2 border-b-2 transition-all flex items-center gap-1.5 ${
-              activeTab === 'profile'
-                ? 'border-indigo-600 text-indigo-600 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <UserIcon className="w-3.5 h-3.5" />
-            <span>Thông Tin Cá Nhân</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('security')}
-            className={`pb-2.5 px-2 border-b-2 transition-all flex items-center gap-1.5 ${
-              activeTab === 'security'
-                ? 'border-indigo-600 text-indigo-600 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Phân Quyền &amp; Token</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('ai')}
-            className={`pb-2.5 px-2 border-b-2 transition-all flex items-center gap-1.5 ${
-              activeTab === 'ai'
-                ? 'border-indigo-600 text-indigo-600 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            <span>Cấu Hình AI Retrieval</span>
-          </button>
-        </div>
-
-        {/* Content Body */}
-        <div className="p-5 overflow-y-auto space-y-4 text-xs flex-1 bg-white">
-          {/* TAB 1: PROFILE */}
-          {activeTab === 'profile' && (
-            <form onSubmit={handleSaveProfile} className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-mono text-slate-600 mb-1 font-semibold">
-                  HỌ VÀ TÊN
-                </label>
+        {/* Detailed Personal Information Body */}
+        <form onSubmit={handleSaveProfile} className="p-6 overflow-y-auto space-y-5 text-xs flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Full Name */}
+            <div>
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-300 mb-1 font-semibold">
+                {t.fullNameLabel}
+              </label>
+              <div className="relative flex items-center">
+                <UserIcon className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 transition-colors font-medium"
+                  className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-medium transition-colors"
+                  required
                 />
               </div>
+            </div>
 
-              <div>
-                <label className="block text-[11px] font-mono text-slate-600 mb-1 font-semibold">
-                  EMAIL DOANH NGHIỆP (CỐ ĐỊNH THEO SSO)
-                </label>
+            {/* Corporate Email */}
+            <div>
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-300 mb-1 font-semibold">
+                {t.corporateEmailLabel}
+              </label>
+              <div className="relative flex items-center">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
                 <input
                   type="email"
                   value={currentUser.email}
                   disabled
-                  className="w-full h-10 px-3 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-500 font-mono cursor-not-allowed"
+                  className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-100 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-850 text-xs text-slate-500 font-mono cursor-not-allowed"
                 />
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-mono text-slate-600 mb-1 font-semibold">
-                    PHÒNG BAN
-                  </label>
-                  <div className="h-10 px-3 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-700 flex items-center gap-1.5 font-medium">
-                    <Building className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{currentUser.department_name || 'Hội đồng Quản trị'}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-mono text-slate-600 mb-1 font-semibold">
-                    CẤP BẬC PHÂN QUYỀN
-                  </label>
-                  <div className="h-10 px-3 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-700 flex items-center gap-1.5 font-mono">
-                    <Shield className="w-3.5 h-3.5 text-indigo-500" />
-                    <span className="font-bold text-indigo-700">{currentUser.role}</span>
-                  </div>
-                </div>
+            {/* Employee ID */}
+            <div>
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-300 mb-1 font-semibold">
+                {t.employeeIdLabel}
+              </label>
+              <div className="h-10 px-3 rounded-xl bg-slate-100 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-850 text-xs text-slate-700 dark:text-slate-300 font-mono flex items-center font-bold">
+                {employeeCode}
               </div>
+            </div>
 
-              <div className="pt-2 flex justify-end">
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center gap-1.5 shadow-sm text-xs transition-all"
-                >
-                  {isSaved ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Save className="w-3.5 h-3.5" />}
-                  <span>{isSaved ? 'Đã Lưu Thay Đổi!' : 'Lưu Thay Đổi'}</span>
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* TAB 2: SECURITY & TOKEN */}
-          {activeTab === 'security' && (
-            <div className="space-y-3.5 font-mono">
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <span className="text-[10px] uppercase text-slate-500 font-bold tracking-wider">
-                  MÃ XÁC THỰC PHIÊN LÀM VIỆC (JWT BEARER TOKEN)
+            {/* Assigned Department */}
+            <div>
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-300 mb-1 font-semibold">
+                {t.departmentLabel}
+              </label>
+              <div className="h-10 px-3 rounded-xl bg-slate-100 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-850 text-xs text-slate-700 dark:text-slate-300 flex items-center gap-2 font-medium">
+                <Building className="w-3.5 h-3.5 text-slate-400" />
+                <span className="truncate">
+                  {lang === 'en' && currentUser.department_name_en
+                    ? currentUser.department_name_en
+                    : currentUser.department_name
+                    ? currentUser.department_name.replace(/\s*\(.*?\)\s*/g, '')
+                    : (lang === 'vi' ? 'Hội đồng Quản trị' : 'Executive Board')}
                 </span>
-                <div className="p-2.5 rounded-lg bg-slate-900 text-emerald-400 text-[11px] break-all select-all font-mono">
-                  {currentUser.token || 'jwt-bearer-token-authenticated-2026'}
-                </div>
-                <p className="text-[10px] text-slate-500 font-sans">
-                  Token này mang các claims mã hóa quyền hạn phòng ban và định tuyến dữ liệu tự động.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-200 space-y-1.5 text-indigo-900 font-sans">
-                <div className="font-bold text-xs flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                  <span>Tiêu Chuẩn Bảo Mật Zero-Trust</span>
-                </div>
-                <p className="text-[11px] text-indigo-800 leading-relaxed">
-                  Hệ thống không chia sẻ tài liệu giữa các phòng ban nếu không có cờ công khai (Public).
-                  Các truy vấn vượt quyền sẽ tự động kích hoạt mã sự kiện 403 và ghi nhật ký kiểm toán.
-                </p>
               </div>
             </div>
-          )}
 
-          {/* TAB 3: AI RETRIEVAL CONFIG */}
-          {activeTab === 'ai' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="space-y-0.5">
-                  <div className="font-semibold text-slate-900">Bắt buộc trích dẫn có kiểm chứng (Strict Grounding)</div>
-                  <div className="text-[10px] text-slate-500">
-                    AI chỉ trả lời khi có điều khoản cụ thể, triệt tiêu 100% ảo giác (Anti-Hallucination)
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={strictGrounding}
-                  onChange={(e) => setStrictGrounding(e.target.checked)}
-                  className="w-4 h-4 rounded text-indigo-600 focus:ring-0"
-                />
-              </div>
+            {/* Job Title */}
+            <div>
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-300 mb-1 font-semibold">
+                {t.jobTitleLabel}
+              </label>
+              <input
+                type="text"
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
+                className="w-full h-10 px-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-medium"
+              />
+            </div>
 
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="space-y-0.5">
-                  <div className="font-semibold text-slate-900">Ranh giới phòng ban tự động (Zero-Trust Guardrail)</div>
-                  <div className="text-[10px] text-slate-500">
-                    Tự động chặn câu hỏi về bí mật phòng ban khác ngay ở lớp xử lý prompt
-                  </div>
-                </div>
+            {/* Phone Number */}
+            <div>
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-300 mb-1 font-semibold">
+                {t.phoneLabel}
+              </label>
+              <div className="relative flex items-center">
+                <Phone className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
                 <input
-                  type="checkbox"
-                  checked={zeroTrustScope}
-                  onChange={(e) => setZeroTrustScope(e.target.checked)}
-                  className="w-4 h-4 rounded text-indigo-600 focus:ring-0"
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-medium"
                 />
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Footer with Logout action */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+            {/* Join Date */}
+            <div>
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-300 mb-1 font-semibold">
+                {t.joinDateLabel}
+              </label>
+              <div className="h-10 px-3 rounded-xl bg-slate-100 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-850 text-xs text-slate-700 dark:text-slate-300 font-mono flex items-center gap-2">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <span>{joinDate}</span>
+              </div>
+            </div>
+
+            {/* Workplace Location */}
+            <div>
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-300 mb-1 font-semibold">
+                {t.workplaceLabel}
+              </label>
+              <div className="relative flex items-center">
+                <MapPin className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+                <input
+                  type="text"
+                  value={workplace}
+                  onChange={(e) => setWorkplace(e.target.value)}
+                  className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-medium"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Security Clearance Banner */}
+          <div className="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-slate-950 border border-indigo-200/80 dark:border-slate-800 flex items-center justify-between">
+            <div className="space-y-0.5">
+              <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Shield className="w-4 h-4 text-indigo-600" />
+                <span>{t.securityClearanceLabel}</span>
+              </div>
+              <div className="text-[11px] text-slate-500">
+                {currentUser.role === 'ADMIN'
+                  ? lang === 'vi' ? 'Cấp 3 Toàn quyền truy xuất' : 'Clearance Level 3 Full Unrestricted Access'
+                  : lang === 'vi' ? `Cấp 1 Phân quyền phòng ban ${currentUser.department_code || ''}` : `Clearance Level 1 Department Access ${currentUser.department_code || ''}`}
+              </div>
+            </div>
+
+            <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-indigo-600 text-white shadow-xs">
+              {currentUser.role === 'ADMIN' ? 'LEVEL 3' : 'LEVEL 1'}
+            </span>
+          </div>
+
+          <div className="pt-2 flex justify-end">
+            <button
+              type="submit"
+              className="h-10 px-5 rounded-xl bg-[#0066cc] hover:bg-[#0052a3] text-white font-bold text-xs flex items-center gap-2 shadow-sm active:scale-95 transition-all"
+            >
+              {isSaved ? <Check className="w-4 h-4 text-emerald-300" /> : <Save className="w-4 h-4" />}
+              <span>{isSaved ? t.savedSuccess : t.saveChanges}</span>
+            </button>
+          </div>
+        </form>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 flex items-center justify-between">
           <button
             onClick={() => {
               onClose();
               onLogout();
             }}
-            className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95"
+            className="px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Đăng Xuất Khỏi Hệ Thống</span>
+            <span>{t.logoutButton}</span>
           </button>
 
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold transition-all"
+            className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all"
           >
-            Đóng
+            {t.closeButton}
           </button>
         </div>
       </div>

@@ -8,6 +8,7 @@ export interface User {
   role: SystemRole;
   department_id: number | null;
   department_name?: string;
+  department_name_en?: string;
   department_code?: string;
   security_level?: 'LEVEL_3_ADMIN' | 'LEVEL_2_MANAGER' | 'LEVEL_1_STAFF';
   token?: string;
@@ -17,6 +18,7 @@ export interface User {
 export interface Department {
   id: number;
   name: string;
+  name_en?: string;
   code: string;
   description?: string;
   quota_mb: number;

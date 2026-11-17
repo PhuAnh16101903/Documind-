@@ -2,25 +2,19 @@ import React, { useState } from 'react';
 import {
   FileText,
   FileSpreadsheet,
-  FileCode,
-  Clock,
   CheckCircle2,
   Eye,
   Grid,
   List,
   Calendar,
-  Layers,
   Sparkles,
   Search,
-  Filter,
   GitCompare,
   Upload,
-  ArrowRight,
-  Shield,
-  FileCheck,
 } from 'lucide-react';
 import { Document, UIThemeId } from '../types';
 import { DocumentDiffModal } from './DocumentDiffModal';
+import { Language, translations } from '../services/i18n';
 
 interface KnowledgeExplorerProps {
   documents: Document[];
@@ -29,6 +23,7 @@ interface KnowledgeExplorerProps {
   onAskAI?: (doc: Document) => void;
   currentTheme?: UIThemeId;
   themeMode?: 'light' | 'dark';
+  lang?: Language;
 }
 
 export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
@@ -37,7 +32,9 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
   onOpenUpload,
   onAskAI,
   themeMode = 'light',
+  lang = 'vi',
 }) => {
+  const t = translations[lang];
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [filterType, setFilterType] = useState<string>('all');
   const [searchFilter, setSearchFilter] = useState('');
@@ -50,31 +47,22 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
     switch (type.toLowerCase()) {
       case 'pdf':
         return {
-          stripe: 'from-rose-500 via-pink-500 to-rose-400',
           bg: isLight ? 'bg-white hover:bg-slate-50/80' : 'bg-[#0f172a] hover:bg-[#131d36]',
-          hoverBorder: 'hover:border-rose-400 hover:shadow-md hover:shadow-rose-500/10',
           iconBox: isLight ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-rose-950/50 text-rose-400 border border-rose-800',
           versionBadge: isLight ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-rose-950/40 text-rose-300 border border-rose-800',
-          titleHover: 'group-hover:text-rose-600',
         };
       case 'docx':
       case 'doc':
         return {
-          stripe: 'from-blue-500 via-indigo-500 to-cyan-400',
           bg: isLight ? 'bg-white hover:bg-slate-50/80' : 'bg-[#0f172a] hover:bg-[#131d36]',
-          hoverBorder: 'hover:border-blue-400 hover:shadow-md hover:shadow-blue-500/10',
           iconBox: isLight ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'bg-blue-950/50 text-blue-400 border border-blue-800',
           versionBadge: isLight ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-blue-950/40 text-blue-300 border border-blue-800',
-          titleHover: 'group-hover:text-blue-600',
         };
       default:
         return {
-          stripe: 'from-emerald-500 via-teal-500 to-green-400',
           bg: isLight ? 'bg-white hover:bg-slate-50/80' : 'bg-[#0f172a] hover:bg-[#131d36]',
-          hoverBorder: 'hover:border-emerald-400 hover:shadow-md hover:shadow-emerald-500/10',
           iconBox: isLight ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-emerald-950/50 text-emerald-400 border border-emerald-800',
           versionBadge: isLight ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-emerald-950/40 text-emerald-300 border border-emerald-800',
-          titleHover: 'group-hover:text-emerald-600',
         };
     }
   };
@@ -106,20 +94,18 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
         <div className="relative flex items-center justify-between pb-2 pt-2">
           <div className="max-w-2xl space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Khởi đầu từ kho tri thức của bạn.
+              {t.heroTitle}
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-              Khám phá quy chế hiện hành và chuẩn bị dữ liệu đối chiếu chính xác cho doanh nghiệp.
+              {t.heroSubtitle}
             </p>
           </div>
 
           {/* Isometric 3D Document Illustration matching Reference Image 1 */}
           <div className="hidden md:block relative w-36 h-28 flex-shrink-0 select-none">
-            {/* Background 3D paper stack shadow */}
             <div className="absolute top-2 right-2 w-28 h-24 rounded-2xl bg-indigo-200/50 dark:bg-indigo-950/60 rotate-6 shadow-md" />
             <div className="absolute top-1 right-1 w-28 h-24 rounded-2xl bg-blue-100/80 dark:bg-slate-800 rotate-3 shadow-md border border-slate-200 dark:border-slate-700" />
 
-            {/* Foreground 3D Document Card */}
             <div className="absolute top-0 right-0 w-28 h-24 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl p-3 flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="font-extrabold text-[11px] text-slate-800 dark:text-white font-mono tracking-wider">
@@ -137,7 +123,6 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                   <div className="w-2 h-1 bg-slate-300 dark:bg-slate-600 rounded-xs" />
                   <div className="w-2 h-1 bg-slate-300 dark:bg-slate-600 rounded-xs" />
                 </div>
-                {/* Red Seal / Circle badge on bottom right matching Image 1 */}
                 <div className="w-4 h-4 rounded-full bg-[#c51c16] shadow-sm flex items-center justify-center text-[8px] text-white font-bold">
                   ✓
                 </div>
@@ -150,7 +135,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
         {/* PROGRESS STEP INDICATOR PILLS MATCHING IMAGE 1 */}
         {/* ========================================================= */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* Step 1: Active Pill */}
+          {/* Step 1 */}
           <button
             onClick={() => setActiveStep(1)}
             className={`p-3.5 rounded-2xl border text-left transition-all duration-200 flex items-center gap-3 ${
@@ -170,10 +155,10 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
             </div>
             <div className="min-w-0">
               <div className="font-bold text-xs text-slate-900 dark:text-white truncate">
-                Khám phá quy chế
+                {t.step1Title}
               </div>
               <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                Tải lên và tra cứu
+                {t.step1Desc}
               </div>
             </div>
           </button>
@@ -198,10 +183,10 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
             </div>
             <div className="min-w-0">
               <div className="font-bold text-xs text-slate-900 dark:text-white truncate">
-                So khớp điều khoản
+                {t.step2Title}
               </div>
               <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                Đối chiếu với AI
+                {t.step2Desc}
               </div>
             </div>
           </button>
@@ -226,38 +211,36 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
             </div>
             <div className="min-w-0">
               <div className="font-bold text-xs text-slate-900 dark:text-white truncate">
-                Tự tin áp dụng
+                {t.step3Title}
               </div>
               <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                Kiểm tra pháp lý
+                {t.step3Desc}
               </div>
             </div>
           </button>
         </div>
 
         {/* ========================================================= */}
-        {/* MAIN BENTO CARD WORKSPACE MATCHING IMAGE 1 */}
+        {/* MAIN BENTO CARD WORKSPACE */}
         {/* ========================================================= */}
         <div
           className={`p-6 sm:p-7 rounded-3xl border shadow-sm space-y-6 transition-all ${
-            isLight
-              ? 'bg-white border-slate-200/90'
-              : 'bg-slate-900/90 border-slate-800'
+            isLight ? 'bg-white border-slate-200/90' : 'bg-slate-900/90 border-slate-800'
           }`}
         >
-          {/* Card Header matching Image 1: "Tải CV của bạn BƯỚC 01" */}
+          {/* Card Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <div className="flex items-center gap-2.5">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                  Tài Liệu &amp; Quy Chế Doanh Nghiệp
+                  {t.bentoTitle}
                 </h2>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-extrabold border border-rose-200 dark:border-rose-800 uppercase">
-                  BƯỚC 01
+                  {t.stepBadge}
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Để dữ liệu và quy định kể câu chuyện vận hành minh bạch của doanh nghiệp.
+                {t.bentoSubtitle}
               </p>
             </div>
 
@@ -265,10 +248,10 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
               <button
                 onClick={() => setIsDiffOpen(true)}
                 className="h-8 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 transition-all shadow-xs whitespace-nowrap flex-shrink-0"
-                title="So sánh phiên bản v1.0 và v2.0"
+                title={t.compareVersions}
               >
                 <GitCompare className="w-3.5 h-3.5 text-indigo-500" />
-                <span>So Sánh Phiên Bản</span>
+                <span>{t.compareVersions}</span>
               </button>
 
               <button
@@ -276,12 +259,12 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                 className="h-8 px-3.5 rounded-xl bg-[#0066cc] hover:bg-[#0052a3] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all whitespace-nowrap flex-shrink-0"
               >
                 <Upload className="w-3.5 h-3.5" />
-                <span>Nạp Tài Liệu</span>
+                <span>{t.ingestDoc}</span>
               </button>
             </div>
           </div>
 
-          {/* Drag & Drop Upload Zone matching Reference Image 1 */}
+          {/* Drag & Drop Upload Zone */}
           <div
             onClick={onOpenUpload}
             className={`border-2 border-dashed rounded-2xl p-7 flex flex-col items-center justify-center cursor-pointer transition-all group ${
@@ -294,10 +277,10 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
               <Upload className="w-6 h-6" />
             </div>
             <div className="font-bold text-sm text-slate-800 dark:text-slate-100 text-center">
-              Kéo thả tài liệu vào đây
+              {t.dropzoneTitle}
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 text-center">
-              hoặc <span className="text-[#0066cc] dark:text-blue-400 font-semibold underline underline-offset-2">chọn file từ thiết bị</span> (PDF, Word, Excel, Markdown)
+              {t.dropzoneSubtitle} · <span className="text-slate-400">{t.dropzoneFormats}</span>
             </div>
           </div>
 
@@ -309,7 +292,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                 type="text"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                placeholder="Lọc tài liệu trong danh sách..."
+                placeholder={t.filterPlaceholder}
                 className={`w-full h-9 pl-9 pr-3 rounded-xl border text-xs focus:outline-none transition-colors font-sans ${
                   isLight
                     ? 'bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:border-indigo-500'
@@ -321,22 +304,22 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
             <div className="flex items-center gap-2">
               {/* Type Filter Buttons */}
               <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold">
-                {['all', 'pdf', 'docx'].map((t) => (
+                {['all', 'pdf', 'docx'].map((tt) => (
                   <button
-                    key={t}
-                    onClick={() => setFilterType(t)}
+                    key={tt}
+                    onClick={() => setFilterType(tt)}
                     className={`px-2.5 py-1 rounded-lg uppercase text-[10px] font-mono transition-all ${
-                      filterType === t
+                      filterType === tt
                         ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-bold'
                         : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
-                    {t}
+                    {tt === 'all' ? t.filterAll : tt}
                   </button>
                 ))}
               </div>
 
-              {/* View mode (Grid / List) */}
+              {/* View mode */}
               <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                 <button
                   onClick={() => setViewMode('grid')}
@@ -345,7 +328,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                       ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
                       : 'text-slate-400 hover:text-slate-700'
                   }`}
-                  title="Chế độ lưới (Grid)"
+                  title="Grid"
                 >
                   <Grid className="w-3.5 h-3.5" />
                 </button>
@@ -356,7 +339,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                       ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
                       : 'text-slate-400 hover:text-slate-700'
                   }`}
-                  title="Chế độ bảng (Table)"
+                  title="Table"
                 >
                   <List className="w-3.5 h-3.5" />
                 </button>
@@ -367,12 +350,12 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
           {/* Document Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
             {filteredDocs.map((doc) => {
-              const theme = getCardTheme(doc.file_type);
+              const cardTheme = getCardTheme(doc.file_type);
               return (
                 <div
                   key={doc.id}
                   className={`group rounded-2xl border transition-all duration-300 p-4 flex flex-col justify-between shadow-xs hover:shadow-md ${
-                    theme.bg
+                    cardTheme.bg
                   } ${
                     isLight
                       ? 'border-slate-200/90 hover:border-blue-400'
@@ -380,9 +363,8 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                   }`}
                 >
                   <div className="space-y-3">
-                    {/* Top Row: Icon + Version pill + Status */}
                     <div className="flex items-center justify-between">
-                      <div className={`p-2 rounded-xl flex items-center justify-center ${theme.iconBox}`}>
+                      <div className={`p-2 rounded-xl flex items-center justify-center ${cardTheme.iconBox}`}>
                         {doc.file_type === 'pdf' ? (
                           <FileText className="w-4 h-4" />
                         ) : (
@@ -391,17 +373,16 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                       </div>
 
                       <div className="flex items-center gap-1.5">
-                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${theme.versionBadge}`}>
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${cardTheme.versionBadge}`}>
                           v{doc.current_version}.0
                         </span>
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                          <span>ĐÃ CHỈ MỤC</span>
+                          <span>{t.indexedStatus}</span>
                         </span>
                       </div>
                     </div>
 
-                    {/* Document Title & File Name */}
                     <div>
                       <h3
                         onClick={() => onSelectDocument(doc)}
@@ -414,24 +395,22 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                       </p>
                     </div>
 
-                    {/* Metadata: Date & File size */}
                     <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono pt-1">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        <span>{new Date(doc.created_at).toLocaleDateString('vi-VN')}</span>
+                        <span>{new Date(doc.created_at).toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US')}</span>
                       </span>
                       <span>{formatFileSize(doc.file_size_bytes)}</span>
                     </div>
                   </div>
 
-                  {/* Actions Footer */}
                   <div className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                     <button
                       onClick={() => onSelectDocument(doc)}
                       className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1"
                     >
                       <Eye className="w-3 h-3" />
-                      <span>Xem</span>
+                      <span>{t.viewCard}</span>
                     </button>
 
                     {onAskAI && (
@@ -440,7 +419,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                         className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs"
                       >
                         <Sparkles className="w-3 h-3 text-purple-500" />
-                        <span>Hỏi AI</span>
+                        <span>{t.askAI}</span>
                       </button>
                     )}
                   </div>
@@ -451,7 +430,6 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
         </div>
       </div>
 
-      {/* Version Diff Modal */}
       <DocumentDiffModal isOpen={isDiffOpen} onClose={() => setIsDiffOpen(false)} />
     </div>
   );

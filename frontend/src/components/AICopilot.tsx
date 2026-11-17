@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { ChatMessage, Citation, UIThemeId, User } from '../types';
 import { ApiService } from '../services/api';
+import { Language, translations } from '../services/i18n';
 
 interface AICopilotProps {
   onCitationClick: (citation: Citation) => void;
@@ -31,6 +32,7 @@ interface AICopilotProps {
   onClearPresetPrompt?: () => void;
   currentTheme?: UIThemeId;
   currentUser?: User;
+  lang?: Language;
 }
 
 export const AICopilot: React.FC<AICopilotProps> = ({
@@ -40,14 +42,18 @@ export const AICopilot: React.FC<AICopilotProps> = ({
   presetPrompt,
   onClearPresetPrompt,
   currentUser,
+  lang = 'vi',
 }) => {
+  const t = translations[lang];
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
       role: 'assistant',
       content:
-        'Xin chào! Tôi là **DocuMind Copilot**.\n\nMọi câu trả lời đều được kiểm chứng và trích dẫn số trang, điều khoản từ các văn bản nội bộ theo đúng phân quyền tài khoản của bạn.',
-      timestamp: 'Vừa xong',
+        lang === 'vi'
+          ? 'Xin chào! Tôi là DocuMind Copilot. Mọi câu trả lời đều được kiểm chứng và trích dẫn số trang, điều khoản từ các văn bản nội bộ theo đúng phân quyền tài khoản của bạn.'
+          : 'Hello! I am DocuMind Copilot. Every response is grounded and verifiable with exact page numbers and clauses from internal documents based on your RBAC credentials.',
+      timestamp: lang === 'vi' ? 'Vừa xong' : 'Just now',
     },
   ]);
   const [input, setInput] = useState('');
@@ -182,23 +188,23 @@ ${
 
   const promptSuggestions = [
     {
-      label: '📍 Tệp này ở đâu?',
-      query: 'Tệp Quy chế làm việc từ xa nằm ở đâu, thuộc thư mục nào?',
+      label: `📍 ${lang === 'vi' ? 'Tệp này ở đâu?' : 'Where is file?'}`,
+      query: t.promptWhereIsFile,
       hoverColor: 'hover:border-cyan-400 hover:text-cyan-300',
     },
     {
-      label: '📑 Nằm ở mục nào, trang mấy?',
-      query: 'Quy định hạn mức tiền phòng khách sạn nằm ở mục nào, chương nào?',
+      label: `📑 ${lang === 'vi' ? 'Nằm ở mục nào, trang mấy?' : 'Which section & page?'}`,
+      query: t.promptWhichSection,
       hoverColor: 'hover:border-emerald-400 hover:text-emerald-300',
     },
     {
-      label: '📋 Nội dung như thế nào?',
-      query: 'Nội dung quy chế làm việc từ xa 2026 ntn?',
+      label: `📋 ${lang === 'vi' ? 'Nội dung như thế nào?' : 'Summary of policy?'}`,
+      query: t.promptSummary,
       hoverColor: 'hover:border-purple-400 hover:text-purple-300',
     },
     {
-      label: '⚠️ Thử hỏi ngoài phạm vi',
-      query: 'Cách nấu phở bò gia truyền ngon nhất?',
+      label: `⚠️ ${lang === 'vi' ? 'Thử hỏi ngoài phạm vi' : 'Ask out of scope'}`,
+      query: t.promptOutOfScope,
       hoverColor: 'hover:border-rose-400 hover:text-rose-300',
     },
   ];
@@ -337,11 +343,11 @@ ${
                       <div className="flex items-center justify-between">
                         <div className="text-[10px] uppercase font-mono tracking-wider text-amber-400 font-bold flex items-center gap-1.5">
                           <FileCheck2 className="w-3.5 h-3.5 text-amber-400" />
-                          <span>Căn Cứ Pháp Lý &amp; Trích Dẫn ({msg.citations.length})</span>
+                          <span>{t.citationsHeader} · {msg.citations.length}</span>
                         </div>
                         <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 font-semibold">
                           <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                          <span>100% Grounded</span>
+                          <span>{t.groundedBadge}</span>
                         </span>
                       </div>
 
@@ -410,7 +416,7 @@ ${
                                 onClick={() => onCitationClick(cite)}
                                 className="px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-400 text-amber-300 flex items-center gap-1 transition-all group-hover:scale-105"
                               >
-                                <span>Xem văn bản gốc</span>
+                                <span>{t.viewOriginal}</span>
                                 <ExternalLink className="w-2.5 h-2.5" />
                               </button>
                             </div>
@@ -476,11 +482,7 @@ ${
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading || isStreaming}
-            placeholder={
-              currentUser?.role === 'ADMIN'
-                ? 'Hỏi AI về bất kỳ tài liệu nào (Toàn quyền Admin)...'
-                : `Hỏi AI quy định nội bộ (${currentUser?.department_code || 'RBAC Scoped'})...`
-            }
+            placeholder={t.copilotInputPlaceholder}
             className="w-full h-10 pl-3.5 pr-10 rounded-xl bg-slate-900/90 border border-slate-750 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
           />
           <button
@@ -494,9 +496,9 @@ ${
         <div className="mt-1.5 flex items-center justify-between text-[9px] text-slate-500 font-mono">
           <span className="flex items-center gap-1">
             <Lock className="w-2.5 h-2.5 text-emerald-400" />
-            <span>Zero-Trust Session Active</span>
+            <span>{t.zeroTrustActive}</span>
           </span>
-          <span>Shift + Enter để xuống dòng</span>
+          <span>{t.shiftEnterHint}</span>
         </div>
       </div>
     </div>

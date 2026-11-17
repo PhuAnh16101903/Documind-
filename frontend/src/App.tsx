@@ -11,12 +11,29 @@ import { SettingsModal } from './components/SettingsModal';
 import { AuthPage } from './components/AuthPage';
 import { ApiService, MockCorporateUsers, MockData } from './services/api';
 import { Department, Document, Citation, User } from './types';
+import { Language, translations } from './services/i18n';
 
 export const App: React.FC = () => {
   // Authentication & Users state
   const [registeredUsers, setRegisteredUsers] = useState<User[]>(MockCorporateUsers);
   const [currentUser, setCurrentUser] = useState<User>(MockCorporateUsers[0]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+
+  // Language state: 'vi' | 'en' (Full bilingual support)
+  const [lang, setLang] = useState<Language>(() => {
+    const saved = localStorage.getItem('documind_lang');
+    return saved === 'en' || saved === 'vi' ? saved : 'vi';
+  });
+
+  const toggleLang = () => {
+    setLang((prev) => {
+      const next = prev === 'vi' ? 'en' : 'vi';
+      localStorage.setItem('documind_lang', next);
+      return next;
+    });
+  };
+
+  const t = translations[lang];
 
   // Theme state: 'light' | 'dark' (Default to light matching reference images)
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>(() => {
@@ -129,11 +146,14 @@ export const App: React.FC = () => {
           themeMode={themeMode}
           onToggleTheme={toggleTheme}
           onOpenSearch={() => setIsSearchOpen(true)}
+          lang={lang}
+          onToggleLang={toggleLang}
         />
         <HybridSearchBar
           isOpen={isSearchOpen}
           onClose={() => setIsSearchOpen(false)}
           onSelectResult={handleSelectResult}
+          lang={lang}
         />
       </div>
     );
@@ -147,7 +167,7 @@ export const App: React.FC = () => {
         themeMode === 'dark' ? 'dark bg-[#060c18] text-slate-100' : 'bg-[#f4f7fb] text-slate-900'
       }`}
     >
-      {/* Top Header matching Reference Image 1 Breadcrumb + Tools */}
+      {/* Top Header */}
       <Header
         user={currentUser}
         onOpenUpload={() => setIsUploadOpen(true)}
@@ -158,11 +178,13 @@ export const App: React.FC = () => {
         onLogout={handleLogout}
         themeMode={themeMode}
         onToggleTheme={toggleTheme}
+        lang={lang}
+        onToggleLang={toggleLang}
       />
 
       {/* Main Layout Body */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar Navigation matching Reference Image 1 */}
+        {/* Sidebar Navigation */}
         <Sidebar
           departments={departments}
           selectedDeptId={selectedDeptId}
@@ -173,6 +195,7 @@ export const App: React.FC = () => {
           onOpenSettings={() => setIsSettingsOpen(true)}
           onLogout={handleLogout}
           themeMode={themeMode}
+          lang={lang}
         />
 
         {/* Active View Screen */}
@@ -184,11 +207,16 @@ export const App: React.FC = () => {
                 onSelectDocument={(doc) => setSelectedDoc(doc)}
                 onOpenUpload={() => setIsUploadOpen(true)}
                 onAskAI={(doc) => {
-                  setPresetAIPrompt(`Tóm tắt các quy định chính và trích dẫn điều khoản trong tài liệu "${doc.title}"`);
+                  setPresetAIPrompt(
+                    lang === 'vi'
+                      ? `Tóm tắt các quy định chính và trích dẫn điều khoản trong tài liệu ${doc.title}`
+                      : `Summarize the core provisions and citations in document ${doc.title}`
+                  );
                   setIsAIPanelOpen(true);
                 }}
                 currentTheme="harmonic"
                 themeMode={themeMode}
+                lang={lang}
               />
               {isAIPanelOpen && (
                 <AICopilot
@@ -199,6 +227,7 @@ export const App: React.FC = () => {
                   onCitationClick={handleCitationClick}
                   currentTheme="harmonic"
                   currentUser={currentUser}
+                  lang={lang}
                 />
               )}
             </div>
@@ -209,6 +238,7 @@ export const App: React.FC = () => {
               onCitationClick={handleCitationClick}
               currentTheme="harmonic"
               currentUser={currentUser}
+              lang={lang}
             />
           )}
 
@@ -218,7 +248,7 @@ export const App: React.FC = () => {
         </main>
       </div>
 
-      {/* Floating Shortcut Pill "Đi đến... Ctrl / ⌘ K" matching Reference Image 1 & 2 */}
+      {/* Floating Shortcut Pill "Đi đến... Ctrl / ⌘ K" */}
       <div
         className={`fixed bottom-5 z-40 transition-all duration-300 ${
           isAIPanelOpen && activeTab === 'knowledge' ? 'right-[405px]' : 'right-6'
@@ -226,14 +256,14 @@ export const App: React.FC = () => {
       >
         <button
           onClick={() => setIsSearchOpen(true)}
-          className={`h-10 px-4 rounded-xl border text-xs font-semibold flex items-center gap-2 shadow-lg hover:border-indigo-500 hover:scale-105 active:scale-95 transition-all ${
+          className={`h-10 px-4 rounded-xl border text-xs font-semibold flex items-center gap-2 shadow-lg hover:border-indigo-500 hover:scale-105 active:scale-95 transition-all cursor-pointer ${
             isLight
               ? 'bg-white/95 text-slate-800 border-slate-300'
               : 'bg-slate-900/95 text-slate-200 border-slate-700'
           }`}
-          title="Tìm kiếm nhanh các mục (Ctrl + K)"
+          title={t.searchPlaceholder}
         >
-          <span>Đi đến...</span>
+          <span>{t.goTo}</span>
           <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700">
             Ctrl / ⌘ K
           </kbd>
@@ -247,6 +277,7 @@ export const App: React.FC = () => {
         onClose={() => setIsSettingsOpen(false)}
         onLogout={handleLogout}
         onUpdateUser={(u) => setCurrentUser(u)}
+        lang={lang}
       />
 
       <UploadModal
@@ -260,6 +291,7 @@ export const App: React.FC = () => {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         onSelectResult={handleSelectResult}
+        lang={lang}
       />
 
       {(selectedDoc || activeCitation) && (
