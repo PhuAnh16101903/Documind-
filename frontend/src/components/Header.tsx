@@ -49,12 +49,12 @@ export const Header: React.FC<HeaderProps> = ({
           : 'bg-[#0a0f1d] border-slate-800 text-slate-200 shadow-md'
       }`}
     >
-      {/* Breadcrumb Navigation without cluttering parentheses */}
-      <div className="flex items-center gap-2 text-xs font-semibold">
+      {/* Breadcrumb Navigation matching neu_career_ai topbar */}
+      <div className="flex items-center gap-1.5 text-xs font-semibold">
         <span className="text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer">
           {t.knowledgeSpace}
         </span>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+        <span className="text-slate-400 font-normal mx-1">/</span>
         <span className="text-slate-900 dark:text-white font-bold">
           {t.regulationsQuery}
         </span>

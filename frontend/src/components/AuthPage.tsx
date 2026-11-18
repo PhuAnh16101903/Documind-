@@ -27,6 +27,7 @@ import { TetBlossomCanvas } from './TetBlossomCanvas';
 import { TetLanterns } from './TetLanterns';
 import { TetMusicPlayer } from './TetMusicPlayer';
 import { TetActivityAnimation } from './TetActivityAnimation';
+import { Brand } from './Brand';
 
 interface AuthPageProps {
   onLoginSuccess: (user: User) => void;
@@ -180,23 +181,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       {/* Traditional Hanging Red Silk Lanterns with Golden Tassels */}
       <TetLanterns />
 
-      {/* Top Header Bar */}
+      {/* Top Header Bar matching neu_career_ai PublicHeader */}
       <header className="h-16 px-6 sm:px-12 flex items-center justify-between z-20 relative">
-        {/* Brand & Round Logo */}
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-white border border-amber-200 shadow-md flex items-center justify-center text-red-600 overflow-hidden">
-            <span className="text-xl">🌸</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white">
-              {t.appName}
-            </span>
-            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-xs">
-              <span>🧧</span>
-              <span>{t.tetBadge}</span>
-            </span>
-          </div>
-        </div>
+        {/* Authentic Circular NEU Brand Emblem */}
+        <Brand lang={lang} />
 
         {/* Right Tools (Language VI/EN, Theme Toggle ☀️, Sign In) */}
         <div className="flex items-center space-x-2 sm:space-x-3">

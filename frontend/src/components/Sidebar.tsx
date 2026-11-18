@@ -7,10 +7,12 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Brain,
+  BookOpen,
+  Briefcase,
 } from 'lucide-react';
 import { Department, UIThemeId, User } from '../types';
 import { Language, translations } from '../services/i18n';
+import { Brand } from './Brand';
 
 interface SidebarProps {
   departments: Department[];
@@ -96,21 +98,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
       </button>
 
-      {/* Top Brand Logo */}
-      <div className="p-4 border-b border-slate-100 dark:border-slate-800/80 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-blue-600 flex items-center justify-center text-white shadow-md flex-shrink-0">
-          <Brain className="w-5 h-5" />
-        </div>
-        {!isCollapsed && (
-          <div className="min-w-0">
-            <div className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white truncate">
-              {t.appName}
-            </div>
-            <div className="text-[10px] text-slate-500 font-mono truncate">
-              {t.subBrand}
-            </div>
-          </div>
-        )}
+      {/* Top Brand Logo with Authentic Circular NEU Emblem matching Image 1 */}
+      <div className="p-4 border-b border-slate-100 dark:border-slate-800/80">
+        <Brand isCollapsed={isCollapsed} lang={lang} />
       </div>
 
       {/* Subtle Tet Holiday Accent in Sidebar */}

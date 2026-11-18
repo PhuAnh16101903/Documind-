@@ -254,34 +254,53 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
         </div>
 
         {/* ========================================================= */}
-        {/* MAIN BENTO CARD WORKSPACE */}
+        {/* 2-COLUMN BENTO WORKBENCH MATCHING REFERENCE IMAGE 1 */}
         {/* ========================================================= */}
-        <div
-          className={`p-6 sm:p-7 rounded-3xl border shadow-sm space-y-6 transition-all ${
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+          {/* Left Panel: Upload Zone */}
+          <section className={`p-6 sm:p-7 rounded-3xl border shadow-sm flex flex-col justify-between transition-all ${
             isLight ? 'bg-white border-slate-200/90' : 'bg-slate-900/90 border-slate-800'
-          }`}
-        >
-          {/* Card Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {t.bentoTitle}
-                </h2>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-extrabold border border-rose-200 dark:border-rose-800 uppercase">
+          }`}>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                    {t.bentoTitle}
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {t.bentoSubtitle}
+                  </p>
+                </div>
+                <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-extrabold border border-rose-200 dark:border-rose-800 uppercase flex-shrink-0">
                   {t.stepBadge}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                {t.bentoSubtitle}
-              </p>
+
+              {/* Drag & Drop Upload Zone */}
+              <div
+                onClick={onOpenUpload}
+                className={`border-2 border-dashed rounded-2xl p-7 flex flex-col items-center justify-center cursor-pointer transition-all group ${
+                  isLight
+                    ? 'border-slate-300 hover:border-[#1461a4] bg-[#f8fafc] hover:bg-blue-50/30'
+                    : 'border-slate-700 hover:border-blue-500 bg-slate-950/60 hover:bg-slate-900'
+                }`}
+              >
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#1461a4] dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform mb-3 shadow-xs">
+                  <Upload className="w-6 h-6" />
+                </div>
+                <div className="font-bold text-sm text-slate-800 dark:text-slate-100 text-center">
+                  {t.dropzoneTitle}
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 text-center">
+                  {t.dropzoneSubtitle} · <span className="text-slate-400">{t.dropzoneFormats}</span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="pt-4 flex items-center justify-between gap-3 border-t border-slate-100 dark:border-slate-800/80 mt-4">
               <button
                 onClick={() => setIsDiffOpen(true)}
-                className="h-8 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 transition-all shadow-xs whitespace-nowrap flex-shrink-0"
-                title={t.compareVersions}
+                className="h-9 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 transition-all shadow-xs"
               >
                 <GitCompare className="w-3.5 h-3.5 text-indigo-500" />
                 <span>{t.compareVersions}</span>
@@ -289,33 +308,69 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
 
               <button
                 onClick={onOpenUpload}
-                className="h-8 px-3.5 rounded-xl bg-[#0066cc] hover:bg-[#0052a3] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all whitespace-nowrap flex-shrink-0"
+                className="h-9 px-4 rounded-xl bg-[#1461a4] hover:bg-[#0f4b80] text-white text-xs font-bold flex items-center gap-2 shadow-md active:scale-95 transition-all"
               >
-                <Upload className="w-3.5 h-3.5" />
-                <span>{t.ingestDoc}</span>
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{lang === 'vi' ? 'Nạp & Phân tích Quy chế' : 'Ingest & Analyze'}</span>
               </button>
             </div>
-          </div>
+          </section>
 
-          {/* Drag & Drop Upload Zone */}
-          <div
-            onClick={onOpenUpload}
-            className={`border-2 border-dashed rounded-2xl p-7 flex flex-col items-center justify-center cursor-pointer transition-all group ${
-              isLight
-                ? 'border-slate-300 hover:border-[#0066cc] bg-[#f8fafc] hover:bg-blue-50/30'
-                : 'border-slate-700 hover:border-blue-500 bg-slate-950/60 hover:bg-slate-900'
-            }`}
-          >
-            <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#0066cc] dark:text-blue-400 group-hover:scale-110 transition-transform mb-2">
-              <Upload className="w-6 h-6" />
+          {/* Right Panel: Analysis Results matching Image 1 */}
+          <section className={`p-6 sm:p-7 rounded-3xl border shadow-sm flex flex-col justify-between transition-all ${
+            isLight ? 'bg-white border-slate-200/90' : 'bg-slate-900/90 border-slate-800'
+          }`}>
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                  {lang === 'vi' ? 'Kết quả phân tích & Đối chiếu' : 'Analysis & Verification Results'}
+                </h2>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 font-bold border border-emerald-200 dark:border-emerald-800">
+                  {documents.length} {lang === 'vi' ? 'Tài liệu' : 'Documents'}
+                </span>
+              </div>
+
+              {/* Empty state / Highlights matching Image 1 */}
+              <div className="py-10 flex flex-col items-center justify-center text-center">
+                <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-[#1461a4] dark:text-blue-400 flex items-center justify-center mb-3 shadow-xs">
+                  <FileText className="w-7 h-7" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100 mb-1">
+                  {lang === 'vi' ? 'Hồ sơ và điều khoản sẽ xuất hiện ở đây' : 'Your provisions will appear here'}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs leading-relaxed">
+                  {lang === 'vi'
+                    ? 'Tải tài liệu lên hoặc chọn từ kho lưu trữ bên dưới để trích xuất điều khoản và kiểm chứng Zero-Trust.'
+                    : 'Upload a document or select one below to extract provisions and verify via Zero-Trust.'}
+                </p>
+              </div>
             </div>
-            <div className="font-bold text-sm text-slate-800 dark:text-slate-100 text-center">
-              {t.dropzoneTitle}
+
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500">
+              <span className="flex items-center gap-1.5 text-[11px]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Zero-Trust RBAC Secured</span>
+              </span>
+              <button
+                onClick={() => {
+                  if (documents[0]) onSelectDocument(documents[0]);
+                }}
+                className="text-xs font-semibold text-[#1461a4] dark:text-sky-400 hover:underline flex items-center gap-1"
+              >
+                <span>{lang === 'vi' ? 'Xem tài liệu mẫu mới nhất →' : 'View latest sample →'}</span>
+              </button>
             </div>
-            <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 text-center">
-              {t.dropzoneSubtitle} · <span className="text-slate-400">{t.dropzoneFormats}</span>
-            </div>
-          </div>
+          </section>
+        </div>
+
+        {/* ========================================================= */}
+        {/* DOCUMENT REPOSITORY SECTION */}
+        {/* ========================================================= */}
+        <div
+          className={`p-6 sm:p-7 rounded-3xl border shadow-sm space-y-6 transition-all ${
+            isLight ? 'bg-white border-slate-200/90' : 'bg-slate-900/90 border-slate-800'
+          }`}
+        >
 
           {/* Filters & Search Toolbar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
