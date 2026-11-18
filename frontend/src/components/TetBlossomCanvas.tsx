@@ -24,8 +24,17 @@ interface Spark {
   size: number;
 }
 
-export const TetBlossomCanvas: React.FC = () => {
+interface TetBlossomCanvasProps {
+  variant?: 'hero' | 'subtle';
+  className?: string;
+}
+
+export const TetBlossomCanvas: React.FC<TetBlossomCanvasProps> = ({
+  variant = 'hero',
+  className = '',
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const isSubtle = variant === 'subtle';
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -44,22 +53,25 @@ export const TetBlossomCanvas: React.FC = () => {
     };
     window.addEventListener('resize', handleResize);
 
-    // Initialize 45 festive petals
-    const petals: Petal[] = Array.from({ length: 48 }, () => {
-      const types: Petal['type'][] = ['mai', 'dao', 'single_mai', 'single_dao', 'single_dao'];
+    const isSubtle = variant === 'subtle';
+    const petalCount = isSubtle ? 16 : 40;
+
+    // Initialize festive petals
+    const petals: Petal[] = Array.from({ length: petalCount }, () => {
+      const types: Petal['type'][] = ['mai', 'dao', 'single_mai', 'single_dao'];
       const chosenType = types[Math.floor(Math.random() * types.length)];
       return {
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: -0.4 + Math.random() * 0.8,
-        vy: 0.8 + Math.random() * 1.4,
-        size: 9 + Math.random() * 14,
+        vx: -0.3 + Math.random() * 0.6,
+        vy: isSubtle ? 0.4 + Math.random() * 0.6 : 0.7 + Math.random() * 1.2,
+        size: isSubtle ? 8 + Math.random() * 9 : 10 + Math.random() * 14,
         type: chosenType,
         rotation: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * 0.04,
+        rotSpeed: (Math.random() - 0.5) * 0.03,
         swayPhase: Math.random() * Math.PI * 2,
-        swaySpeed: 0.02 + Math.random() * 0.03,
-        opacity: 0.75 + Math.random() * 0.25,
+        swaySpeed: 0.015 + Math.random() * 0.025,
+        opacity: isSubtle ? 0.35 + Math.random() * 0.35 : 0.75 + Math.random() * 0.25,
       };
     });
 
@@ -207,13 +219,15 @@ export const TetBlossomCanvas: React.FC = () => {
       step++;
       ctx.clearRect(0, 0, width, height);
 
-      // Random gentle firework burst
-      fireworkTimer++;
-      if (fireworkTimer > 180) {
-        fireworkTimer = 0;
-        const fx = width * 0.3 + Math.random() * (width * 0.6);
-        const fy = height * 0.15 + Math.random() * (height * 0.35);
-        createFirework(fx, fy);
+      // Random gentle firework burst (only in hero mode)
+      if (!isSubtle) {
+        fireworkTimer++;
+        if (fireworkTimer > 180) {
+          fireworkTimer = 0;
+          const fx = width * 0.3 + Math.random() * (width * 0.6);
+          const fy = height * 0.15 + Math.random() * (height * 0.35);
+          createFirework(fx, fy);
+        }
       }
 
       // Update & render fireworks sparks
@@ -280,7 +294,7 @@ export const TetBlossomCanvas: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 pointer-events-none z-10"
+      className={`absolute inset-0 pointer-events-none ${isSubtle ? 'z-0' : 'z-10'} ${className}`}
       style={{ mixBlendMode: 'normal' }}
     />
   );

@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Play, Pause, Music, Sparkles, X } from 'lucide-react';
+import { Volume2, VolumeX, Play, Pause, Music, Sparkles, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { Language, translations } from '../services/i18n';
 
 interface TetMusicPlayerProps {
   lang?: Language;
   onAutoPlayed?: () => void;
+  className?: string;
 }
 
 export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
   lang = 'vi',
+  className = '',
 }) => {
   const t = translations[lang];
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [volume, setVolume] = useState<number>(0.65);
+  const [volume, setVolume] = useState<number>(0.6);
   const [hasEnded, setHasEnded] = useState<boolean>(false);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState<boolean>(false);
@@ -23,13 +25,11 @@ export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
   const hasStartedRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // Initialize audio element
     const audio = new Audio('/tet_music.mp3');
     audio.loop = false; // CRITICAL: NEVER LOOP ("k lặp lại")
     audio.volume = volume;
     audioRef.current = audio;
 
-    // Handle end of playback
     const handleEnded = () => {
       setIsPlaying(false);
       setHasEnded(true);
@@ -46,11 +46,9 @@ export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
           hasStartedRef.current = true;
         })
         .catch(() => {
-          // Browser autoplay policy blocked unmuted sound without user gesture
           setAutoplayBlocked(true);
           setIsPlaying(false);
 
-          // Listen for first interaction anywhere on page
           const onFirstInteraction = () => {
             if (!hasStartedRef.current && audioRef.current && !hasEnded) {
               audioRef.current
@@ -125,142 +123,110 @@ export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
     }
   };
 
+  // Sleek minimized floating pill
   if (isCollapsed) {
     return (
-      <button
+      <div
+        className={`fixed bottom-4 right-4 z-40 flex items-center gap-2 p-1.5 pl-3 pr-2 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-amber-400/60 shadow-lg select-none transition-all hover:scale-105 cursor-pointer ${className}`}
         onClick={() => setIsCollapsed(false)}
-        className="fixed bottom-5 right-5 z-40 p-3 rounded-full bg-gradient-to-tr from-red-600 via-amber-500 to-rose-600 text-white shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center border-2 border-amber-300"
         title={t.tetMusicTrack}
       >
-        <Music className={`w-5 h-5 ${isPlaying ? 'animate-bounce' : ''}`} />
-        {isPlaying && (
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
-        )}
-      </button>
+        <span className="text-xs">🎵</span>
+        <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
+          {isPlaying ? (lang === 'vi' ? 'Nhạc Tết đang phát' : 'Playing') : (lang === 'vi' ? 'Bật nhạc Tết' : 'Tết Music')}
+        </span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            togglePlay();
+          }}
+          className="w-7 h-7 rounded-full bg-gradient-to-r from-red-600 to-amber-500 text-white flex items-center justify-center shadow-xs"
+        >
+          {isPlaying ? <Pause className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 fill-current ml-0.5" />}
+        </button>
+      </div>
     );
   }
 
+  // Refined, sleek, compact glassmorphic player
   return (
     <aside
       aria-label={t.tetMusicTrack}
-      className="fixed bottom-5 right-5 z-40 max-w-sm rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-2 border-amber-400/80 dark:border-amber-500/60 shadow-2xl p-3.5 space-y-2.5 animate-slide-up select-none font-sans"
+      className={`fixed bottom-4 right-4 z-40 flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-amber-400/50 dark:border-amber-500/40 shadow-xl shadow-amber-900/10 select-none font-sans text-xs animate-slide-up ${className}`}
     >
-      {/* Header bar with holiday decoration */}
-      <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-amber-200/60 dark:border-slate-800">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-red-600 to-amber-500 text-white flex items-center justify-center shadow-xs">
-            <Music className="w-3.5 h-3.5" />
-          </div>
-          <div>
-            <div className="text-xs font-extrabold text-red-600 dark:text-red-400 flex items-center gap-1">
-              <span>🌸</span>
-              <span>{t.tetBadge}</span>
-              <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300">
-                {lang === 'vi' ? 'Không lặp lại' : 'No Loop'}
-              </span>
-            </div>
-            <div className="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate max-w-[190px]">
-              {t.tetMusicTrack}
-            </div>
-          </div>
+      {/* Play/Pause Button */}
+      <button
+        onClick={togglePlay}
+        className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-xs active:scale-95 transition-all cursor-pointer ${
+          isPlaying
+            ? 'bg-gradient-to-tr from-amber-500 to-amber-600'
+            : 'bg-gradient-to-tr from-red-600 to-rose-600'
+        }`}
+        title={isPlaying ? 'Tạm dừng' : 'Phát'}
+      >
+        {isPlaying ? (
+          <Pause className="w-3.5 h-3.5 fill-current" />
+        ) : (
+          <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+        )}
+      </button>
+
+      {/* Song info and subtle badge */}
+      <div className="flex flex-col pr-1">
+        <div className="flex items-center gap-1.5">
+          <span className="text-red-600 dark:text-red-400 font-extrabold text-[11px] flex items-center gap-1">
+            <span>🌸</span>
+            <span>{lang === 'vi' ? 'Nhạc Tết 2026' : 'Tết Music'}</span>
+          </span>
+          <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 font-bold border border-amber-200 dark:border-amber-800">
+            {lang === 'vi' ? '1 lần' : 'No loop'}
+          </span>
         </div>
-
-        <button
-          onClick={() => setIsCollapsed(true)}
-          className="w-6 h-6 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
-          title={t.closeButton}
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* Autoplay prompt alert if blocked by browser policy */}
-      {autoplayBlocked && !isPlaying && !hasEnded && (
-        <button
-          onClick={togglePlay}
-          className="w-full py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-red-500 to-amber-500 hover:from-red-600 hover:to-amber-600 text-white text-[11px] font-extrabold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer animate-pulse"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-amber-200" />
-          <span>{t.tetMusicClickToPlay}</span>
-        </button>
-      )}
-
-      {/* Playback Controls & Waveform */}
-      <div className="flex items-center justify-between gap-3 pt-0.5">
-        <div className="flex items-center gap-2">
-          {/* Play/Pause Button */}
-          <button
-            onClick={togglePlay}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-md active:scale-90 transition-all cursor-pointer ${
-              isPlaying
-                ? 'bg-amber-500 hover:bg-amber-600'
-                : 'bg-red-600 hover:bg-red-700'
-            }`}
-            title={isPlaying ? 'Tạm dừng' : 'Phát'}
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4 fill-current" />
-            ) : (
-              <Play className="w-4 h-4 fill-current ml-0.5" />
-            )}
-          </button>
-
-          {/* Mute/Unmute */}
-          <button
-            onClick={toggleMute}
-            className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 flex items-center justify-center transition-colors"
-            title={isMuted ? 'Bật âm' : 'Tắt tiếng'}
-          >
-            {isMuted ? (
-              <VolumeX className="w-3.5 h-3.5 text-red-500" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5" />
-            )}
-          </button>
-
-          {/* Volume slider */}
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={isMuted ? 0 : volume}
-            onChange={handleVolumeChange}
-            className="w-16 h-1.5 accent-amber-500 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
-          />
-        </div>
-
-        {/* Equalizer animation bars */}
-        <div className="flex items-end gap-1 h-5 px-2">
-          <div
-            className={`w-1 bg-red-500 rounded-full transition-all duration-150 ${
-              isPlaying ? 'h-5 animate-pulse' : 'h-1.5 opacity-40'
-            }`}
-          />
-          <div
-            className={`w-1 bg-amber-500 rounded-full transition-all duration-200 ${
-              isPlaying ? 'h-3 animate-bounce' : 'h-1 opacity-40'
-            }`}
-          />
-          <div
-            className={`w-1 bg-red-600 rounded-full transition-all duration-100 ${
-              isPlaying ? 'h-4 animate-pulse' : 'h-2 opacity-40'
-            }`}
-          />
-          <div
-            className={`w-1 bg-amber-400 rounded-full transition-all duration-300 ${
-              isPlaying ? 'h-5 animate-bounce' : 'h-1.5 opacity-40'
-            }`}
-          />
+        <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 max-w-[170px] truncate">
+          Ngày Tết Quê Em
         </div>
       </div>
 
-      {/* Completion message */}
-      {hasEnded && (
-        <div className="text-[10px] text-center font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 rounded-lg py-1 border border-amber-200 dark:border-amber-900">
-          ✨ {lang === 'vi' ? 'Đã hoàn tất phát nhạc Tết 1 lần' : 'Finished playing Tết melody'}
-        </div>
-      )}
+      {/* Mini Equalizer Waves when playing */}
+      <div className="flex items-end gap-0.5 h-4 px-1">
+        <div
+          className={`w-0.5 bg-red-500 rounded-full transition-all duration-150 ${
+            isPlaying ? 'h-4 animate-pulse' : 'h-1 opacity-40'
+          }`}
+        />
+        <div
+          className={`w-0.5 bg-amber-500 rounded-full transition-all duration-200 ${
+            isPlaying ? 'h-3 animate-bounce' : 'h-1.5 opacity-40'
+          }`}
+        />
+        <div
+          className={`w-0.5 bg-red-600 rounded-full transition-all duration-100 ${
+            isPlaying ? 'h-3.5 animate-pulse' : 'h-1 opacity-40'
+          }`}
+        />
+      </div>
+
+      {/* Mute/Volume Toggle */}
+      <button
+        onClick={toggleMute}
+        className="w-7 h-7 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
+        title={isMuted ? 'Bật âm' : 'Tắt tiếng'}
+      >
+        {isMuted ? (
+          <VolumeX className="w-3.5 h-3.5 text-red-500" />
+        ) : (
+          <Volume2 className="w-3.5 h-3.5" />
+        )}
+      </button>
+
+      {/* Collapse to mini button */}
+      <button
+        onClick={() => setIsCollapsed(true)}
+        className="w-6 h-6 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
+        title={t.closeButton}
+      >
+        <X className="w-3 h-3" />
+      </button>
     </aside>
   );
 };

@@ -80,7 +80,13 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Tools Area */}
-      <div className="flex items-center space-x-2.5">
+      <div className="flex items-center space-x-2 sm:space-x-2.5">
+        {/* Festive Tet Holiday Badge in Workspace Header */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 text-red-700 dark:text-red-400 border border-red-300/80 dark:border-red-900/60 font-bold text-xs shadow-xs select-none">
+          <span>🌸</span>
+          <span className="hidden sm:inline">{t.tetBadge}</span>
+        </div>
+
         {/* Quick Search Bar trigger */}
         <button
           onClick={onOpenSearch}

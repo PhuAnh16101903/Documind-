@@ -113,6 +113,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
+      {/* Subtle Tet Holiday Accent in Sidebar */}
+      {!isCollapsed && (
+        <div className="mx-3 mt-2 px-2.5 py-1 rounded-xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-red-600/10 border border-red-200/60 dark:border-red-900/40 flex items-center justify-between text-[10px] font-extrabold text-red-700 dark:text-red-400">
+          <span className="flex items-center gap-1">
+            <span>🌸</span>
+            <span>Xuân Bính Ngọ</span>
+          </span>
+          <span className="text-amber-600 dark:text-amber-400 font-bold">2026 🧧</span>
+        </div>
+      )}
+
       {/* Navigation Links Area */}
       <div className="flex-1 p-3 space-y-6 overflow-y-auto">
         {/* Main Workspaces (Solid Blue Pill for Active matching Image 1) */}

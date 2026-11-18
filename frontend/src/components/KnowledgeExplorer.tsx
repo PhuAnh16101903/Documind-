@@ -11,6 +11,7 @@ import {
   Search,
   GitCompare,
   Upload,
+  X,
 } from 'lucide-react';
 import { Document, UIThemeId } from '../types';
 import { DocumentDiffModal } from './DocumentDiffModal';
@@ -40,6 +41,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
   const [searchFilter, setSearchFilter] = useState('');
   const [isDiffOpen, setIsDiffOpen] = useState(false);
   const [activeStep, setActiveStep] = useState<number>(1);
+  const [showHolidayBanner, setShowHolidayBanner] = useState(true);
 
   const isLight = themeMode === 'light';
 
@@ -88,6 +90,37 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
       }`}
     >
       <div className="p-6 sm:p-8 max-w-6xl mx-auto w-full space-y-6 pb-20">
+        {/* Festive Internal New Year Greeting Banner */}
+        {showHolidayBanner && (
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 border border-amber-300/60 dark:border-amber-700/50 p-3 sm:px-4 flex items-center justify-between shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                <span className="text-sm">🌸</span>
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-extrabold text-red-700 dark:text-red-400 flex items-center gap-1.5">
+                  <span>{lang === 'vi' ? 'Xuân Bính Ngọ 2026 • Chúc Mừng Năm Mới' : 'Happy Lunar New Year 2026'}</span>
+                  <span className="hidden sm:inline-block text-[9px] font-mono px-2 py-0.2 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 font-bold">
+                    {lang === 'vi' ? 'Vạn Sự Như Ý' : 'Prosperity'}
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-600 dark:text-slate-300">
+                  {lang === 'vi'
+                    ? 'DocuMind Enterprise kính chúc Quý Thầy Cô & Cán bộ năm mới An Khang Thịnh Vượng, Công Tác Hanh Thông!'
+                    : 'DocuMind Enterprise wishes all faculty and staff a prosperous and healthy Lunar New Year!'}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowHolidayBanner(false)}
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+              title="Đóng thông báo"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
         {/* ========================================================= */}
         {/* HERO SECTION MATCHING REFERENCE IMAGE 1 */}
         {/* ========================================================= */}
@@ -244,7 +277,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
               </p>
             </div>
 
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setIsDiffOpen(true)}
                 className="h-8 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 transition-all shadow-xs whitespace-nowrap flex-shrink-0"

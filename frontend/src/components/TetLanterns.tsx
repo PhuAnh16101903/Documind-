@@ -2,7 +2,7 @@ import React from 'react';
 
 export const TetLanterns: React.FC = () => {
   return (
-    <div className="absolute top-0 left-0 right-0 pointer-events-none z-20 overflow-hidden flex justify-between px-4 sm:px-12">
+    <div className="absolute top-0 left-0 right-0 pointer-events-none z-10 overflow-hidden flex justify-between px-8 sm:px-24 md:px-36 lg:px-48">
       {/* Left Lantern Group */}
       <div className="flex items-start gap-4 -mt-2">
         {/* Main Large Lantern */}
