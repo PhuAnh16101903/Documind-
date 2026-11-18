@@ -15,155 +15,286 @@ export const TetFloralBorders: React.FC<TetFloralBordersProps> = ({
       className={`absolute inset-0 pointer-events-none z-10 overflow-hidden select-none ${className}`}
     >
       {/* ========================================================= */}
-      {/* LEFT SIDE: NHÁNH HOA ĐÀO (PINK PEACH BLOSSOM BRANCH) */}
+      {/* 1. LUSH & ELEGANT HOA ĐÀO CANOPY (TOP-LEFT CORNER & OVERHEAD) */}
+      {/* Cascades gently along top-left margin without occluding text */}
       {/* ========================================================= */}
       <div
-        className="absolute top-12 -left-8 sm:left-0 w-48 sm:w-60 md:w-72 h-72 sm:h-88 opacity-90"
+        className="absolute -top-2 -left-2 w-[340px] sm:w-[460px] md:w-[580px] lg:w-[680px] xl:w-[740px] h-[300px] sm:h-[400px] md:h-[480px] lg:h-[540px] drop-shadow-xl transition-transform"
         style={{
-          animation: 'swayLeftBranch 6s ease-in-out infinite alternate',
+          animation: 'swayLeftBranch 7.5s ease-in-out infinite alternate',
           transformOrigin: 'top left',
         }}
       >
-        <svg viewBox="0 0 320 400" fill="none" className="w-full h-full drop-shadow-md">
-          {/* Main rustic woody branch */}
+        <svg viewBox="0 0 740 540" fill="none" className="w-full h-full">
+          {/* Main rugged aged dark wood trunk & curving overhead branches */}
+          {/* Trunk arches along top and cascades down the far left side */}
           <path
-            d="M-20 -10 C40 30, 80 80, 110 150 C130 190, 140 240, 155 310"
-            stroke="#5c3826"
-            strokeWidth="9"
+            d="M-20 -20 C60 20, 110 50, 150 120 C180 180, 185 270, 170 370 C155 450, 130 500, 100 540"
+            stroke="#3d2114"
+            strokeWidth="14"
             strokeLinecap="round"
           />
+          {/* Upper branch sweeping horizontally across the top */}
           <path
-            d="M40 30 C90 20, 150 40, 190 70 C220 90, 240 120, 260 160"
-            stroke="#6b412b"
+            d="M60 20 C160 15, 270 25, 370 50 C460 70, 550 105, 640 140 C680 155, 715 175, 740 200"
+            stroke="#4e2b1b"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          {/* Mid overhead branch fork */}
+          <path
+            d="M150 120 C240 110, 330 135, 410 170 C480 205, 540 245, 590 300"
+            stroke="#5f3521"
+            strokeWidth="7"
+            strokeLinecap="round"
+          />
+          {/* Top edge sub-branch */}
+          <path
+            d="M370 50 C420 30, 480 25, 550 35 C600 45, 645 65, 690 95"
+            stroke="#5f3521"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          {/* Left cascading sub-branch */}
+          <path
+            d="M180 180 C130 220, 90 280, 70 350 C55 410, 45 470, 40 520"
+            stroke="#4e2b1b"
             strokeWidth="6"
             strokeLinecap="round"
           />
+          {/* Upper-mid twig */}
           <path
-            d="M110 150 C150 160, 190 190, 210 230"
-            stroke="#7a4b32"
+            d="M410 170 C450 150, 500 155, 540 185"
+            stroke="#6e3f27"
             strokeWidth="4"
             strokeLinecap="round"
           />
-          <path
-            d="M190 70 C210 50, 240 45, 270 50"
-            stroke="#7a4b32"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M140 240 C170 260, 190 290, 205 330"
-            stroke="#6b412b"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
 
-          {/* Fresh young green spring leaves */}
-          <path d="M100 120 C120 110, 130 125, 110 135 Z" fill="#65a30d" />
-          <path d="M175 60 C195 50, 205 65, 185 75 Z" fill="#84cc16" />
-          <path d="M230 100 C250 95, 255 110, 235 118 Z" fill="#65a30d" />
-          <path d="M145 205 C165 195, 175 210, 155 220 Z" fill="#84cc16" />
-          <path d="M195 250 C215 240, 220 255, 205 265 Z" fill="#65a30d" />
+          {/* Lush Fresh Spring Green Leaf Clusters */}
+          <path d="M120 70 C150 50, 170 75, 135 95 Z" fill="#65a30d" />
+          <path d="M250 35 C285 20, 300 45, 265 65 Z" fill="#84cc16" />
+          <path d="M340 80 C375 65, 390 90, 355 110 Z" fill="#65a30d" />
+          <path d="M470 75 C505 60, 520 85, 485 105 Z" fill="#84cc16" />
+          <path d="M600 120 C635 105, 650 130, 615 150 Z" fill="#65a30d" />
+          <path d="M280 140 C315 125, 330 150, 295 170 Z" fill="#84cc16" />
+          <path d="M480 200 C515 185, 530 210, 495 230 Z" fill="#65a30d" />
+          <path d="M110 240 C140 220, 155 245, 125 265 Z" fill="#84cc16" />
+          <path d="M90 380 C120 360, 135 385, 105 405 Z" fill="#65a30d" />
+          <path d="M670 160 C700 145, 715 170, 685 190 Z" fill="#84cc16" />
 
-          {/* Peach Blossom Clusters (Hoa Đào Hồng) */}
-          {/* Flower 1 (Large - top center) */}
-          <g transform="translate(190, 70)">
-            <circle cx="0" cy="0" r="16" fill="url(#pinkGlow)" />
-            {/* 5 Petals */}
+          {/* Hanging Lucky Red Ribbons & Gold Coins */}
+          <g transform="translate(370, 50)">
+            <line x1="0" y1="0" x2="0" y2="24" stroke="#dc2626" strokeWidth="1.5" />
+            <circle cx="0" cy="28" r="5" fill="#facc15" stroke="#ca8a04" strokeWidth="1" />
+            <line x1="0" y1="33" x2="0" y2="46" stroke="#dc2626" strokeWidth="2" strokeDasharray="2 1" />
+          </g>
+          <g transform="translate(550, 105)">
+            <line x1="0" y1="0" x2="0" y2="20" stroke="#dc2626" strokeWidth="1.5" />
+            <circle cx="0" cy="24" r="4.5" fill="#facc15" stroke="#ca8a04" strokeWidth="1" />
+          </g>
+
+          {/* 18+ Abundant Layered Peach Blossoms (Hoa Đào Hồng Thắm) */}
+          {/* Flower 1 - Master Overhead Blossom */}
+          <g transform="translate(270, 30)">
+            <circle cx="0" cy="0" r="30" fill="url(#pinkAura)" />
             {[0, 72, 144, 216, 288].map((angle, i) => (
               <path
                 key={i}
-                d="M0 0 C-9 -18, 9 -18, 0 0"
+                d="M0 0 C-15 -30, 15 -30, 0 0"
                 fill="#f43f5e"
                 stroke="#fda4af"
-                strokeWidth="1"
-                transform={`rotate(${angle}) scale(1.3)`}
+                strokeWidth="1.4"
+                transform={`rotate(${angle}) scale(1.65)`}
               />
             ))}
-            {/* Flower Center Stamen */}
-            <circle cx="0" cy="0" r="4.5" fill="#fef08a" />
-            <circle cx="0" cy="0" r="2.5" fill="#e11d48" />
+            <circle cx="0" cy="0" r="7.5" fill="#fef08a" />
+            <circle cx="0" cy="0" r="3.5" fill="#be123c" />
           </g>
 
-          {/* Flower 2 (Large - mid branch) */}
-          <g transform="translate(110, 150)">
+          {/* Flower 2 - Upper Left Branch */}
+          <g transform="translate(150, 120)">
+            <circle cx="0" cy="0" r="26" fill="url(#pinkAura)" />
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-14 -28, 14 -28, 0 0"
+                fill="#fb7185"
+                stroke="#ffe4e6"
+                strokeWidth="1.2"
+                transform={`rotate(${angle + 25}) scale(1.5)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="7" fill="#fef08a" />
+            <circle cx="0" cy="0" r="3" fill="#9f1239" />
+          </g>
+
+          {/* Flower 3 - Top Mid Canopy */}
+          <g transform="translate(460, 70)">
+            <circle cx="0" cy="0" r="25" fill="url(#pinkAura)" />
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-13 -26, 13 -26, 0 0"
+                fill="#f43f5e"
+                stroke="#fda4af"
+                strokeWidth="1.2"
+                transform={`rotate(${angle + 12}) scale(1.45)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="6.5" fill="#fef08a" />
+            <circle cx="0" cy="0" r="3" fill="#be123c" />
+          </g>
+
+          {/* Flower 4 - Far Right Canopy Tip */}
+          <g transform="translate(640, 140)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-12 -24, 12 -24, 0 0"
+                fill="#fda4af"
+                stroke="#ffe4e6"
+                strokeWidth="1"
+                transform={`rotate(${angle + 30}) scale(1.35)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5.5" fill="#fef08a" />
+          </g>
+
+          {/* Flower 5 - Far Top-Right Tip */}
+          <g transform="translate(730, 195)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#f43f5e"
+                transform={`rotate(${angle + 40}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5" fill="#fef08a" />
+          </g>
+
+          {/* Flower 6 - Mid Fork Hanging */}
+          <g transform="translate(410, 170)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-12 -24, 12 -24, 0 0"
+                fill="#fb7185"
+                transform={`rotate(${angle + 18}) scale(1.35)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="6" fill="#fef08a" />
+          </g>
+
+          {/* Flower 7 - Mid Fork Tip */}
+          <g transform="translate(580, 290)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#f43f5e"
+                transform={`rotate(${angle + 50}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5" fill="#fef08a" />
+          </g>
+
+          {/* Flower 8 - Left Margin Cascade (Upper) */}
+          <g transform="translate(170, 270)">
+            <circle cx="0" cy="0" r="22" fill="url(#pinkAura)" />
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-12 -24, 12 -24, 0 0"
+                fill="#f43f5e"
+                transform={`rotate(${angle}) scale(1.35)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5.5" fill="#fef08a" />
+          </g>
+
+          {/* Flower 9 - Left Margin Cascade (Mid) */}
+          <g transform="translate(150, 390)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#fb7185"
+                transform={`rotate(${angle + 33}) scale(1.3)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5" fill="#fef08a" />
+          </g>
+
+          {/* Flower 10 - Left Margin Cascade (Lower) */}
+          <g transform="translate(95, 520)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#f43f5e"
+                transform={`rotate(${angle + 5}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="4.5" fill="#fef08a" />
+          </g>
+
+          {/* Flower 11 - Top-most Canopy Tip */}
+          <g transform="translate(550, 35)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#fda4af"
+                transform={`rotate(${angle + 15}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="4.5" fill="#fef08a" />
+          </g>
+
+          {/* Flower 12 - Outer Left Branch */}
+          <g transform="translate(65, 340)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#f43f5e"
+                transform={`rotate(${angle + 45}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="4.5" fill="#fef08a" />
+          </g>
+
+          {/* Flower 13 - Far Upper Corner */}
+          <g transform="translate(690, 95)">
             {[0, 72, 144, 216, 288].map((angle, i) => (
               <path
                 key={i}
                 d="M0 0 C-10 -20, 10 -20, 0 0"
                 fill="#fb7185"
-                stroke="#ffe4e6"
-                strokeWidth="1"
-                transform={`rotate(${angle + 20}) scale(1.4)`}
-              />
-            ))}
-            <circle cx="0" cy="0" r="5" fill="#fef08a" />
-            <circle cx="0" cy="0" r="2.5" fill="#be123c" />
-          </g>
-
-          {/* Flower 3 (Right tip) */}
-          <g transform="translate(260, 160)">
-            {[0, 72, 144, 216, 288].map((angle, i) => (
-              <path
-                key={i}
-                d="M0 0 C-8 -16, 8 -16, 0 0"
-                fill="#f43f5e"
-                transform={`rotate(${angle + 35}) scale(1.1)`}
-              />
-            ))}
-            <circle cx="0" cy="0" r="3.5" fill="#fef08a" />
-          </g>
-
-          {/* Flower 4 (Upper branch) */}
-          <g transform="translate(268, 50)">
-            {[0, 72, 144, 216, 288].map((angle, i) => (
-              <path
-                key={i}
-                d="M0 0 C-8 -16, 8 -16, 0 0"
-                fill="#fda4af"
-                transform={`rotate(${angle + 10}) scale(1.15)`}
+                transform={`rotate(${angle + 20}) scale(1.2)`}
               />
             ))}
             <circle cx="0" cy="0" r="4" fill="#fef08a" />
           </g>
 
-          {/* Flower 5 (Lower stem) */}
-          <g transform="translate(155, 305)">
-            {[0, 72, 144, 216, 288].map((angle, i) => (
-              <path
-                key={i}
-                d="M0 0 C-8 -17, 8 -17, 0 0"
-                fill="#fb7185"
-                transform={`rotate(${angle + 45}) scale(1.2)`}
-              />
-            ))}
-            <circle cx="0" cy="0" r="4.5" fill="#fef08a" />
-          </g>
+          {/* 16+ Plentiful Rose & Coral Buds */}
+          <circle cx="190" cy="70" r="8.5" fill="#f43f5e" stroke="#fda4af" strokeWidth="1.3" />
+          <circle cx="330" cy="40" r="8" fill="#fb7185" />
+          <circle cx="420" cy="60" r="7.5" fill="#f43f5e" />
+          <circle cx="510" cy="85" r="8" fill="#f43f5e" />
+          <circle cx="610" cy="80" r="7.5" fill="#fb7185" />
+          <circle cx="490" cy="160" r="8" fill="#f43f5e" />
+          <circle cx="540" cy="230" r="7.5" fill="#fda4af" />
+          <circle cx="180" cy="210" r="8" fill="#f43f5e" />
+          <circle cx="160" cy="330" r="8" fill="#fb7185" />
+          <circle cx="120" cy="440" r="7.5" fill="#f43f5e" />
+          <circle cx="50" cy="460" r="7" fill="#fb7185" />
+          <circle cx="80" cy="260" r="7.5" fill="#f43f5e" />
 
-          {/* Flower 6 (Branch fork) */}
-          <g transform="translate(210, 230)">
-            {[0, 72, 144, 216, 288].map((angle, i) => (
-              <path
-                key={i}
-                d="M0 0 C-7 -15, 7 -15, 0 0"
-                fill="#f43f5e"
-                transform={`rotate(${angle + 15})`}
-              />
-            ))}
-            <circle cx="0" cy="0" r="3.5" fill="#fde047" />
-          </g>
-
-          {/* Buds (Nụ hoa đào) */}
-          <circle cx="140" cy="80" r="6" fill="#f43f5e" stroke="#fda4af" strokeWidth="1" />
-          <circle cx="70" cy="50" r="5" fill="#fb7185" />
-          <circle cx="230" cy="65" r="5.5" fill="#f43f5e" />
-          <circle cx="180" cy="285" r="6" fill="#f43f5e" />
-          <circle cx="125" cy="270" r="5" fill="#fda4af" />
-          <circle cx="290" cy="180" r="4.5" fill="#f43f5e" />
-
-          {/* Defs */}
           <defs>
-            <radialGradient id="pinkGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#fda4af" stopOpacity="0.8" />
+            <radialGradient id="pinkAura" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#fecdd3" stopOpacity="0.85" />
               <stop offset="100%" stopColor="#f43f5e" stopOpacity="0" />
             </radialGradient>
           </defs>
@@ -171,155 +302,285 @@ export const TetFloralBorders: React.FC<TetFloralBordersProps> = ({
       </div>
 
       {/* ========================================================= */}
-      {/* RIGHT SIDE: NHÁNH HOA MAI (GOLDEN APRICOT BLOSSOM BRANCH) */}
+      {/* 2. LUSH & ELEGANT HOA MAI CANOPY (TOP-RIGHT CORNER & OVERHEAD) */}
+      {/* Cascades gently along top-right margin without occluding text */}
       {/* ========================================================= */}
       <div
-        className="absolute -top-4 -right-6 sm:right-0 w-48 sm:w-64 md:w-80 h-80 sm:h-96"
+        className="absolute -top-2 -right-2 w-[340px] sm:w-[460px] md:w-[580px] lg:w-[680px] xl:w-[740px] h-[300px] sm:h-[400px] md:h-[480px] lg:h-[540px] drop-shadow-xl transition-transform"
         style={{
-          animation: 'swayRightBranch 6.5s ease-in-out infinite alternate',
+          animation: 'swayRightBranch 8s ease-in-out infinite alternate',
           transformOrigin: 'top right',
         }}
       >
-        <svg viewBox="0 0 320 400" fill="none" className="w-full h-full drop-shadow-md">
-          {/* Main rustic woody branch curving inward from right */}
+        <svg viewBox="0 0 740 540" fill="none" className="w-full h-full">
+          {/* Main rugged aged dark wood trunk & curving overhead branches sweeping from right */}
           <path
-            d="M340 -10 C280 30, 240 80, 210 150 C190 190, 180 240, 165 310"
-            stroke="#5c3826"
-            strokeWidth="9"
+            d="M760 -20 C680 20, 630 50, 590 120 C560 180, 555 270, 570 370 C585 450, 610 500, 640 540"
+            stroke="#3d2114"
+            strokeWidth="14"
             strokeLinecap="round"
           />
+          {/* Upper branch sweeping horizontally across the top toward left */}
           <path
-            d="M280 30 C230 20, 170 40, 130 70 C100 90, 80 120, 60 160"
-            stroke="#6b412b"
+            d="M680 20 C580 15, 470 25, 370 50 C280 70, 190 105, 100 140 C60 155, 25 175, 0 200"
+            stroke="#4e2b1b"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          {/* Mid overhead branch fork */}
+          <path
+            d="M590 120 C500 110, 410 135, 330 170 C260 205, 200 245, 150 300"
+            stroke="#5f3521"
+            strokeWidth="7"
+            strokeLinecap="round"
+          />
+          {/* Top edge sub-branch */}
+          <path
+            d="M370 50 C320 30, 260 25, 190 35 C140 45, 95 65, 50 95"
+            stroke="#5f3521"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          {/* Right cascading sub-branch */}
+          <path
+            d="M560 180 C610 220, 650 280, 670 350 C685 410, 695 470, 700 520"
+            stroke="#4e2b1b"
             strokeWidth="6"
             strokeLinecap="round"
           />
+          {/* Upper-mid twig */}
           <path
-            d="M210 150 C170 160, 130 190, 110 230"
-            stroke="#7a4b32"
+            d="M330 170 C290 150, 240 155, 200 185"
+            stroke="#6e3f27"
             strokeWidth="4"
             strokeLinecap="round"
           />
-          <path
-            d="M130 70 C110 50, 80 45, 50 50"
-            stroke="#7a4b32"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M180 240 C150 260, 130 290, 115 330"
-            stroke="#6b412b"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
 
-          {/* Fresh young green spring leaves */}
-          <path d="M220 120 C200 110, 190 125, 210 135 Z" fill="#65a30d" />
-          <path d="M145 60 C125 50, 115 65, 135 75 Z" fill="#84cc16" />
-          <path d="M90 100 C70 95, 65 110, 85 118 Z" fill="#65a30d" />
-          <path d="M175 205 C155 195, 145 210, 165 220 Z" fill="#84cc16" />
-          <path d="M125 250 C105 240, 100 255, 115 265 Z" fill="#65a30d" />
+          {/* Lush Spring Green Leaf Clusters */}
+          <path d="M620 70 C590 50, 570 75, 605 95 Z" fill="#65a30d" />
+          <path d="M490 35 C455 20, 440 45, 475 65 Z" fill="#84cc16" />
+          <path d="M400 80 C365 65, 350 90, 385 110 Z" fill="#65a30d" />
+          <path d="M270 75 C235 60, 220 85, 255 105 Z" fill="#84cc16" />
+          <path d="M140 120 C105 105, 90 130, 125 150 Z" fill="#65a30d" />
+          <path d="M460 140 C425 125, 410 150, 445 170 Z" fill="#84cc16" />
+          <path d="M260 200 C225 185, 210 210, 245 230 Z" fill="#65a30d" />
+          <path d="M630 240 C600 220, 585 245, 615 265 Z" fill="#84cc16" />
+          <path d="M650 380 C620 360, 605 385, 635 405 Z" fill="#65a30d" />
+          <path d="M70 160 C40 145, 25 170, 55 190 Z" fill="#84cc16" />
 
-          {/* Apricot Blossom Clusters (Hoa Mai Vàng Phú Quý) */}
-          {/* Flower 1 (Large - top center) */}
-          <g transform="translate(130, 70)">
-            <circle cx="0" cy="0" r="16" fill="url(#yellowGlow)" />
-            {/* 5 Sunny Petals */}
+          {/* Hanging Lucky Red Ribbons & Gold Coins */}
+          <g transform="translate(370, 50)">
+            <line x1="0" y1="0" x2="0" y2="24" stroke="#dc2626" strokeWidth="1.5" />
+            <circle cx="0" cy="28" r="5" fill="#facc15" stroke="#ca8a04" strokeWidth="1" />
+            <line x1="0" y1="33" x2="0" y2="46" stroke="#dc2626" strokeWidth="2" strokeDasharray="2 1" />
+          </g>
+          <g transform="translate(190, 105)">
+            <line x1="0" y1="0" x2="0" y2="20" stroke="#dc2626" strokeWidth="1.5" />
+            <circle cx="0" cy="24" r="4.5" fill="#facc15" stroke="#ca8a04" strokeWidth="1" />
+          </g>
+
+          {/* 18+ Abundant Golden Apricot Blossoms (Hoa Mai Vàng Phú Quý) */}
+          {/* Flower 1 - Master Overhead Blossom */}
+          <g transform="translate(470, 30)">
+            <circle cx="0" cy="0" r="30" fill="url(#goldAura)" />
             {[0, 72, 144, 216, 288].map((angle, i) => (
               <path
                 key={i}
-                d="M0 0 C-9 -18, 9 -18, 0 0"
+                d="M0 0 C-15 -30, 15 -30, 0 0"
+                fill="#facc15"
+                stroke="#fef08a"
+                strokeWidth="1.4"
+                transform={`rotate(${angle}) scale(1.65)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="7.5" fill="#ea580c" />
+            <circle cx="0" cy="0" r="3.5" fill="#fef08a" />
+          </g>
+
+          {/* Flower 2 - Upper Right Branch */}
+          <g transform="translate(590, 120)">
+            <circle cx="0" cy="0" r="26" fill="url(#goldAura)" />
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-14 -28, 14 -28, 0 0"
+                fill="#eab308"
+                stroke="#fef08a"
+                strokeWidth="1.3"
+                transform={`rotate(${angle + 25}) scale(1.5)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="7" fill="#c2410c" />
+            <circle cx="0" cy="0" r="3" fill="#fef08a" />
+          </g>
+
+          {/* Flower 3 - Top Mid Canopy */}
+          <g transform="translate(280, 70)">
+            <circle cx="0" cy="0" r="25" fill="url(#goldAura)" />
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-13 -26, 13 -26, 0 0"
                 fill="#facc15"
                 stroke="#fef08a"
                 strokeWidth="1.2"
-                transform={`rotate(${angle}) scale(1.3)`}
+                transform={`rotate(${angle + 12}) scale(1.45)`}
               />
             ))}
-            {/* Center Orange-Red Stamen */}
-            <circle cx="0" cy="0" r="4.5" fill="#ea580c" />
-            <circle cx="0" cy="0" r="2.5" fill="#fef08a" />
+            <circle cx="0" cy="0" r="6.5" fill="#ea580c" />
+            <circle cx="0" cy="0" r="3" fill="#fef08a" />
           </g>
 
-          {/* Flower 2 (Large - mid branch) */}
-          <g transform="translate(210, 150)">
+          {/* Flower 4 - Far Left Canopy Tip */}
+          <g transform="translate(100, 140)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-12 -24, 12 -24, 0 0"
+                fill="#fde047"
+                stroke="#fef08a"
+                strokeWidth="1"
+                transform={`rotate(${angle + 30}) scale(1.35)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5.5" fill="#c2410c" />
+          </g>
+
+          {/* Flower 5 - Far Top-Left Tip */}
+          <g transform="translate(10, 195)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#facc15"
+                transform={`rotate(${angle + 40}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5" fill="#ea580c" />
+          </g>
+
+          {/* Flower 6 - Mid Fork Hanging */}
+          <g transform="translate(330, 170)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-12 -24, 12 -24, 0 0"
+                fill="#eab308"
+                transform={`rotate(${angle + 18}) scale(1.35)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="6" fill="#ea580c" />
+          </g>
+
+          {/* Flower 7 - Mid Fork Tip */}
+          <g transform="translate(160, 290)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#facc15"
+                transform={`rotate(${angle + 50}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5" fill="#c2410c" />
+          </g>
+
+          {/* Flower 8 - Right Margin Cascade (Upper) */}
+          <g transform="translate(570, 270)">
+            <circle cx="0" cy="0" r="22" fill="url(#goldAura)" />
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-12 -24, 12 -24, 0 0"
+                fill="#facc15"
+                transform={`rotate(${angle}) scale(1.35)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5.5" fill="#ea580c" />
+          </g>
+
+          {/* Flower 9 - Right Margin Cascade (Mid) */}
+          <g transform="translate(590, 390)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#eab308"
+                transform={`rotate(${angle + 33}) scale(1.3)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="5" fill="#ea580c" />
+          </g>
+
+          {/* Flower 10 - Right Margin Cascade (Lower) */}
+          <g transform="translate(645, 520)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#facc15"
+                transform={`rotate(${angle + 5}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="4.5" fill="#c2410c" />
+          </g>
+
+          {/* Flower 11 - Top-most Canopy Tip */}
+          <g transform="translate(190, 35)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#fde047"
+                transform={`rotate(${angle + 15}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="4.5" fill="#ea580c" />
+          </g>
+
+          {/* Flower 12 - Outer Right Branch */}
+          <g transform="translate(675, 340)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path
+                key={i}
+                d="M0 0 C-11 -22, 11 -22, 0 0"
+                fill="#facc15"
+                transform={`rotate(${angle + 45}) scale(1.25)`}
+              />
+            ))}
+            <circle cx="0" cy="0" r="4.5" fill="#c2410c" />
+          </g>
+
+          {/* Flower 13 - Far Upper Corner */}
+          <g transform="translate(50, 95)">
             {[0, 72, 144, 216, 288].map((angle, i) => (
               <path
                 key={i}
                 d="M0 0 C-10 -20, 10 -20, 0 0"
                 fill="#eab308"
-                stroke="#fef08a"
-                strokeWidth="1.2"
-                transform={`rotate(${angle + 25}) scale(1.4)`}
+                transform={`rotate(${angle + 20}) scale(1.2)`}
               />
             ))}
-            <circle cx="0" cy="0" r="5" fill="#ea580c" />
-            <circle cx="0" cy="0" r="2.5" fill="#fef08a" />
+            <circle cx="0" cy="0" r="4" fill="#ea580c" />
           </g>
 
-          {/* Flower 3 (Left tip) */}
-          <g transform="translate(60, 160)">
-            {[0, 72, 144, 216, 288].map((angle, i) => (
-              <path
-                key={i}
-                d="M0 0 C-8 -16, 8 -16, 0 0"
-                fill="#facc15"
-                transform={`rotate(${angle + 35}) scale(1.1)`}
-              />
-            ))}
-            <circle cx="0" cy="0" r="3.5" fill="#ea580c" />
-          </g>
+          {/* 16+ Plentiful Golden Buds */}
+          <circle cx="550" cy="70" r="8.5" fill="#facc15" stroke="#fef08a" strokeWidth="1.3" />
+          <circle cx="410" cy="40" r="8" fill="#eab308" />
+          <circle cx="320" cy="60" r="7.5" fill="#facc15" />
+          <circle cx="230" cy="85" r="8" fill="#facc15" />
+          <circle cx="130" cy="80" r="7.5" fill="#eab308" />
+          <circle cx="250" cy="160" r="8" fill="#facc15" />
+          <circle cx="200" cy="230" r="7.5" fill="#fde047" />
+          <circle cx="560" cy="210" r="8" fill="#facc15" />
+          <circle cx="580" cy="330" r="8" fill="#eab308" />
+          <circle cx="620" cy="440" r="7.5" fill="#facc15" />
+          <circle cx="690" cy="460" r="7" fill="#eab308" />
+          <circle cx="660" cy="260" r="7.5" fill="#facc15" />
 
-          {/* Flower 4 (Upper branch tip) */}
-          <g transform="translate(52, 50)">
-            {[0, 72, 144, 216, 288].map((angle, i) => (
-              <path
-                key={i}
-                d="M0 0 C-8 -16, 8 -16, 0 0"
-                fill="#fde047"
-                transform={`rotate(${angle + 10}) scale(1.15)`}
-              />
-            ))}
-            <circle cx="0" cy="0" r="4" fill="#c2410c" />
-          </g>
-
-          {/* Flower 5 (Lower stem) */}
-          <g transform="translate(165, 305)">
-            {[0, 72, 144, 216, 288].map((angle, i) => (
-              <path
-                key={i}
-                d="M0 0 C-8 -17, 8 -17, 0 0"
-                fill="#eab308"
-                transform={`rotate(${angle + 45}) scale(1.2)`}
-              />
-            ))}
-            <circle cx="0" cy="0" r="4.5" fill="#ea580c" />
-          </g>
-
-          {/* Flower 6 (Branch fork) */}
-          <g transform="translate(110, 230)">
-            {[0, 72, 144, 216, 288].map((angle, i) => (
-              <path
-                key={i}
-                d="M0 0 C-7 -15, 7 -15, 0 0"
-                fill="#facc15"
-                transform={`rotate(${angle + 15})`}
-              />
-            ))}
-            <circle cx="0" cy="0" r="3.5" fill="#c2410c" />
-          </g>
-
-          {/* Golden Buds (Nụ hoa mai vàng) */}
-          <circle cx="180" cy="80" r="6" fill="#facc15" stroke="#fef08a" strokeWidth="1" />
-          <circle cx="250" cy="50" r="5" fill="#eab308" />
-          <circle cx="90" cy="65" r="5.5" fill="#facc15" />
-          <circle cx="140" cy="285" r="6" fill="#facc15" />
-          <circle cx="195" cy="270" r="5" fill="#fde047" />
-          <circle cx="30" cy="180" r="4.5" fill="#facc15" />
-
-          {/* Defs */}
           <defs>
-            <radialGradient id="yellowGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#fef08a" stopOpacity="0.8" />
+            <radialGradient id="goldAura" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#fef08a" stopOpacity="0.85" />
               <stop offset="100%" stopColor="#eab308" stopOpacity="0" />
             </radialGradient>
           </defs>
@@ -327,71 +588,123 @@ export const TetFloralBorders: React.FC<TetFloralBordersProps> = ({
       </div>
 
       {/* ========================================================= */}
-      {/* TRADITIONAL RED SILK COUPLETS (CÂU ĐỐI ĐỎ NẠP TÀI TẤN LỘC) */}
+      {/* 3. PROMINENT RED SILK COUPLETS (ĐÔI CÂU ĐỐI ĐỎ SƠN SON THIẾP VÀNG) */}
+      {/* Positioned on outer edges, framed cleanly by flowers */}
       {/* ========================================================= */}
       {showCouplets && (
         <>
-          {/* Left Couplet Scroll */}
-          <div className="hidden 2xl:flex flex-col items-center absolute left-4 top-40 z-20">
+          {/* Left Couplet Scroll: XUÂN AN KHANG THỊNH VƯỢNG PHÁT TÀI */}
+          <div className="flex flex-col items-center absolute left-1 sm:left-2.5 md:left-4 lg:left-6 top-20 sm:top-24 md:top-28 lg:top-32 z-30 transition-all drop-shadow-2xl scale-75 sm:scale-90 md:scale-100 origin-top">
             {/* Top Hanging Ring */}
-            <div className="w-1.5 h-6 bg-amber-500 shadow-sm" />
-            <div className="w-12 h-2.5 rounded-t-sm bg-gradient-to-r from-amber-700 via-amber-400 to-amber-700 shadow-sm" />
+            <div className="w-1 h-6 sm:h-8 bg-amber-500 shadow-sm" />
+            <div className="w-12 sm:w-16 h-3 rounded-t-sm bg-gradient-to-r from-amber-700 via-yellow-300 to-amber-700 shadow-md border-b border-amber-600" />
 
             {/* Red Silk Banner */}
-            <div className="w-10 py-4 rounded-sm bg-gradient-to-b from-[#b91c1c] via-[#991b1b] to-[#7f1d1d] border-x-2 border-amber-400/80 shadow-xl flex flex-col items-center justify-center space-y-2.5">
-              {'XUÂN AN KHANG THỊNH VƯỢNG'.split(' ').map((word, i) => (
+            <div className="w-10 sm:w-14 py-3 sm:py-5 rounded-sm bg-gradient-to-b from-[#b91c1c] via-[#991b1b] to-[#7f1d1d] border-x-2 border-amber-300 shadow-2xl flex flex-col items-center justify-center space-y-2 sm:space-y-3 relative overflow-hidden">
+              <div className="text-[10px] text-amber-300 font-bold">🌸</div>
+              {'XUÂN AN KHANG THỊNH VƯỢNG PHÁT TÀI'.split(' ').map((word, i) => (
                 <span
                   key={i}
-                  className="text-[11px] font-extrabold tracking-widest text-amber-200 font-serif drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
+                  className="text-[11px] sm:text-sm font-extrabold tracking-widest text-amber-200 font-serif drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
                   style={{ writingMode: 'vertical-rl' }}
                 >
                   {word}
                 </span>
               ))}
+              <div className="text-[10px] text-amber-300 font-bold">🌸</div>
             </div>
 
             {/* Bottom Wood Roller & Golden Tassel */}
-            <div className="w-12 h-2.5 rounded-b-sm bg-gradient-to-r from-amber-700 via-amber-400 to-amber-700 shadow-sm" />
-            <div className="w-2 h-2 rounded-full bg-amber-500 border border-yellow-200 mt-0.5" />
-            <div className="w-3 h-8 bg-gradient-to-b from-amber-400 via-yellow-500 to-amber-600 rounded-b-sm shadow-xs" />
+            <div className="w-12 sm:w-16 h-3 rounded-b-sm bg-gradient-to-r from-amber-700 via-yellow-300 to-amber-700 shadow-md" />
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-500 border border-yellow-200 mt-0.5 shadow-xs" />
+            <div className="w-3.5 sm:w-4 h-10 sm:h-12 bg-gradient-to-b from-amber-400 via-yellow-500 to-amber-600 rounded-b-sm shadow-md" />
           </div>
 
-          {/* Right Couplet Scroll */}
-          <div className="hidden 2xl:flex flex-col items-center absolute right-4 top-40 z-20">
+          {/* Right Couplet Scroll: TẾT VẠN SỰ NHƯ Ý CÁT TƯỜNG */}
+          <div className="flex flex-col items-center absolute right-1 sm:right-2.5 md:right-4 lg:right-6 top-20 sm:top-24 md:top-28 lg:top-32 z-30 transition-all drop-shadow-2xl scale-75 sm:scale-90 md:scale-100 origin-top">
             {/* Top Hanging Ring */}
-            <div className="w-1.5 h-6 bg-amber-500 shadow-sm" />
-            <div className="w-12 h-2.5 rounded-t-sm bg-gradient-to-r from-amber-700 via-amber-400 to-amber-700 shadow-sm" />
+            <div className="w-1 h-6 sm:h-8 bg-amber-500 shadow-sm" />
+            <div className="w-12 sm:w-16 h-3 rounded-t-sm bg-gradient-to-r from-amber-700 via-yellow-300 to-amber-700 shadow-md border-b border-amber-600" />
 
             {/* Red Silk Banner */}
-            <div className="w-10 py-4 rounded-sm bg-gradient-to-b from-[#b91c1c] via-[#991b1b] to-[#7f1d1d] border-x-2 border-amber-400/80 shadow-xl flex flex-col items-center justify-center space-y-2.5">
-              {'TẾT PHÚ QUÝ VẠN NIÊN TRƯỜNG'.split(' ').map((word, i) => (
+            <div className="w-10 sm:w-14 py-3 sm:py-5 rounded-sm bg-gradient-to-b from-[#b91c1c] via-[#991b1b] to-[#7f1d1d] border-x-2 border-amber-300 shadow-2xl flex flex-col items-center justify-center space-y-2 sm:space-y-3 relative overflow-hidden">
+              <div className="text-[10px] text-amber-300 font-bold">🧧</div>
+              {'TẾT VẠN SỰ NHƯ Ý CÁT TƯỜNG'.split(' ').map((word, i) => (
                 <span
                   key={i}
-                  className="text-[11px] font-extrabold tracking-widest text-amber-200 font-serif drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
+                  className="text-[11px] sm:text-sm font-extrabold tracking-widest text-amber-200 font-serif drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
                   style={{ writingMode: 'vertical-rl' }}
                 >
                   {word}
                 </span>
               ))}
+              <div className="text-[10px] text-amber-300 font-bold">🧧</div>
             </div>
 
             {/* Bottom Wood Roller & Golden Tassel */}
-            <div className="w-12 h-2.5 rounded-b-sm bg-gradient-to-r from-amber-700 via-amber-400 to-amber-700 shadow-sm" />
-            <div className="w-2 h-2 rounded-full bg-amber-500 border border-yellow-200 mt-0.5" />
-            <div className="w-3 h-8 bg-gradient-to-b from-amber-400 via-yellow-500 to-amber-600 rounded-b-sm shadow-xs" />
+            <div className="w-12 sm:w-16 h-3 rounded-b-sm bg-gradient-to-r from-amber-700 via-yellow-300 to-amber-700 shadow-md" />
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-500 border border-yellow-200 mt-0.5 shadow-xs" />
+            <div className="w-3.5 sm:w-4 h-10 sm:h-12 bg-gradient-to-b from-amber-400 via-yellow-500 to-amber-600 rounded-b-sm shadow-md" />
           </div>
         </>
       )}
+
+      {/* ========================================================= */}
+      {/* 4. BOTTOM CORNERS: SPRING BLOSSOMS & GOLDEN INGOTS */}
+      {/* ========================================================= */}
+      {/* Bottom Left Bush */}
+      <div className="absolute -bottom-6 -left-6 w-48 sm:w-64 h-48 sm:h-64 opacity-90 pointer-events-none drop-shadow-lg">
+        <svg viewBox="0 0 280 280" fill="none" className="w-full h-full">
+          <path d="M20 260 C70 200, 130 190, 170 210 Z" fill="#65a30d" opacity="0.85" />
+          <path d="M50 270 C100 210, 160 220, 190 240 Z" fill="#84cc16" opacity="0.8" />
+          <g transform="translate(100, 210) scale(1.3)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path key={i} d="M0 0 C-10 -20, 10 -20, 0 0" fill="#f43f5e" transform={`rotate(${angle})`} />
+            ))}
+            <circle cx="0" cy="0" r="5" fill="#fef08a" />
+          </g>
+          <g transform="translate(160, 230) scale(1.1)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path key={i} d="M0 0 C-10 -20, 10 -20, 0 0" fill="#fb7185" transform={`rotate(${angle + 20})`} />
+            ))}
+            <circle cx="0" cy="0" r="4" fill="#fef08a" />
+          </g>
+          <ellipse cx="60" cy="250" rx="14" ry="7" fill="#facc15" stroke="#eab308" strokeWidth="1.5" />
+          <circle cx="60" cy="250" r="3" fill="#ca8a04" />
+        </svg>
+      </div>
+
+      {/* Bottom Right Bush */}
+      <div className="absolute -bottom-6 -right-6 w-48 sm:w-64 h-48 sm:h-64 opacity-90 pointer-events-none drop-shadow-lg">
+        <svg viewBox="0 0 280 280" fill="none" className="w-full h-full">
+          <path d="M260 260 C210 200, 150 190, 110 210 Z" fill="#65a30d" opacity="0.85" />
+          <path d="M230 270 C180 210, 120 220, 90 240 Z" fill="#84cc16" opacity="0.8" />
+          <g transform="translate(180, 210) scale(1.3)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path key={i} d="M0 0 C-10 -20, 10 -20, 0 0" fill="#facc15" transform={`rotate(${angle})`} />
+            ))}
+            <circle cx="0" cy="0" r="5" fill="#ea580c" />
+          </g>
+          <g transform="translate(120, 230) scale(1.1)">
+            {[0, 72, 144, 216, 288].map((angle, i) => (
+              <path key={i} d="M0 0 C-10 -20, 10 -20, 0 0" fill="#fde047" transform={`rotate(${angle + 20})`} />
+            ))}
+            <circle cx="0" cy="0" r="4" fill="#ea580c" />
+          </g>
+          <ellipse cx="220" cy="250" rx="14" ry="7" fill="#facc15" stroke="#eab308" strokeWidth="1.5" />
+          <circle cx="220" cy="250" r="3" fill="#ca8a04" />
+        </svg>
+      </div>
 
       {/* Global Style for Swaying Branches */}
       <style>{`
         @keyframes swayLeftBranch {
           0% { transform: rotate(0deg) scale(1); }
-          100% { transform: rotate(2.5deg) scale(1.02); }
+          100% { transform: rotate(2deg) scale(1.02); }
         }
         @keyframes swayRightBranch {
           0% { transform: rotate(0deg) scale(1); }
-          100% { transform: rotate(-2.5deg) scale(1.02); }
+          100% { transform: rotate(-2deg) scale(1.02); }
         }
       `}</style>
     </div>
