@@ -26,6 +26,7 @@ import { Language, translations } from '../services/i18n';
 import { TetBlossomCanvas } from './TetBlossomCanvas';
 import { TetLanterns } from './TetLanterns';
 import { TetMusicPlayer } from './TetMusicPlayer';
+import { TetActivityAnimation } from './TetActivityAnimation';
 
 interface AuthPageProps {
   onLoginSuccess: (user: User) => void;
@@ -285,47 +286,17 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           </div>
         </main>
 
-        {/* Right Side: Refined, Elegant 3D Festive Tết Artwork Showcase (Clean, No Clutter) */}
+        {/* Right Side: Animated Tết Activities Showcase (Múa Lân, Nấu Bánh Chưng, Nhận Lì Xì) */}
         <aside
-          aria-label="Khung Cảnh Tết 2026"
-          className="hidden lg:flex absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 z-10 w-[440px] xl:w-[500px] flex-col items-center pointer-events-auto"
+          aria-label="Hoạt Họa Tết 2026"
+          className="hidden lg:flex absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 z-10 w-[440px] xl:w-[480px] flex-col items-center pointer-events-auto"
         >
-          {/* Refined Glassmorphic Picture Frame */}
-          <div className="relative group p-2 rounded-3xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-amber-300/60 dark:border-amber-500/40 shadow-2xl shadow-amber-900/15 transition-all duration-500 hover:shadow-amber-500/25">
-            <div className="relative rounded-2xl overflow-hidden shadow-inner bg-slate-950">
-              <img
-                src="/tet_celebration_people.jpg"
-                alt="Khung Cảnh Tết Rộn Ràng 2026 - Người Dân và Trẻ Em Đón Xuân"
-                className="w-full h-[280px] xl:h-[320px] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-              />
-
-              {/* Gentle subtle bottom gradient for title clarity */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/10 pointer-events-none" />
-
-              {/* Clean bottom gradient bar */}
-              <div className="absolute bottom-0 inset-x-0 p-3.5 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-center justify-between text-white">
-                <div>
-                  <div className="text-xs font-extrabold text-amber-300 tracking-wide drop-shadow-sm">
-                    Khung Cảnh Ngày Hội Mùa Xuân & Tri Thức Doanh Nghiệp
-                  </div>
-                  <div className="text-[11px] text-slate-200 drop-shadow-sm">
-                    Gia Đình Sum Vầy • Trẻ Em Nhận Lì Xì • Vạn Sự Cát Tường
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => {
-                    setAuthTab('login');
-                    setIsAuthModalOpen(true);
-                  }}
-                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-white font-extrabold text-xs shadow-md active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
-                >
-                  <span>🧧</span>
-                  <span>Vào Hệ Thống</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          <TetActivityAnimation
+            onOpenLogin={() => {
+              setAuthTab('login');
+              setIsAuthModalOpen(true);
+            }}
+          />
 
           {/* Minimalist Poetic Couplet */}
           <div className="mt-3 px-4 py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-amber-300/50 dark:border-amber-500/30 shadow-xs text-center">

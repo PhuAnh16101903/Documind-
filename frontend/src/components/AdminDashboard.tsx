@@ -121,6 +121,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
         </div>
       </div>
 
+      {/* Subtle & Tasteful Tet Holiday Operational Status */}
+      <div className="flex items-center justify-between p-3.5 px-4.5 rounded-2xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 border border-amber-300/60 dark:border-amber-700/50 shadow-xs">
+        <div className="flex items-center gap-3">
+          <span className="text-lg">🌸</span>
+          <div>
+            <div className="text-xs font-bold text-red-700 dark:text-red-400 flex items-center gap-2">
+              <span>Trực Ban Khai Thác Tri Thức Dịp Tết Bính Ngọ 2026</span>
+              <span className="text-[10px] font-mono px-2 py-0.2 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-bold">
+                Thông Suốt 24/7
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-600 dark:text-slate-300">
+              Hệ thống duy trì 100% thời gian hoạt động • Sẵn sàng hỗ trợ cán bộ và giảng viên tra cứu quy chế xuyên kỳ nghỉ lễ.
+            </p>
+          </div>
+        </div>
+        <div className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-red-700 dark:text-red-400">
+          <span>🧧</span>
+          <span>Xuân An Khang</span>
+        </div>
+      </div>
+
       {/* KPI Bento Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi, idx) => {

@@ -227,3 +227,79 @@
   animation: goldShimmer 4s linear infinite;
 }
 
+/* Animations for Tet Activities */
+@keyframes lionBob {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-8px) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(2deg);
+  }
+  75% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+@keyframes earWiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes fireCrack {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.18) translateY(-4px);
+    opacity: 1;
+  }
+}
+
+@keyframes steamFlow {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.1) translateX(6px);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-40px) scale(1.3) translateX(-4px);
+    opacity: 0;
+  }
+}
+
+@keyframes coinFloat {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.9);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-16px) rotate(180deg) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-32px) rotate(360deg) scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes envelopeSway {
+  0%, 100% {
+    transform: rotate(-6deg) scale(1);
+  }
+  50% {
+    transform: rotate(6deg) scale(1.05);
+  }
+}
+
+
