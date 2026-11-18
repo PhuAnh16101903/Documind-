@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Heart, Gift, Flame } from 'lucide-react';
+import { Lottie } from 'lottie-react';
+import lionDanceAnimation from '../assets/lottie/lion_dance.json';
+import cookingPotAnimation from '../assets/lottie/boiling_pot.json';
+import redEnvelopeAnimation from '../assets/lottie/lucky_envelope_open.json';
 
 interface TetActivityAnimationProps {
   onOpenLogin?: () => void;
@@ -70,7 +73,7 @@ export const TetActivityAnimation: React.FC<TetActivityAnimationProps> = ({
         </button>
       </div>
 
-      {/* Main Animated Stage Area */}
+      {/* Main Animated Stage Area (Lottie Vector 60fps) */}
       <div className="relative h-[250px] sm:h-[270px] rounded-2xl overflow-hidden bg-gradient-to-b from-amber-100/50 via-rose-50/40 to-amber-100/60 dark:from-slate-950 dark:via-red-950/20 dark:to-slate-950 border border-amber-200/50 dark:border-slate-800 flex items-center justify-center">
         {/* Floating background ambient dust */}
         <div className="absolute inset-0 pointer-events-none opacity-40">
@@ -80,7 +83,7 @@ export const TetActivityAnimation: React.FC<TetActivityAnimationProps> = ({
         </div>
 
         {/* ========================================================= */}
-        {/* SCENE 1: MÚA LÂN SƯ RỒNG (LION DANCE ANIMATED GIF) */}
+        {/* SCENE 1: MÚA LÂN SƯ RỒNG (LOTTIE VECTOR ANIMATION) */}
         {/* ========================================================= */}
         {activeTab === 'lion' && (
           <div className="relative flex flex-col items-center justify-center animate-fade-in w-full h-full p-2">
@@ -89,13 +92,16 @@ export const TetActivityAnimation: React.FC<TetActivityAnimationProps> = ({
               className="relative cursor-pointer group flex flex-col items-center justify-center"
               title="Nhấn để vào không gian tri thức!"
             >
-              <img
-                src="/images/tet/mua_lan_medium.gif"
-                alt="Múa Lân Tết"
-                className="h-40 sm:h-44 w-auto max-w-[280px] object-contain rounded-2xl drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
-              />
+              <div className="w-48 h-48 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                <Lottie
+                  src={lionDanceAnimation}
+                  loop
+                  autoplay
+                  className="w-full h-full"
+                />
+              </div>
             </div>
-            <div className="mt-2 text-center">
+            <div className="mt-1 text-center">
               <span className="text-xs font-extrabold text-red-700 dark:text-red-400">
                 🦁 Múa Lân Sư Rồng Rước Lộc Khởi Xuân
               </span>
@@ -104,7 +110,7 @@ export const TetActivityAnimation: React.FC<TetActivityAnimationProps> = ({
         )}
 
         {/* ========================================================= */}
-        {/* SCENE 2: NỒI BÁNH CHƯNG XANH (COOKING BÁNH CHƯNG ANIMATED GIF) */}
+        {/* SCENE 2: NỒI BÁNH CHƯNG XANH (LOTTIE VECTOR ANIMATION) */}
         {/* ========================================================= */}
         {activeTab === 'banh_chung' && (
           <div className="relative flex flex-col items-center justify-center animate-fade-in w-full h-full p-2">
@@ -113,13 +119,16 @@ export const TetActivityAnimation: React.FC<TetActivityAnimationProps> = ({
               className="relative cursor-pointer group flex flex-col items-center justify-center"
               title="Nhấn để vào không gian tri thức!"
             >
-              <img
-                src="/images/tet/banh_chung.gif"
-                alt="Bánh Chưng Tết"
-                className="h-40 sm:h-44 w-auto max-w-[280px] object-contain rounded-2xl drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
-              />
+              <div className="w-48 h-48 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                <Lottie
+                  src={cookingPotAnimation}
+                  loop
+                  autoplay
+                  className="w-full h-full"
+                />
+              </div>
             </div>
-            <div className="mt-2 text-center">
+            <div className="mt-1 text-center">
               <span className="text-xs font-extrabold text-emerald-800 dark:text-emerald-400">
                 🎋 Bánh Chưng Xanh Nghi Ngút Khói Chiều 30 Tết
               </span>
@@ -128,7 +137,7 @@ export const TetActivityAnimation: React.FC<TetActivityAnimationProps> = ({
         )}
 
         {/* ========================================================= */}
-        {/* SCENE 3: EM BÉ NHẬN LÌ XÌ (RECEIVING LUCKY ENVELOPES ANIMATED GIF) */}
+        {/* SCENE 3: EM BÉ NHẬN LÌ XÌ (LOTTIE VECTOR ANIMATION) */}
         {/* ========================================================= */}
         {activeTab === 'li_xi' && (
           <div className="relative flex flex-col items-center justify-center animate-fade-in w-full h-full p-2">
@@ -137,13 +146,16 @@ export const TetActivityAnimation: React.FC<TetActivityAnimationProps> = ({
               className="relative cursor-pointer group flex flex-col items-center justify-center"
               title="Nhấn để vào không gian tri thức!"
             >
-              <img
-                src="/images/tet/li_xi.gif"
-                alt="Lì Xì May Mắn"
-                className="h-40 sm:h-44 w-auto max-w-[280px] object-contain rounded-2xl drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
-              />
+              <div className="w-48 h-48 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                <Lottie
+                  src={redEnvelopeAnimation}
+                  loop
+                  autoplay
+                  className="w-full h-full"
+                />
+              </div>
             </div>
-            <div className="mt-2 text-center">
+            <div className="mt-1 text-center">
               <span className="text-xs font-extrabold text-rose-700 dark:text-rose-400">
                 🧧 Trao Nhận Lì Xì Khai Xuân Như Ý
               </span>

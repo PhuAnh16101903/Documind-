@@ -239,9 +239,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       </header>
 
       {/* Main Container */}
-      <div className="flex-1 flex items-center relative z-10 px-6 sm:px-14 lg:px-20 pb-16">
+      <div className="flex-1 flex flex-col lg:flex-row items-center justify-between relative z-10 px-6 sm:px-12 lg:px-16 xl:px-20 pb-16 gap-8">
         {/* Left Side: Hero Content */}
-        <main className="max-w-2xl xl:max-w-3xl space-y-6">
+        <main className="max-w-xl xl:max-w-2xl space-y-6">
           {/* Festive Holiday Banner */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100/90 dark:bg-red-950/70 border border-red-300/80 dark:border-red-800 text-xs font-extrabold text-red-700 dark:text-red-300 shadow-xs">
             <span className="animate-spin" style={{ animationDuration: '8s' }}>🌸</span>
@@ -289,7 +289,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         {/* Right Side: Animated Tết Activities Showcase (Múa Lân, Nấu Bánh Chưng, Nhận Lì Xì) */}
         <aside
           aria-label="Hoạt Họa Tết 2026"
-          className="hidden lg:flex absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 z-10 w-[440px] xl:w-[480px] flex-col items-center pointer-events-auto"
+          className="flex flex-col items-center pointer-events-auto w-full max-w-[440px] xl:max-w-[480px] flex-shrink-0"
         >
           <TetActivityAnimation
             onOpenLogin={() => {
