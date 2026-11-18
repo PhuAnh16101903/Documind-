@@ -84,7 +84,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
       resource: 'Báo cáo tài chính Q4.xlsx',
       status: 'DENIED',
       time: '10:25:12',
-      note: 'Chặn bởi RBAC Isolation (TC-SEC-01)',
+      note: 'Chặn bởi RBAC Isolation - Mã TC-SEC-01',
     },
     {
       id: 4,
@@ -213,7 +213,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
             <span className="text-blue-700 font-mono text-[10px] bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 font-medium">Active</span>
           </div>
           <p className="text-[11px] text-slate-500">
-            Loại bỏ tài liệu đã hết hiệu lực (expired) hoặc đã bị thay thế (superseded) khỏi context.
+            Loại bỏ tài liệu đã hết hiệu lực hoặc đã bị thay thế khỏi ngữ cảnh truy xuất.
           </p>
         </div>
       </div>
@@ -223,7 +223,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentTheme }) 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-indigo-600" />
-            <span>Nhật Ký Hoạt Động &amp; Bảo Mật (Audit Log Trail)</span>
+            <span>Nhật Ký Hoạt Động &amp; Bảo Mật Audit Log</span>
           </h3>
 
           {/* Action Filter */}

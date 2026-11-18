@@ -49,7 +49,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
               <div className="text-xs font-bold text-white flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Palette className="w-4 h-4 text-indigo-400" />
-                  <span>Chọn Hệ Thống Giao Diện (5 Design References)</span>
+                  <span>Chọn Hệ Thống Giao Diện • 5 Mẫu Thiết Kế</span>
                 </span>
                 <span className="text-[10px] font-mono text-cyan-400">Live Switcher</span>
               </div>

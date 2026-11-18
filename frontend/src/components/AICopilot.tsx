@@ -308,7 +308,7 @@ ${
                       <button
                         onClick={() => handleExportReport(msg)}
                         className="px-1.5 py-0.5 rounded bg-slate-800/90 hover:bg-slate-750 text-slate-300 hover:text-white transition-colors border border-slate-700 flex items-center gap-1 text-[9px] font-mono shadow-2xs"
-                        title="Xuất báo cáo đối chiếu (.md)"
+                        title="Xuất báo cáo đối chiếu Markdown"
                       >
                         <Download className="w-2.5 h-2.5" />
                         <span>Xuất</span>

@@ -69,8 +69,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   const pipelineSteps = [
     'Xác thực SHA-256 Checksum & Khử trùng lặp',
     'Trích xuất văn bản, bảng biểu & Mục lục cấu trúc',
-    'Phân đoạn ngữ nghĩa (Semantic Chunking theo Heading)',
-    'Sinh Vector Embeddings 768D (Gemini API)',
+    'Phân đoạn ngữ nghĩa Semantic Chunking theo tiêu đề',
+    'Sinh Vector Embeddings 768D chuẩn Gemini API',
     'Lập chỉ mục Hybrid BM25 & Kích hoạt RAG Grounding',
   ];
 
@@ -128,7 +128,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                 </span>
               </div>
               <p className="text-[11px] text-slate-500">
-                Cho phép chọn hoặc kéo thả nhiều tệp cùng lúc (PDF, Word, Excel, Markdown)
+                Cho phép chọn hoặc kéo thả nhiều tệp cùng lúc: PDF, Word, Excel, Markdown
               </p>
             </div>
           </div>
@@ -152,7 +152,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                 Nhấp để chọn hoặc kéo thả nhiều tài liệu vào đây
               </span>
               <span className="text-[11px] text-slate-500 mt-1">
-                Hỗ trợ tải lên nhiều file cùng lúc • PDF, DOCX, XLSX, TXT, MD (Tối đa 100MB/tệp)
+                Hỗ trợ tải lên nhiều file cùng lúc • PDF, DOCX, XLSX, TXT, MD • Tối đa 100MB/tệp
               </span>
               <input
                 type="file"
@@ -167,7 +167,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             {files.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 font-semibold px-1">
-                  <span>DANH SÁCH TÀI LIỆU ĐÃ CHỌN ({files.length} TỆP)</span>
+                  <span>DANH SÁCH TÀI LIỆU ĐÃ CHỌN: {files.length} TỆP</span>
                   <button
                     type="button"
                     onClick={() => setFiles([])}
@@ -263,7 +263,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                 <Sparkles className="w-4 h-4" />
                 <span>
                   {files.length > 0
-                    ? `Bắt Đầu Lập Chỉ Mục Tự Động (${files.length} Tài Liệu)`
+                    ? `Bắt Đầu Lập Chỉ Mục Tự Động: ${files.length} Tài Liệu`
                     : 'Vui Lòng Chọn Tệp Để Lập Chỉ Mục'}
                 </span>
               </button>

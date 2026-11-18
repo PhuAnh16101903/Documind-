@@ -36,7 +36,7 @@ export const THEMES: Record<UIThemeId, UIThemeInfo> = {
   impeccable: {
     id: 'impeccable',
     name: 'Impeccable Craft (Tối Giản Sắc Nét)',
-    author: 'Paul Bakaus (Ex Google)',
+    author: 'Paul Bakaus • Ex Google',
     stars: '110k+ ⭐',
     tagline: 'Tối giản chuẩn Linear/Apple, hairline viền 1px siêu nét, độ tương phản typography sắc sảo, không mỏi mắt.',
     badge: 'SURGICAL CRAFT',
@@ -68,7 +68,7 @@ export const THEMES: Record<UIThemeId, UIThemeInfo> = {
   vibe: {
     id: 'vibe',
     name: 'Vibe Harness (Cyber AI Cân Bằng)',
-    author: 'Teddies Loco (v3.2)',
+    author: 'Teddies Loco • v3.2',
     stars: '40+ Gates',
     tagline: 'Cyber-Obsidian AI có kiểm soát, ánh sáng tím neon làm điểm nhấn, kính mờ tối ưu tương phản.',
     badge: 'CYBER AI VIBE',

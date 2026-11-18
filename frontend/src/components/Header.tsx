@@ -71,12 +71,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span>{t.rbacBadge} {user.department_code || 'STAFF'}</span>
           </span>
         )}
-
-        {/* Festive Tet Holiday Pill */}
-        <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 text-red-700 dark:text-red-400 border border-red-200/80 dark:border-red-900/60 shadow-xs">
-          <span>🌸</span>
-          <span>{t.tetBadge}</span>
-        </span>
       </div>
 
       {/* Right Tools Area */}

@@ -222,7 +222,7 @@ export const ApiService = {
 
         if (isTechQuery && currentUser.department_id !== 3) {
           return {
-            answer: `🚫 **[RBAC SECURITY VIOLATION - 403 FORBIDDEN]**:\n\nTruy cập bị từ chối! Tài khoản của bạn (**${currentUser.full_name}** - ${currentUser.department_name}) không có quyền truy xuất tài liệu thiết kế bảo mật của **Phòng Kỹ Thuật - R&D**.\n\n• **Chính sách bảo vệ tài sản trí tuệ**: Confidential Intellectual Property (IP-Classified).\n• **Audit Trail**: Đã ghi nhận truy vấn vào nhật ký an ninh thông tin (Audit Code #SEC-TECH-${Date.now()}).`,
+            answer: `🚫 **[RBAC SECURITY VIOLATION - 403 FORBIDDEN]**:\n\nTruy cập bị từ chối! Tài khoản của bạn (**${currentUser.full_name}** - ${currentUser.department_name}) không có quyền truy xuất tài liệu thiết kế bảo mật của **Phòng Kỹ Thuật - R&D**.\n\n• **Chính sách bảo vệ tài sản trí tuệ**: Confidential Intellectual Property IP-Classified.\n• **Audit Trail**: Đã ghi nhận truy vấn vào nhật ký an ninh thông tin Audit Code #SEC-TECH-${Date.now()}.`,
             citations: [],
             is_security_alert: true,
           };
@@ -245,7 +245,7 @@ export const ApiService = {
 
       if (isUnrelated) {
         return {
-          answer: `⚠️ **Thông Báo Ranh Giới Phạm Vi Tri Thức (Scope Guardrail Active)**:\n\nCâu hỏi này nằm ngoài cơ sở dữ liệu quy chế và tài liệu nội bộ của công ty.\n\n• **Tiêu chuẩn DocuMind**: Hệ thống chỉ kiểm chứng và trích dẫn các tài liệu nội bộ đã ký duyệt số để đảm bảo tính pháp lý và ngăn ngừa ảo giác (Hallucination).\n• **Kiến thức tham khảo đại chúng**: Đây là thông tin phổ biến bên ngoài, không có giá trị quy định nội bộ.\n\n💡 *Gợi ý: Hãy đặt các câu hỏi về quy trình làm việc, hạn mức chi phí, bảo mật hoặc cấu trúc tài liệu công ty.*`,
+          answer: `⚠️ **Thông Báo Ranh Giới Phạm Vi Tri Thức**:\n\nCâu hỏi này nằm ngoài cơ sở dữ liệu quy chế và tài liệu nội bộ của công ty.\n\n• **Tiêu chuẩn DocuMind**: Hệ thống chỉ kiểm chứng và trích dẫn các tài liệu nội bộ đã ký duyệt số để đảm bảo tính pháp lý và ngăn ngừa ảo giác thông tin.\n• **Kiến thức tham khảo đại chúng**: Đây là thông tin phổ biến bên ngoài, không có giá trị quy định nội bộ.\n\n💡 *Gợi ý: Hãy đặt các câu hỏi về quy trình làm việc, hạn mức chi phí, bảo mật hoặc cấu trúc tài liệu công ty.*`,
           citations: [],
         };
       }
@@ -297,7 +297,7 @@ export const ApiService = {
                 exact_quoted_text: 'Quy chế này do Phòng Nhân Sự chủ trì biên soạn và lưu trữ tại hệ sinh thái tri thức DocuMind...',
                 confidence_score: 0.992,
                 department_code: 'HR',
-                department_name: 'Phòng Nhân Sự (HR)',
+                department_name: 'Phòng Nhân Sự',
                 checksum_sha256: 'sha256:a12b45f...99cd',
               },
             ],
@@ -314,7 +314,7 @@ export const ApiService = {
             answer: `📑 **Vị Trí Mục Lục & Cấu Trúc Điều Khoản**:
 Quy định về hạn mức lưu trú và chi phí công tác nằm tại:
 • **Chương III: Định Mức Thanh Toán Công Tác Phí Trong Nước**
-• **Mục cụ thể**: **Khoản 3 (Tiêu chuẩn khách sạn & phụ cấp lưu trú)** [Nguồn 1]
+• **Mục cụ thể**: **Khoản 3: Tiêu chuẩn khách sạn & phụ cấp lưu trú** [Nguồn 1]
 • **Vị trí trang**: **Trang 5**
 • **Trích dẫn điều khoản**: *"Tiêu chuẩn lưu trú tại Hà Nội, TP.HCM và Đà Nẵng áp dụng mức trần thanh toán 1.200.000 VNĐ/ngày theo hóa đơn VAT hợp lệ."*`,
             citations: [
@@ -338,7 +338,7 @@ Quy định về hạn mức lưu trú và chi phí công tác nằm tại:
             answer: `📑 **Vị Trí Mục Lục & Cấu Trúc Điều Khoản**:
 Quy định này nằm chính xác tại:
 • **Chương II: Chế Độ Làm Việc Linh Hoạt & Quy Trình Đăng Ký**
-• **Điều khoản**: **Điều 4 (Chế độ làm việc linh hoạt - Remote/Hybrid)** [Nguồn 1]
+• **Điều khoản**: **Điều 4: Chế độ làm việc linh hoạt Remote hoặc Hybrid** [Nguồn 1]
 • **Vị trí trang**: **Trang 3** của tài liệu \`Quy Chế Làm Việc Từ Xa & Chấm Công 2026\`
 • **Trích dẫn điều khoản**: *"Cán bộ nhân viên được đăng ký làm việc linh hoạt tối đa 02 ngày trong tuần sau khi hoàn thành thời gian thử việc..."*`,
             citations: [
@@ -349,10 +349,10 @@ Quy định này nằm chính xác tại:
                 file_type: 'pdf',
                 page_number: 3,
                 heading: 'Điều 4. Chế độ làm việc linh hoạt',
-                exact_quoted_text: 'Cán bộ nhân viên được đăng ký làm việc linh hoạt (Remote/Hybrid) tối đa 02 ngày trong tuần sau khi hoàn thành thời gian thử việc...',
+                exact_quoted_text: 'Cán bộ nhân viên được đăng ký làm việc linh hoạt Remote hoặc Hybrid tối đa 02 ngày trong tuần sau khi hoàn thành thời gian thử việc...',
                 confidence_score: 0.994,
                 department_code: 'HR',
-                department_name: 'Phòng Nhân Sự (HR)',
+                department_name: 'Phòng Nhân Sự',
                 checksum_sha256: 'sha256:a12b45f...99cd',
               },
             ],
@@ -380,10 +380,10 @@ Dựa trên tài liệu đã lập chỉ mục, các nội dung cốt lõi bao g
               file_type: 'pdf',
               page_number: 3,
               heading: 'Điều 4. Chế độ làm việc linh hoạt',
-              exact_quoted_text: 'Cán bộ nhân viên được đăng ký làm việc linh hoạt (Remote/Hybrid) tối đa 02 ngày trong tuần...',
+              exact_quoted_text: 'Cán bộ nhân viên được đăng ký làm việc linh hoạt Remote hoặc Hybrid tối đa 02 ngày trong tuần...',
               confidence_score: 0.991,
               department_code: 'HR',
-              department_name: 'Phòng Nhân Sự (HR)',
+              department_name: 'Phòng Nhân Sự',
               checksum_sha256: 'sha256:a12b45f...99cd',
             },
           ],
@@ -403,10 +403,10 @@ Dựa trên tài liệu đã lập chỉ mục, các nội dung cốt lõi bao g
             file_type: 'pdf',
             page_number: 3,
             heading: 'Điều 4. Chế độ làm việc linh hoạt',
-            exact_quoted_text: 'Cán bộ nhân viên được đăng ký làm việc linh hoạt (Remote/Hybrid) tối đa 02 ngày trong tuần...',
+            exact_quoted_text: 'Cán bộ nhân viên được đăng ký làm việc linh hoạt Remote hoặc Hybrid tối đa 02 ngày trong tuần...',
             confidence_score: 0.988,
             department_code: 'HR',
-            department_name: 'Phòng Nhân Sự (HR)',
+            department_name: 'Phòng Nhân Sự',
             checksum_sha256: 'sha256:a12b45f...99cd',
           },
           {

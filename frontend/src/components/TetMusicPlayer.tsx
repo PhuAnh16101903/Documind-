@@ -23,10 +23,11 @@ export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
   const [autoplayBlocked, setAutoplayBlocked] = useState<boolean>(false);
 
   const hasStartedRef = useRef<boolean>(false);
+  const MAX_PLAY_SECONDS = 20; // Chơi 1 đoạn ngắn ~20 giây rộn ràng ngày Tết rồi tự dừng
 
   useEffect(() => {
     const audio = new Audio('/tet_music.mp3');
-    audio.loop = false; // CRITICAL: NEVER LOOP ("k lặp lại")
+    audio.loop = false; // Tuyệt đối không lặp lại
     audio.volume = volume;
     audioRef.current = audio;
 
@@ -34,7 +35,23 @@ export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
       setIsPlaying(false);
       setHasEnded(true);
     };
+
+    // Theo dõi thời gian để chỉ phát 1 đoạn ngắn (~20 giây) rồi tự dừng êm ái
+    const handleTimeUpdate = () => {
+      if (!audio) return;
+      if (audio.currentTime >= MAX_PLAY_SECONDS) {
+        audio.pause();
+        setIsPlaying(false);
+        setHasEnded(true);
+      } else if (audio.currentTime >= MAX_PLAY_SECONDS - 2) {
+        // Giảm dần âm lượng trong 2 giây cuối để kết thúc tự nhiên
+        const remaining = Math.max(0, MAX_PLAY_SECONDS - audio.currentTime);
+        audio.volume = (remaining / 2) * volume;
+      }
+    };
+
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
 
     // Attempt autoplay immediately
     const startAudio = () => {
@@ -75,6 +92,7 @@ export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
 
     return () => {
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.pause();
       audioRef.current = null;
     };

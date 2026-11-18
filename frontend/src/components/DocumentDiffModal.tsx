@@ -14,8 +14,8 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({ isOpen, on
   const diffData = {
     documentTitle: 'Quy Định Hạn Mức Công Tác Phí & Tiếp Khách',
     v1: {
-      version: 'v1.0 (Năm 2025)',
-      status: 'ĐÃ HẾT HIỆU LỰC (SUPERSEDED)',
+      version: 'Phiên bản v1.0 • Năm 2025',
+      status: 'ĐÃ HẾT HIỆU LỰC',
       date: '01/01/2025',
       clauses: [
         {
@@ -36,8 +36,8 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({ isOpen, on
       ],
     },
     v2: {
-      version: 'v2.0 (Năm 2026 - Hiện hành)',
-      status: 'ĐANG ÁP DỤNG (APPROVED)',
+      version: 'Phiên bản v2.0 • Năm 2026 Hiện hành',
+      status: 'ĐANG ÁP DỤNG',
       date: '15/01/2026',
       clauses: [
         {
@@ -51,7 +51,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({ isOpen, on
           change: 'MODIFIED',
         },
         {
-          heading: 'Điều 8. Chính sách làm việc từ xa kết hợp công tác (Bleisure)',
+          heading: 'Điều 8. Chính sách làm việc từ xa kết hợp công tác',
           content: '[ĐIỀU KHOẢN MỚI BỔ SUNG]: CBNV được phép kết hợp làm việc từ xa tối đa 02 ngày liền kề chuyến công tác nếu được Trưởng bộ phận phê duyệt trước.',
           change: 'ADDED',
         },
@@ -101,11 +101,11 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({ isOpen, on
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded bg-rose-100 border border-rose-400" />
-              <span>Nội dung đã bãi bỏ / Thay đổi (v1.0)</span>
+              <span>Nội dung đã bãi bỏ / Thay đổi v1.0</span>
             </span>
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded bg-emerald-100 border border-emerald-400" />
-              <span>Quy định mới bổ sung / Cập nhật (v2.0)</span>
+              <span>Quy định mới bổ sung / Cập nhật v2.0</span>
             </span>
           </div>
           <span className="text-emerald-700 font-medium">Tự động đối chiếu theo điều khoản</span>

@@ -59,11 +59,11 @@ export const CorporateAuthModal: React.FC<CorporateAuthModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-slate-900">
-                  Xác Thực Định Danh Doanh Nghiệp (IAM &amp; SSO)
+                  Xác Thực Định Danh Doanh Nghiệp
                 </h3>
               </div>
               <p className="text-[11px] text-slate-500">
-                Phân quyền bảo mật tự động dựa trên tài khoản đăng nhập (RBAC Enforced)
+                Phân quyền bảo mật tự động dựa trên tài khoản đăng nhập
               </p>
             </div>
           </div>
@@ -79,7 +79,7 @@ export const CorporateAuthModal: React.FC<CorporateAuthModalProps> = ({
         <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono uppercase text-slate-500 font-bold tracking-wider">
-              Phiên Làm Việc Hiện Tại (Active Session)
+              Phiên Làm Việc Hiện Tại
             </span>
             {getSecurityBadge(currentUser)}
           </div>
