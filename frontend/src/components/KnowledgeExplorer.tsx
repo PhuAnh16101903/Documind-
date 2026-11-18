@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Document, UIThemeId } from '../types';
 import { DocumentDiffModal } from './DocumentDiffModal';
+import { TetFloralBorders } from './TetFloralBorders';
 import { Language, translations } from '../services/i18n';
 
 interface KnowledgeExplorerProps {
@@ -85,10 +86,12 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
 
   return (
     <div
-      className={`flex-1 flex flex-col h-full overflow-y-auto font-sans transition-colors duration-200 ${
+      className={`flex-1 flex flex-col h-full overflow-y-auto font-sans transition-colors duration-200 relative ${
         isLight ? 'bg-[#f4f7fb] text-slate-800' : 'bg-[#060c18] text-slate-100'
       }`}
     >
+      {/* Subtle interior floral spring accents */}
+      <TetFloralBorders showCouplets={false} className="opacity-25" />
       <div className="p-6 sm:p-8 max-w-6xl mx-auto w-full space-y-6 pb-20">
         {/* Festive Internal New Year Greeting Banner */}
         {showHolidayBanner && (

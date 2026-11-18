@@ -27,6 +27,7 @@ import { TetBlossomCanvas } from './TetBlossomCanvas';
 import { TetLanterns } from './TetLanterns';
 import { TetMusicPlayer } from './TetMusicPlayer';
 import { TetActivityAnimation } from './TetActivityAnimation';
+import { TetFloralBorders } from './TetFloralBorders';
 import { Brand } from './Brand';
 
 interface AuthPageProps {
@@ -171,10 +172,18 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     <div
       className={`min-h-screen w-screen flex flex-col font-sans relative overflow-hidden select-none transition-colors duration-300 ${
         isLight
-          ? 'bg-gradient-to-br from-[#fff7ed] via-[#fef2f2] to-[#ffedd5] text-slate-800'
-          : 'bg-gradient-to-br from-[#180a0a] via-[#12070b] to-[#0d0714] text-slate-100'
+          ? 'bg-gradient-to-br from-[#fff1f2] via-[#fef3c7]/75 via-[#ffe4e6]/70 to-[#fed7aa]/60 text-slate-900'
+          : 'bg-gradient-to-br from-[#1c060d] via-[#240d16] via-[#16060c] to-[#0a0f1d] text-slate-100'
       }`}
     >
+      {/* Warm Ambient Radiance & Sunset Glow Orbs */}
+      <div className="absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-rose-400/25 dark:bg-rose-600/15 blur-[90px] pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-[460px] h-[460px] rounded-full bg-amber-400/30 dark:bg-amber-600/15 blur-[90px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[650px] h-[450px] bg-red-500/10 dark:bg-red-600/10 rounded-full blur-[110px] pointer-events-none" />
+
+      {/* Decorative Blooming Hoa Đào (Left) & Hoa Mai (Right) Branches + Couplets */}
+      <TetFloralBorders />
+
       {/* Falling Hoa Mai (Apricot) and Hoa Đào (Peach) Blossom Petals + Firework Sparks */}
       <TetBlossomCanvas variant="hero" />
 
