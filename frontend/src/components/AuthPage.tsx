@@ -18,9 +18,14 @@ import {
   Sun,
   Moon,
   X,
+  Music,
+  Gift,
 } from 'lucide-react';
 import { Department, User } from '../types';
 import { Language, translations } from '../services/i18n';
+import { TetBlossomCanvas } from './TetBlossomCanvas';
+import { TetLanterns } from './TetLanterns';
+import { TetMusicPlayer } from './TetMusicPlayer';
 
 interface AuthPageProps {
   onLoginSuccess: (user: User) => void;
@@ -47,6 +52,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   const t = translations[lang];
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
+  const [themeScene, setThemeScene] = useState<'tet' | 'aquatic'>('tet');
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -522,29 +528,87 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   return (
     <div
       className={`min-h-screen w-screen flex flex-col font-sans relative overflow-hidden select-none transition-colors duration-300 ${
-        isLight ? 'bg-[#d8e7f3] text-slate-800' : 'bg-[#060c18] text-slate-100'
+        isLight
+          ? themeScene === 'tet'
+            ? 'bg-gradient-to-br from-[#fef2f2] via-[#fff7ed] to-[#fed7aa] text-slate-800'
+            : 'bg-[#d8e7f3] text-slate-800'
+          : themeScene === 'tet'
+          ? 'bg-gradient-to-br from-[#1c0a0a] via-[#12070b] to-[#0c0512] text-slate-100'
+          : 'bg-[#060c18] text-slate-100'
       }`}
     >
-      {/* Dynamic Animated Canvas for 3D Aquatic Cube & Swimming Fishes (Reference Image 2) */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 pointer-events-none z-0 opacity-90"
-      />
+      {/* Visual Ambiance depending on themeScene */}
+      {themeScene === 'tet' ? (
+        <>
+          {/* Falling Hoa Mai (Apricot) and Hoa Đào (Peach) Blossom Petals + Firework Sparks */}
+          <TetBlossomCanvas />
+          {/* Traditional Hanging Red Silk Lanterns with Golden Tassels */}
+          <TetLanterns />
+        </>
+      ) : (
+        /* Dynamic Animated Canvas for 3D Aquatic Cube & Swimming Koi Fishes */
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 pointer-events-none z-0 opacity-90"
+        />
+      )}
 
-      {/* Top Header Bar matching Reference Image 2 */}
+      {/* Top Header Bar */}
       <header className="h-16 px-6 sm:px-12 flex items-center justify-between z-20 relative">
         {/* Brand & Round Logo */}
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-white border border-slate-200/80 shadow-md flex items-center justify-center text-indigo-600 overflow-hidden">
-            <Brain className="w-5 h-5 text-indigo-600" />
+          <div className="w-10 h-10 rounded-full bg-white border border-slate-200/80 shadow-md flex items-center justify-center text-red-600 dark:text-red-500 overflow-hidden">
+            {themeScene === 'tet' ? (
+              <span className="text-lg">🌸</span>
+            ) : (
+              <Brain className="w-5 h-5 text-indigo-600" />
+            )}
           </div>
-          <div className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white">
-            {t.appName}
+          <div className="flex flex-col">
+            <div className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span>{t.appName}</span>
+              {themeScene === 'tet' && (
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-xs">
+                  <span>🧧</span>
+                  <span>{t.tetBadge}</span>
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Right Tools (Language VI/EN, Theme Toggle ☀️, Sign In) */}
-        <div className="flex items-center space-x-2.5">
+        {/* Right Tools (Scene Toggle, Language VI/EN, Theme Toggle ☀️, Sign In) */}
+        <div className="flex items-center space-x-2 sm:space-x-2.5">
+          {/* Theme Scene Toggle (Tết 2026 vs Aquatic Koi) */}
+          <div className="flex items-center p-0.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-300/80 dark:border-slate-700 backdrop-blur-md shadow-xs">
+            <button
+              type="button"
+              onClick={() => setThemeScene('tet')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                themeScene === 'tet'
+                  ? 'bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Không Khí Tết 2026"
+            >
+              <span>🌸</span>
+              <span className="hidden md:inline">{t.tetTabFestive}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setThemeScene('aquatic')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                themeScene === 'aquatic'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Hồ Cá Koi 3D"
+            >
+              <span>🐟</span>
+              <span className="hidden md:inline">{t.tetTabAquatic}</span>
+            </button>
+          </div>
+
           {/* Language Toggle VI <-> EN */}
           {onToggleLang && (
             <button
@@ -582,12 +646,23 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         </div>
       </header>
 
-      {/* Hero Content matching Reference Image 2 Typography & Layout */}
-      <main className="flex-1 flex flex-col justify-center px-6 sm:px-14 lg:px-20 max-w-4xl z-10 relative pb-16">
-        <div className="space-y-6">
-          <div className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 tracking-wide font-sans">
-            {t.heroCompanyTag}
-          </div>
+      {/* Main Container */}
+      <div className="flex-1 flex items-center relative z-10 px-6 sm:px-14 lg:px-20 pb-16">
+        {/* Left Side: Hero Content */}
+        <main className="max-w-3xl space-y-6">
+          {/* Festive Holiday Banner */}
+          {themeScene === 'tet' ? (
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100/90 dark:bg-red-950/70 border border-red-300 dark:border-red-800 text-xs font-extrabold text-red-700 dark:text-red-300 shadow-xs">
+              <span className="animate-spin" style={{ animationDuration: '6s' }}>🌸</span>
+              <span>{t.tetGreeting}</span>
+              <span className="text-[10px] text-amber-600 dark:text-amber-400">★</span>
+              <span>Xuân Bính Ngọ Rạng Rỡ</span>
+            </div>
+          ) : (
+            <div className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 tracking-wide font-sans">
+              {t.heroCompanyTag}
+            </div>
+          )}
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.12]">
             {t.heroLine1}<br />
@@ -599,14 +674,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             {t.heroDescription}
           </p>
 
-          <div className="pt-3 flex flex-wrap items-center gap-3.5">
+          <div className="pt-2 flex flex-wrap items-center gap-3.5">
             {/* Primary Action Button */}
             <button
               onClick={() => {
                 setAuthTab('login');
                 setIsAuthModalOpen(true);
               }}
-              className="h-12 px-6 rounded-2xl bg-[#c51c16] hover:bg-[#a91712] text-white font-bold text-sm flex items-center gap-2.5 shadow-lg shadow-red-900/20 active:scale-95 transition-all"
+              className="h-12 px-6 rounded-2xl bg-gradient-to-r from-[#c51c16] to-[#e11d48] hover:from-[#a91712] hover:to-[#be123c] text-white font-bold text-sm flex items-center gap-2.5 shadow-lg shadow-red-900/25 active:scale-95 transition-all cursor-pointer"
             >
               <span>{t.heroExploreBtn}</span>
               <ArrowRight className="w-4 h-4" />
@@ -618,15 +693,91 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 setAuthTab('register');
                 setIsAuthModalOpen(true);
               }}
-              className="h-12 px-5 rounded-2xl bg-white/85 dark:bg-slate-900/85 hover:bg-white text-slate-900 dark:text-white font-semibold text-xs border border-slate-300/80 dark:border-slate-700 shadow-sm transition-all"
+              className="h-12 px-5 rounded-2xl bg-white/85 dark:bg-slate-900/85 hover:bg-white text-slate-900 dark:text-white font-semibold text-xs border border-slate-300/80 dark:border-slate-700 shadow-sm transition-all cursor-pointer"
             >
               <span>{t.heroRegisterBtn}</span>
             </button>
-          </div>
-        </div>
-      </main>
 
-      {/* NOTE: REMOVED "Đi đến..." BUTTON ON LANDING PAGE PER USER REQUEST */}
+            {/* Quick Demo Blessing Trigger in Tet mode */}
+            {themeScene === 'tet' && (
+              <button
+                onClick={() => {
+                  setAuthTab('login');
+                  setIsAuthModalOpen(true);
+                }}
+                className="h-12 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-extrabold text-xs flex items-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer"
+                title="Nhận Lộc Đầu Xuân"
+              >
+                <span>🧧</span>
+                <span>Khai Xuân Nhận Lộc</span>
+              </button>
+            )}
+          </div>
+        </main>
+
+        {/* Right Side: 3D Festive Tết Showcase Card (when in Tet Mode) */}
+        {themeScene === 'tet' && (
+          <aside
+            aria-label="Không Khí Tết 2026"
+            className="hidden lg:flex absolute right-10 xl:right-16 top-1/2 -translate-y-1/2 z-10 w-[420px] xl:w-[460px] flex-col items-center pointer-events-auto"
+          >
+            {/* 3D Festive Glassmorphic Card */}
+            <div className="relative group p-2.5 rounded-3xl bg-gradient-to-b from-amber-400/40 via-red-500/20 to-amber-500/30 backdrop-blur-md border-2 border-amber-400/70 shadow-2xl shadow-red-900/20 transition-all hover:scale-[1.02]">
+              <div className="relative rounded-2xl overflow-hidden shadow-inner bg-slate-950">
+                <img
+                  src="/tet_hero.jpg"
+                  alt="Múa Lân Ngày Tết 2026"
+                  className="w-full h-[290px] xl:h-[330px] object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                {/* Subtle gradient overlay & tags */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent pointer-events-none" />
+
+                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600/90 text-white text-xs font-extrabold shadow-md border border-amber-300 backdrop-blur-xs">
+                  <span>🌸</span>
+                  <span>Xuân Bính Ngọ 2026</span>
+                </div>
+
+                <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/90 text-slate-950 text-[11px] font-extrabold shadow-md border border-yellow-200">
+                  <span>🧧</span>
+                  <span>Múa Lân Rước Lộc</span>
+                </div>
+
+                <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-center justify-between text-white">
+                  <div>
+                    <div className="text-xs font-extrabold text-amber-300">
+                      Lễ Hội Mùa Xuân & Tri Thức Doanh Nghiệp
+                    </div>
+                    <div className="text-[11px] text-slate-200">
+                      Hoa Mai Đào Nở Rộ • Vạn Sự Hanh Thông
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setAuthTab('login');
+                      setIsAuthModalOpen(true);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-white font-extrabold text-xs shadow-md active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>🧧</span>
+                    <span>Đăng Nhập</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Auspicious Traditional Couplet Ribbon */}
+            <div className="mt-3.5 px-4 py-2 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-amber-300/80 dark:border-amber-500/50 shadow-md text-center max-w-sm">
+              <div className="text-xs font-extrabold text-red-600 dark:text-red-400 tracking-wide">
+                {t.tetBannerCouplet}
+              </div>
+            </div>
+          </aside>
+        )}
+      </div>
+
+      {/* TET HOLIDAY BACKGROUND MUSIC PLAYER (PLAYS ONCE, NO LOOP) */}
+      <TetMusicPlayer lang={lang} />
 
       {/* AUTHENTICATION MODAL (LOGIN & REGISTER) */}
       {isAuthModalOpen && (

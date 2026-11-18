@@ -187,3 +187,43 @@
 .fish-swim-2 {
   animation: fish-swim 18s ease-in-out 3s infinite reverse;
 }
+
+/* Tet Holiday Lanterns & Festive Atmosphere */
+@keyframes swingLantern {
+  0% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes festivePulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3), 0 0 30px rgba(245, 158, 11, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.5), 0 0 45px rgba(245, 158, 11, 0.35);
+    transform: scale(1.015);
+  }
+}
+
+@keyframes goldShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.festive-gold-text {
+  background: linear-gradient(90deg, #d97706, #fbbf24, #f59e0b, #d97706);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: goldShimmer 4s linear infinite;
+}
+

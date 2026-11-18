@@ -17,7 +17,7 @@ export const App: React.FC = () => {
   // Authentication & Users state
   const [registeredUsers, setRegisteredUsers] = useState<User[]>(MockCorporateUsers);
   const [currentUser, setCurrentUser] = useState<User>(MockCorporateUsers[0]);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   // Language state: 'vi' | 'en' (Full bilingual support)
   const [lang, setLang] = useState<Language>(() => {

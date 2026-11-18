@@ -100,6 +100,17 @@ export const translations = {
     logoutButton: 'Đăng Xuất Khỏi Hệ Thống',
     closeButton: 'Đóng',
 
+    // Tet Holiday & Festive Theme
+    tetBadge: 'Xuân Bính Ngọ 2026',
+    tetGreeting: 'Chúc Mừng Năm Mới 2026',
+    tetBannerCouplet: 'Vạn Sự Như Ý • An Khang Thịnh Vượng • Tấn Tài Tấn Lộc',
+    tetMusicTrack: 'Ngày Tết Quê Em - Tam Ca Áo Trắng',
+    tetMusicPlaying: 'Đang phát nhạc Tết (1 lần)',
+    tetMusicPaused: 'Tạm dừng nhạc Tết',
+    tetMusicClickToPlay: 'Bật nhạc Tết 🎵',
+    tetTabFestive: 'Không Khí Tết 2026',
+    tetTabAquatic: 'Hồ Cá Koi 3D',
+
     // Auth & Landing
     heroCompanyTag: 'Hệ thống tri thức AI dành cho doanh nghiệp',
     heroLine1: 'Tra cứu quy chế.',
@@ -219,6 +230,17 @@ export const translations = {
     savedSuccess: 'Saved successfully!',
     logoutButton: 'Sign Out from System',
     closeButton: 'Close',
+
+    // Tet Holiday & Festive Theme
+    tetBadge: 'Lunar New Year 2026',
+    tetGreeting: 'Happy Lunar New Year 2026',
+    tetBannerCouplet: 'Peace • Prosperity • Great Fortune & Success',
+    tetMusicTrack: 'Tet Festival Melody - Tam Ca Ao Trang',
+    tetMusicPlaying: 'Tết Music Playing (Plays Once)',
+    tetMusicPaused: 'Tết Music Paused',
+    tetMusicClickToPlay: 'Play Tết Music 🎵',
+    tetTabFestive: 'Tết Holiday 2026',
+    tetTabAquatic: '3D Golden Koi',
 
     // Auth & Landing
     heroCompanyTag: 'Enterprise AI Knowledge Platform',
