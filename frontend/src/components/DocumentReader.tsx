@@ -204,11 +204,11 @@ export const DocumentReader: React.FC<DocumentReaderProps> = ({
               <div className="pt-8 border-t border-slate-200 grid grid-cols-2 gap-8 text-center text-xs">
                 <div>
                   <p className="font-bold text-slate-900">TRƯỞNG PHÒNG BAN HÀNH</p>
-                  <p className="text-slate-500 italic mt-8 font-mono text-[11px]">(Đã ký duyệt)</p>
+                  <p className="text-slate-500 italic mt-8 font-mono text-[11px]">Đã ký duyệt</p>
                 </div>
                 <div>
                   <p className="font-bold text-slate-900">TỔNG GIÁM ĐỐC PHÊ DUYỆT</p>
-                  <p className="text-slate-500 italic mt-8 font-mono text-[11px]">(Ký số điện tử)</p>
+                  <p className="text-slate-500 italic mt-8 font-mono text-[11px]">Ký số điện tử</p>
                 </div>
               </div>
             </div>

@@ -123,6 +123,7 @@ export const CorporateAuthModal: React.FC<CorporateAuthModalProps> = ({
                 <button
                   key={u.id}
                   onClick={() => {
+                    if (u.token) localStorage.setItem('documind_token', u.token);
                     onSelectUser(u);
                     onClose();
                   }}

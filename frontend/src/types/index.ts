@@ -44,6 +44,10 @@ export interface Document {
   is_public: boolean;
   current_version: number;
   created_at: string;
+  content?: string;
+  summary?: string;
+  extracted_text?: string;
+  chunks?: { page_number: number; heading: string; text: string }[];
 }
 
 export interface Citation {

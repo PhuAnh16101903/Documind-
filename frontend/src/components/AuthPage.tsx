@@ -149,6 +149,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       return;
     }
 
+    if (user.token) {
+      localStorage.setItem('documind_token', user.token);
+    }
     window.location.hash = '';
     onLoginSuccess(user);
   };
