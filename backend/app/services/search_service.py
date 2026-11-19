@@ -21,12 +21,51 @@ VIETNAMESE_STOP_WORDS = {
 _HYBRID_SEARCH_CACHE: Dict[str, Tuple[float, List[Dict[str, Any]]]] = {}
 CACHE_TTL_SECONDS = 300  # 5 minutes TTL
 
+# Colloquial and Semantic Synonym Expansions for Enterprise & Academic Documents
+QUERY_EXPANSIONS = {
+    "tmdt": ["thuong mai dien tu", "website", "ecofresh"],
+    "phuc vu": ["khach hang", "doi tuong", "muc tieu", "chan dung", "nguoi dung", "phan khuc", "tieu dung"],
+    "nhung ai": ["khach hang", "doi tuong", "muc tieu", "chan dung", "nguoi dung", "phan khuc"],
+    "cho ai": ["khach hang", "doi tuong", "muc tieu", "chan dung", "nguoi dung"],
+    "danh cho ai": ["khach hang", "doi tuong", "muc tieu", "chan dung", "nguoi dung"],
+    "ai mua": ["khach hang", "nguoi tieu dung"],
+    "ai dung": ["nguoi dung", "khach hang"],
+    "muc dich": ["y tuong", "ly do", "muc tieu", "giai phap", "chien luoc", "de lam gi"],
+    "de lam gi": ["muc dich", "muc tieu", "y tuong", "ly do", "giai phap"],
+    "lam gi": ["muc dich", "muc tieu", "y tuong", "ly do"],
+    "kiem tien": ["doanh thu", "nguon thu", "mo hinh kinh doanh", "loi nhuan"],
+    "doanh thu": ["nguon thu", "tai chinh", "doanh so", "loi nhuan", "kinh doanh", "tien"],
+    "cong nghe": ["kien truc", "he thong", "backend", "frontend", "co so du lieu", "mysql", "restful", "ngon ngu"],
+    "dung gi": ["cong nghe", "kien truc", "he thong", "ngon ngu"],
+    "viet bang gi": ["cong nghe", "kien truc", "ngon ngu", "backend", "frontend"],
+    "chuc nang": ["tinh nang", "module", "dac ta", "yeu cau", "giao dien"],
+    "tinh nang": ["chuc nang", "module", "dac ta", "yeu cau"],
+    "thanh vien": ["nhom", "phan cong", "vai tro", "nhan su", "tac gia"],
+    "may nguoi": ["thanh vien", "nhom", "phan cong", "nhan su"],
+    "ai lam": ["thanh vien", "nhom", "phan cong"],
+}
+
 class HybridSearchService:
     @staticmethod
     def clear_cache():
         """Clear search cache when documents are uploaded or updated"""
         global _HYBRID_SEARCH_CACHE
         _HYBRID_SEARCH_CACHE.clear()
+
+    @staticmethod
+    def expand_query_terms(query: str) -> str:
+        """Expand colloquial phrases and abbreviations into semantic synonyms"""
+        q_norm = remove_vietnamese_tones(query.lower())
+        extra_phrases = []
+
+        for phrase, synonyms in QUERY_EXPANSIONS.items():
+            phrase_norm = remove_vietnamese_tones(phrase)
+            if phrase_norm in q_norm:
+                extra_phrases.extend(synonyms)
+
+        if extra_phrases:
+            return f"{query} {' '.join(extra_phrases)}"
+        return query
 
     @staticmethod
     def tokenize(text: str) -> List[str]:
@@ -78,13 +117,19 @@ class HybridSearchService:
             if now - ts < CACHE_TTL_SECONDS:
                 return [c.copy() for c in cached_result]
 
-        # 1. BM25 Scoring across Document Title, Heading and Content
+        # 1. BM25 Scoring with Query Semantic Expansion
         corpus = [
             cls.tokenize(f"{c.get('document_title', '')} {c.get('heading', '')} {c.get('content', '')}")
             for c in candidates
         ]
-        tokenized_query = cls.tokenize(query)
         
+        # Expand query with synonyms & colloquial abbreviations
+        expanded_query_str = cls.expand_query_terms(query)
+        tokenized_query = cls.tokenize(expanded_query_str)
+        
+        if not tokenized_query:
+            tokenized_query = cls.tokenize(query)
+
         if not tokenized_query:
             return []
 
@@ -95,27 +140,39 @@ class HybridSearchService:
         max_bm25 = max(bm25_raw_scores) if max(bm25_raw_scores) > 0 else 1.0
         bm25_norm_scores = [s / max_bm25 for s in bm25_raw_scores]
 
-        # 2. Vector Scoring (Mock semantic similarity if embeddings not computed)
+        # 2. Vector Scoring & Heading Boost
         vector_scores = []
+        unique_query_terms = set(tokenized_query)
+
         for idx, c in enumerate(candidates):
-            overlap = len(set(tokenized_query).intersection(set(corpus[idx])))
-            v_score = overlap / max(1, len(tokenized_query))
+            overlap = len(unique_query_terms.intersection(set(corpus[idx])))
+            v_score = overlap / max(1, len(unique_query_terms))
             vector_scores.append(v_score)
 
-        # 3. Combine scores with Term Match Ratio Threshold (BA v2.0 Anti-Drift)
+        # 3. Combine scores with Semantic Heading Boost
         ranked = []
-        unique_query_terms = set(tokenized_query)
-        
+        is_table_query = any(k in query.lower() for k in ["bang", "bảng", "so sanh", "so sánh", "danh muc"])
+
         for i, c in enumerate(candidates):
             candidate_terms = set(corpus[i])
             overlap_terms = unique_query_terms.intersection(candidate_terms)
             term_match_ratio = len(overlap_terms) / max(1, len(unique_query_terms))
 
-            # If overlap exists or general report match
-            if term_match_ratio < 0.15 and len(overlap_terms) == 0:
-                continue
+            heading_text = (c.get("heading") or "").lower()
+            heading_tokens = set(cls.tokenize(heading_text))
+            heading_overlap = len(unique_query_terms.intersection(heading_tokens))
 
-            final_score = alpha * vector_scores[i] + (1 - alpha) * bm25_norm_scores[i]
+            # Heading boost: +0.50 if section heading directly matches query intent
+            heading_boost = 0.50 if heading_overlap >= 2 else (0.20 if heading_overlap == 1 else 0.0)
+
+            # Downweight massive data tables if user is asking qualitative/conceptual question
+            table_penalty = 0.0
+            if "(bảng dữ liệu)" in heading_text and not is_table_query:
+                table_penalty = 0.35
+
+            final_score = alpha * vector_scores[i] + (1 - alpha) * bm25_norm_scores[i] + heading_boost - table_penalty
+            final_score = max(0.01, final_score)
+
             if final_score > 0.05 or len(overlap_terms) > 0:
                 item = c.copy()
                 item["score"] = round(float(final_score), 4)

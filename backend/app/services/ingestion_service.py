@@ -39,29 +39,62 @@ class IngestionService:
 
     @staticmethod
     def parse_docx(file_path: str) -> List[Dict[str, Any]]:
-        """Parse DOCX preserving Heading 1, 2, 3 hierarchy and tables"""
+        """Parse DOCX preserving Heading hierarchy, bullet lists and table structures"""
+        import re
         chunks = []
         doc = DocxDocument(file_path)
         current_heading = "General"
+        current_buffer = []
+
+        def is_heading(text: str, style_name: str) -> bool:
+            if style_name.startswith("Heading"):
+                return True
+            # Detect section numbers like "1.3.", "PHẦN 1", "3.1. Mục đích..."
+            if re.match(r"^(PHẦN \d+|Chương \d+|\d+\.\d+\.?|\d+\. |\bMục \d+)", text) and len(text) < 140:
+                return True
+            return False
 
         for para in doc.paragraphs:
             text = para.text.strip()
             if not text:
                 continue
 
-            # Detect headings
-            if para.style.name.startswith("Heading"):
+            if is_heading(text, para.style.name):
+                if current_buffer:
+                    chunks.append({
+                        "content": "\n".join(current_buffer),
+                        "page_number": None,
+                        "heading": current_heading,
+                        "sheet_name": None,
+                        "cell_range": None
+                    })
+                    current_buffer = []
                 current_heading = text
                 continue
 
-            if len(text) > 30:
+            is_bullet = text.startswith(("-", "+", "•", "*", "a)", "b)", "c)", "d)"))
+            current_buffer.append(text)
+            joined_len = sum(len(x) for x in current_buffer)
+
+            # Flush when reaching semantic size limit, keeping bullet lists together
+            if joined_len > 700 and not text.endswith(":") and not is_bullet:
                 chunks.append({
-                    "content": text,
+                    "content": "\n".join(current_buffer),
                     "page_number": None,
                     "heading": current_heading,
                     "sheet_name": None,
                     "cell_range": None
                 })
+                current_buffer = []
+
+        if current_buffer:
+            chunks.append({
+                "content": "\n".join(current_buffer),
+                "page_number": None,
+                "heading": current_heading,
+                "sheet_name": None,
+                "cell_range": None
+            })
 
         # Parse tables
         for t_idx, table in enumerate(doc.tables):
