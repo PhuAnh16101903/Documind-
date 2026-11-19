@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   FileText,
   FileSpreadsheet,
@@ -12,11 +12,27 @@ import {
   GitCompare,
   Upload,
   X,
+  ArrowUpDown,
+  RotateCcw,
 } from 'lucide-react';
 import { Document, UIThemeId } from '../types';
 import { DocumentDiffModal } from './DocumentDiffModal';
 import { TetFloralBorders } from './TetFloralBorders';
 import { Language, translations } from '../services/i18n';
+
+// Chuẩn hóa tiếng Việt bỏ dấu giúp tìm kiếm không dấu mượt mà
+const removeVietnameseTones = (str: string): string => {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase();
+};
+
+const ALPHABET = [
+  'ALL', 'A', 'B', 'C', 'D', 'E', 'G', 'H', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Y'
+];
 
 interface KnowledgeExplorerProps {
   documents: Document[];
@@ -40,11 +56,25 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [filterType, setFilterType] = useState<string>('all');
   const [searchFilter, setSearchFilter] = useState('');
+  const [selectedLetter, setSelectedLetter] = useState<string>('ALL');
+  const [sortBy, setSortBy] = useState<'date-desc' | 'name-asc' | 'name-desc' | 'size-desc'>('name-asc');
   const [isDiffOpen, setIsDiffOpen] = useState(false);
   const [activeStep, setActiveStep] = useState<number>(1);
   const [showHolidayBanner, setShowHolidayBanner] = useState(true);
 
   const isLight = themeMode === 'light';
+
+  // Tập hợp các chữ cái đầu thực tế có tài liệu trong kho
+  const availableLetters = useMemo(() => {
+    const letters = new Set<string>();
+    documents.forEach((d) => {
+      const clean = removeVietnameseTones(d.title.trim());
+      if (clean.length > 0) {
+        letters.add(clean[0].toUpperCase());
+      }
+    });
+    return letters;
+  }, [documents]);
 
   const getCardTheme = (type: string) => {
     switch (type.toLowerCase()) {
@@ -70,14 +100,54 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
     }
   };
 
-  const filteredDocs = documents.filter((doc) => {
-    const matchType =
-      filterType === 'all' || doc.file_type.toLowerCase() === filterType.toLowerCase();
-    const matchSearch =
-      doc.title.toLowerCase().includes(searchFilter.toLowerCase()) ||
-      doc.file_name.toLowerCase().includes(searchFilter.toLowerCase());
-    return matchType && matchSearch;
-  });
+  // Lọc tài liệu theo: Định dạng + Từ khóa (có/không dấu) + Chữ cái đầu (A-Z) + Sắp xếp
+  const filteredDocs = useMemo(() => {
+    return documents
+      .filter((doc) => {
+        // 1. Lọc theo định dạng file (ALL, PDF, DOCX...)
+        const matchType =
+          filterType === 'all' || doc.file_type.toLowerCase() === filterType.toLowerCase();
+
+        // 2. Lọc theo ô tìm kiếm tên (hỗ trợ cả tiếng Việt có dấu và không dấu)
+        const q = searchFilter.trim().toLowerCase();
+        const qNorm = removeVietnameseTones(q);
+        const titleNorm = removeVietnameseTones(doc.title);
+        const fileNorm = removeVietnameseTones(doc.file_name);
+
+        const matchSearch =
+          !q ||
+          doc.title.toLowerCase().includes(q) ||
+          doc.file_name.toLowerCase().includes(q) ||
+          titleNorm.includes(qNorm) ||
+          fileNorm.includes(qNorm);
+
+        // 3. Lọc theo chữ cái đầu A-Z
+        const cleanTitle = removeVietnameseTones(doc.title.trim());
+        const firstLetter = cleanTitle.length > 0 ? cleanTitle[0].toUpperCase() : '';
+        const matchLetter = selectedLetter === 'ALL' || firstLetter === selectedLetter;
+
+        return matchType && matchSearch && matchLetter;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'name-asc') {
+          return a.title.localeCompare(b.title, 'vi');
+        }
+        if (sortBy === 'name-desc') {
+          return b.title.localeCompare(a.title, 'vi');
+        }
+        if (sortBy === 'size-desc') {
+          return (b.file_size_bytes || 0) - (a.file_size_bytes || 0);
+        }
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+      });
+  }, [documents, filterType, searchFilter, selectedLetter, sortBy]);
+
+  const handleResetFilters = () => {
+    setSearchFilter('');
+    setSelectedLetter('ALL');
+    setFilterType('all');
+    setSortBy('name-asc');
+  };
 
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
@@ -376,148 +446,247 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
         >
 
           {/* Filters & Search Toolbar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3 pointer-events-none" />
-              <input
-                type="text"
-                value={searchFilter}
-                onChange={(e) => setSearchFilter(e.target.value)}
-                placeholder={t.filterPlaceholder}
-                className={`w-full h-9 pl-9 pr-3 rounded-xl border text-xs focus:outline-none transition-colors font-sans ${
-                  isLight
-                    ? 'bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:border-indigo-500'
-                    : 'bg-slate-950 border-slate-800 text-slate-100 focus:border-indigo-500'
-                }`}
-              />
+          <div className="space-y-3 pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              {/* Search input by Name */}
+              <div className="relative flex-1 max-w-md">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchFilter}
+                  onChange={(e) => setSearchFilter(e.target.value)}
+                  placeholder={lang === 'vi' ? 'Tìm theo tên văn bản, mã số (gõ có hoặc không dấu)...' : 'Search by title, filename, code...'}
+                  className={`w-full h-9 pl-9 pr-8 rounded-xl border text-xs focus:outline-none transition-colors font-sans ${
+                    isLight
+                      ? 'bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:border-red-500'
+                      : 'bg-slate-950 border-slate-800 text-slate-100 focus:border-amber-500'
+                  }`}
+                />
+                {searchFilter && (
+                  <button
+                    onClick={() => setSearchFilter('')}
+                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                    title="Xóa tìm kiếm"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Sort Dropdown: A-Z, Z-A, Date, Size */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">Sắp xếp:</span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="h-9 px-2.5 rounded-xl border text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:border-red-500 font-sans cursor-pointer"
+                  >
+                    <option value="name-asc">Tên: A → Z</option>
+                    <option value="name-desc">Tên: Z → A</option>
+                    <option value="date-desc">Mới cập nhật</option>
+                    <option value="size-desc">Dung lượng lớn</option>
+                  </select>
+                </div>
+
+                {/* Type Filter Buttons */}
+                <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold">
+                  {['all', 'pdf', 'docx'].map((tt) => (
+                    <button
+                      key={tt}
+                      onClick={() => setFilterType(tt)}
+                      className={`px-2.5 py-1 rounded-lg uppercase text-[10px] font-mono transition-all cursor-pointer ${
+                        filterType === tt
+                          ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-bold'
+                          : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      {tt === 'all' ? t.filterAll : tt}
+                    </button>
+                  ))}
+                </div>
+
+                {/* View mode */}
+                <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                      viewMode === 'grid'
+                        ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                        : 'text-slate-400 hover:text-slate-700'
+                    }`}
+                    title="Grid"
+                  >
+                    <Grid className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('table')}
+                    className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                      viewMode === 'table'
+                        ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                        : 'text-slate-400 hover:text-slate-700'
+                    }`}
+                    title="Table"
+                  >
+                    <List className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              {/* Type Filter Buttons */}
-              <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold">
-                {['all', 'pdf', 'docx'].map((tt) => (
+            {/* Alphabetical Quick Filter Ribbon (Lọc nhanh theo chữ cái đầu A-Z) */}
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 pt-1 scrollbar-none text-[11px] font-mono border-t border-slate-100 dark:border-slate-800/80">
+              <span className="text-[10px] text-slate-500 font-sans font-bold mr-1 flex items-center gap-1 flex-shrink-0">
+                <span>Lọc chữ cái A-Z:</span>
+              </span>
+              {ALPHABET.map((letter) => {
+                const isSelected = selectedLetter === letter;
+                const hasDocs = letter === 'ALL' || availableLetters.has(letter);
+                return (
                   <button
-                    key={tt}
-                    onClick={() => setFilterType(tt)}
-                    className={`px-2.5 py-1 rounded-lg uppercase text-[10px] font-mono transition-all ${
-                      filterType === tt
-                        ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-bold'
-                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                    key={letter}
+                    onClick={() => setSelectedLetter(letter)}
+                    disabled={!hasDocs}
+                    className={`h-6 min-w-[24px] px-1.5 rounded-md flex items-center justify-center transition-all flex-shrink-0 cursor-pointer ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold shadow-xs scale-105'
+                        : hasDocs
+                        ? isLight
+                          ? 'bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-red-700 font-semibold border border-slate-200'
+                          : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-300 font-semibold border border-slate-700'
+                        : 'opacity-30 text-slate-400 cursor-not-allowed border border-transparent'
+                    }`}
+                    title={
+                      letter === 'ALL'
+                        ? 'Tất cả chữ cái'
+                        : hasDocs
+                        ? `Lọc tài liệu bắt đầu bằng chữ ${letter}`
+                        : `Không có tài liệu bắt đầu bằng chữ ${letter}`
+                    }
+                  >
+                    {letter === 'ALL' ? (lang === 'vi' ? 'TẤT CẢ' : 'ALL') : letter}
+                  </button>
+                );
+              })}
+
+              {/* Status counter & Reset button */}
+              <div className="ml-auto pl-3 flex items-center gap-2 flex-shrink-0">
+                <span className="text-[10px] text-slate-500 font-sans font-medium">
+                  {lang === 'vi' ? `Hiển thị ${filteredDocs.length}/${documents.length} tài liệu` : `Showing ${filteredDocs.length}/${documents.length}`}
+                </span>
+                {(searchFilter || selectedLetter !== 'ALL' || filterType !== 'all') && (
+                  <button
+                    onClick={handleResetFilters}
+                    className="text-[10px] text-red-600 hover:text-red-700 dark:text-amber-400 font-sans font-bold flex items-center gap-0.5 hover:underline cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Đặt lại</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Document Cards Grid or Empty State */}
+          {filteredDocs.length === 0 ? (
+            <div className="py-12 flex flex-col items-center justify-center text-center p-6 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-dashed border-slate-200 dark:border-slate-800">
+              <Search className="w-8 h-8 text-slate-400 mb-2" />
+              <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">
+                {lang === 'vi' ? 'Không tìm thấy tài liệu phù hợp' : 'No matching documents found'}
+              </h4>
+              <p className="text-xs text-slate-500 max-w-sm mb-3">
+                {lang === 'vi'
+                  ? `Không có tài liệu nào khớp với từ khóa "${searchFilter}" ${selectedLetter !== 'ALL' ? `hoặc chữ cái "${selectedLetter}"` : ''}. Thử tìm bằng từ khóa khác hoặc gõ tiếng Việt không dấu.`
+                  : 'Try searching with another keyword or clearing filters.'}
+              </p>
+              <button
+                onClick={handleResetFilters}
+                className="px-3.5 py-1.5 rounded-xl bg-red-600 text-white text-xs font-bold hover:bg-red-700 shadow-sm cursor-pointer"
+              >
+                {lang === 'vi' ? 'Xóa bộ lọc & Hiển thị tất cả' : 'Clear filters'}
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+              {filteredDocs.map((doc) => {
+                const cardTheme = getCardTheme(doc.file_type);
+                return (
+                  <div
+                    key={doc.id}
+                    className={`group rounded-2xl border transition-all duration-300 p-4 flex flex-col justify-between shadow-xs hover:shadow-md ${
+                      cardTheme.bg
+                    } ${
+                      isLight
+                        ? 'border-slate-200/90 hover:border-blue-400'
+                        : 'border-slate-800 hover:border-blue-500'
                     }`}
                   >
-                    {tt === 'all' ? t.filterAll : tt}
-                  </button>
-                ))}
-              </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className={`p-2 rounded-xl flex items-center justify-center ${cardTheme.iconBox}`}>
+                          {doc.file_type === 'pdf' ? (
+                            <FileText className="w-4 h-4" />
+                          ) : (
+                            <FileSpreadsheet className="w-4 h-4" />
+                          )}
+                        </div>
 
-              {/* View mode */}
-              <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-1.5 rounded-lg transition-all ${
-                    viewMode === 'grid'
-                      ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
-                      : 'text-slate-400 hover:text-slate-700'
-                  }`}
-                  title="Grid"
-                >
-                  <Grid className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => setViewMode('table')}
-                  className={`p-1.5 rounded-lg transition-all ${
-                    viewMode === 'table'
-                      ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
-                      : 'text-slate-400 hover:text-slate-700'
-                  }`}
-                  title="Table"
-                >
-                  <List className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Document Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
-            {filteredDocs.map((doc) => {
-              const cardTheme = getCardTheme(doc.file_type);
-              return (
-                <div
-                  key={doc.id}
-                  className={`group rounded-2xl border transition-all duration-300 p-4 flex flex-col justify-between shadow-xs hover:shadow-md ${
-                    cardTheme.bg
-                  } ${
-                    isLight
-                      ? 'border-slate-200/90 hover:border-blue-400'
-                      : 'border-slate-800 hover:border-blue-500'
-                  }`}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className={`p-2 rounded-xl flex items-center justify-center ${cardTheme.iconBox}`}>
-                        {doc.file_type === 'pdf' ? (
-                          <FileText className="w-4 h-4" />
-                        ) : (
-                          <FileSpreadsheet className="w-4 h-4" />
-                        )}
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${cardTheme.versionBadge}`}>
+                            v{doc.current_version}.0
+                          </span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                            <span>{t.indexedStatus}</span>
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5">
-                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${cardTheme.versionBadge}`}>
-                          v{doc.current_version}.0
+                      <div>
+                        <h3
+                          onClick={() => onSelectDocument(doc)}
+                          className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[#0066cc] dark:group-hover:text-blue-400 transition-colors line-clamp-2 cursor-pointer"
+                        >
+                          {doc.title}
+                        </h3>
+                        <p className="text-[11px] text-slate-500 font-mono truncate mt-1">
+                          {doc.file_name}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono pt-1">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          <span>{new Date(doc.created_at).toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US')}</span>
                         </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                          <span>{t.indexedStatus}</span>
-                        </span>
+                        <span>{formatFileSize(doc.file_size_bytes)}</span>
                       </div>
                     </div>
 
-                    <div>
-                      <h3
-                        onClick={() => onSelectDocument(doc)}
-                        className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[#0066cc] dark:group-hover:text-blue-400 transition-colors line-clamp-2 cursor-pointer"
-                      >
-                        {doc.title}
-                      </h3>
-                      <p className="text-[11px] text-slate-500 font-mono truncate mt-1">
-                        {doc.file_name}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono pt-1">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        <span>{new Date(doc.created_at).toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US')}</span>
-                      </span>
-                      <span>{formatFileSize(doc.file_size_bytes)}</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                    <button
-                      onClick={() => onSelectDocument(doc)}
-                      className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1"
-                    >
-                      <Eye className="w-3 h-3" />
-                      <span>{t.viewCard}</span>
-                    </button>
-
-                    {onAskAI && (
+                    <div className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                       <button
-                        onClick={() => onAskAI(doc)}
-                        className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs"
+                        onClick={() => onSelectDocument(doc)}
+                        className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1 cursor-pointer"
                       >
-                        <Sparkles className="w-3 h-3 text-purple-500" />
-                        <span>{t.askAI}</span>
+                        <Eye className="w-3 h-3" />
+                        <span>{t.viewCard}</span>
                       </button>
-                    )}
+
+                      {onAskAI && (
+                        <button
+                          onClick={() => onAskAI(doc)}
+                          className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs cursor-pointer"
+                        >
+                          <Sparkles className="w-3 h-3 text-purple-500" />
+                          <span>{t.askAI}</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
