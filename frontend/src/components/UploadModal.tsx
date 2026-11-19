@@ -170,9 +170,42 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       const ext = currentFile.name.split('.').pop() || 'pdf';
       const cleanTitle = currentFile.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
 
-      // Build rich document object with semantic structure
+      // Try uploading to backend API to parse and store
+      let serverDoc: Document | null = null;
+      try {
+        serverDoc = await ApiService.uploadDocument(currentFile, cleanTitle, deptId, isPublic);
+      } catch {
+        serverDoc = null;
+      }
+
+      // Determine real extracted content from server parsing or client reader
+      const finalContent = serverDoc?.content || extractedContent || '';
+      let finalChunks: { page_number: number; heading: string; text: string }[] = [];
+
+      if (serverDoc?.chunks && serverDoc.chunks.length > 0) {
+        finalChunks = serverDoc.chunks.map((c: any, cIdx: number) => ({
+          page_number: c.page_number || cIdx + 1,
+          heading: c.heading || `Mục ${cIdx + 1}. Nội dung tài liệu`,
+          text: c.content || c.text || '',
+        }));
+      } else if (finalContent.trim().length > 0) {
+        const paragraphs = finalContent
+          .split(/\r?\n\s*\r?\n|\r?\n/)
+          .map((p) => p.trim())
+          .filter((p) => p.length > 8);
+
+        if (paragraphs.length > 0) {
+          finalChunks = paragraphs.slice(0, 8).map((p, pIdx) => ({
+            page_number: Math.floor(pIdx / 3) + 1,
+            heading: `Mục ${pIdx + 1}. Trích đoạn tài liệu thực tế`,
+            text: p,
+          }));
+        }
+      }
+
+      // Build rich document object with real content
       const newDoc: Document = {
-        id: Date.now() + fIdx,
+        id: serverDoc?.id || Date.now() + fIdx,
         title: cleanTitle,
         file_name: currentFile.name,
         file_type: ext,
@@ -183,35 +216,12 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         is_public: isPublic,
         current_version: 1,
         created_at: new Date().toISOString(),
-        content:
-          extractedContent ||
-          `Văn bản ${cleanTitle} ghi nhận các thông số vận hành, kế hoạch triển khai và các chỉ tiêu trọng yếu của bộ phận.`,
-        summary: `Văn bản ${cleanTitle} gồm các nội dung cốt lõi: 1. Mục tiêu và phạm vi thực hiện; 2. Thống kê kết quả chỉ tiêu đạt 104.8%; 3. Đánh giá rủi ro và các giải pháp thực thi trọng tâm.`,
-        chunks: [
-          {
-            page_number: 1,
-            heading: 'Phần I. Tổng quan & Phạm vi văn bản',
-            text: `Văn bản ${cleanTitle} mã hiệu DOC-${(Date.now() + fIdx) % 10000} do bộ phận chủ trì biên soạn nhằm mục đích báo cáo kết quả và kế hoạch hoạt động. Toàn bộ nội dung tuân thủ quy chuẩn quản lý thông tin nội bộ.`,
-          },
-          {
-            page_number: 2,
-            heading: 'Phần II. Số liệu & Kết quả then chốt',
-            text: `Tiến độ hoàn thành chỉ tiêu đạt 104.8% kế hoạch đề ra. Ngân sách thực hiện tối ưu 15% so với định mức cho phép. Tỷ lệ hoàn thành công việc đúng hạn đạt 98.5%. Không ghi nhận sự cố hay vi phạm an toàn thông tin.`,
-          },
-          {
-            page_number: 3,
-            heading: 'Phần III. Kết luận & Đề xuất thực thi',
-            text: `Đề xuất ban lãnh đạo phê duyệt nghiệm thu các giai đoạn đã hoàn thành và tiếp tục phân bổ nguồn lực cho các hạng mục trọng điểm kế tiếp trong chu kỳ mới.`,
-          },
-        ],
+        content: finalContent,
+        summary:
+          finalContent.slice(0, 300) ||
+          `Tài liệu ${cleanTitle} đã được lập chỉ mục và lưu trữ tại kho dữ liệu.`,
+        chunks: finalChunks,
       };
-
-      // Try uploading to backend API if available
-      try {
-        await ApiService.uploadDocument(currentFile, cleanTitle, deptId, isPublic);
-      } catch {
-        // Fallback already handled
-      }
 
       // Add to mock documents store if not already present
       const existsIndex = MockData.documents.findIndex(

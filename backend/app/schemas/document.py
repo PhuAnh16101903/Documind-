@@ -17,6 +17,8 @@ class DocumentResponse(BaseModel):
     current_version: int
     created_at: datetime
     updated_at: datetime
+    content: Optional[str] = None
+    parsed_chunks: Optional[List[dict]] = None
 
     class Config:
         from_attributes = True

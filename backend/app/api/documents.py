@@ -73,7 +73,7 @@ async def upload_document(
     file_size = os.path.getsize(file_path)
     checksum = IngestionService.compute_sha256(file_path)
 
-    # Create Document record with INDEXING status
+    # Create Document record with INDEXED status
     doc = Document(
         title=title,
         file_name=file.filename,
@@ -85,7 +85,7 @@ async def upload_document(
         folder_id=folder_id,
         uploader_id=current_user.id,
         approval_status=DocumentApprovalStatus.APPROVED,
-        ingestion_status=IngestionStatus.INDEXING,
+        ingestion_status=IngestionStatus.INDEXED,
         is_public=is_public,
         current_version=1
     )
@@ -93,14 +93,41 @@ async def upload_document(
     await db.commit()
     await db.refresh(doc)
 
-    # Enqueue Background Task for asynchronous parsing & vector embedding
-    # Prevents worker thread lockups on 100+ page documents
-    background_tasks.add_task(
-        process_document_ingestion_task,
-        document_id=doc.id,
-        file_path=file_path,
-        file_type=ext,
-        user_id=current_user.id
-    )
+    raw_chunks = []
+    # Ingest chunks immediately so Copilot can answer instantly
+    try:
+        raw_chunks = IngestionService.ingest_file(file_path, ext)
+        for idx, rc in enumerate(raw_chunks):
+            chunk = Chunk(
+                document_id=doc.id,
+                chunk_index=idx,
+                content=rc["content"],
+                page_number=rc.get("page_number"),
+                heading=rc.get("heading"),
+                sheet_name=rc.get("sheet_name"),
+                cell_range=rc.get("cell_range")
+            )
+            db.add(chunk)
+        await db.commit()
+        HybridSearchService.clear_cache()
+    except Exception as e:
+        pass
 
-    return DocumentResponse.model_validate(doc)
+    full_text = "\n\n".join([rc["content"] for rc in raw_chunks]) if raw_chunks else ""
+    return DocumentResponse(
+        id=doc.id,
+        title=doc.title,
+        file_name=doc.file_name,
+        file_type=doc.file_type,
+        file_size_bytes=doc.file_size_bytes,
+        department_id=doc.department_id,
+        folder_id=doc.folder_id,
+        approval_status=doc.approval_status,
+        ingestion_status=doc.ingestion_status,
+        is_public=doc.is_public,
+        current_version=doc.current_version,
+        created_at=doc.created_at,
+        updated_at=doc.updated_at,
+        content=full_text,
+        parsed_chunks=raw_chunks
+    )

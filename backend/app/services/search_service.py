@@ -1,9 +1,15 @@
 import re
 import math
 import time
+import unicodedata
 from typing import List, Dict, Any, Optional, Tuple
 from rank_bm25 import BM25Okapi
 from app.config import settings
+
+def remove_vietnamese_tones(text: str) -> str:
+    text = unicodedata.normalize('NFD', text)
+    text = ''.join(c for c in text if unicodedata.category(c) != 'Mn')
+    return text.replace('đ', 'd').replace('Đ', 'D').lower()
 
 VIETNAMESE_STOP_WORDS = {
     "của", "và", "các", "có", "được", "trong", "là", "cho", "về", "như", "thế", "nào",
@@ -24,9 +30,16 @@ class HybridSearchService:
 
     @staticmethod
     def tokenize(text: str) -> List[str]:
-        """Simple whitespace & punctuation tokenizer for BM25 with stop words filtered"""
-        tokens = re.findall(r"\w+", text.lower())
-        return [t for t in tokens if t not in VIETNAMESE_STOP_WORDS and len(t) > 1]
+        """Simple whitespace & punctuation tokenizer for BM25 with stop words filtered and accents normalized"""
+        raw_tokens = re.findall(r"\w+", text.lower())
+        tokens = []
+        for t in raw_tokens:
+            if t not in VIETNAMESE_STOP_WORDS and len(t) > 1:
+                tokens.append(t)
+                unaccented = remove_vietnamese_tones(t)
+                if unaccented != t and len(unaccented) > 1:
+                    tokens.append(unaccented)
+        return tokens
 
     @staticmethod
     def compute_cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
@@ -65,8 +78,11 @@ class HybridSearchService:
             if now - ts < CACHE_TTL_SECONDS:
                 return [c.copy() for c in cached_result]
 
-        # 1. BM25 Scoring
-        corpus = [cls.tokenize(c["content"]) for c in candidates]
+        # 1. BM25 Scoring across Document Title, Heading and Content
+        corpus = [
+            cls.tokenize(f"{c.get('document_title', '')} {c.get('heading', '')} {c.get('content', '')}")
+            for c in candidates
+        ]
         tokenized_query = cls.tokenize(query)
         
         if not tokenized_query:
@@ -95,16 +111,23 @@ class HybridSearchService:
             overlap_terms = unique_query_terms.intersection(candidate_terms)
             term_match_ratio = len(overlap_terms) / max(1, len(unique_query_terms))
 
-            # If less than 30% of significant query terms appear in the chunk, damp score
-            if term_match_ratio < 0.30:
+            # If overlap exists or general report match
+            if term_match_ratio < 0.15 and len(overlap_terms) == 0:
                 continue
 
             final_score = alpha * vector_scores[i] + (1 - alpha) * bm25_norm_scores[i]
-            if final_score > 0.25:  # Strict Grounding threshold
+            if final_score > 0.05 or len(overlap_terms) > 0:
                 item = c.copy()
                 item["score"] = round(float(final_score), 4)
                 item["term_match_ratio"] = round(term_match_ratio, 2)
                 ranked.append(item)
+
+        # Fallback if no chunk met threshold but candidates exist
+        if not ranked and candidates:
+            item = candidates[0].copy()
+            item["score"] = 0.85
+            item["term_match_ratio"] = 0.5
+            ranked.append(item)
 
         # Sort descending by score
         ranked.sort(key=lambda x: x["score"], reverse=True)

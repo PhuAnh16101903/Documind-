@@ -101,13 +101,19 @@ class RAGService:
 
         # Local High-Fidelity Synthesizer (Fallback for offline/dev)
         first_chunk = retrieved_chunks[0]
-        summary_points = [p.strip() for p in first_chunk["content"].split("\n") if len(p.strip()) > 15][:3]
-        bullet_points = "\n".join([f"• {pt} [Nguồn 1]" for pt in summary_points])
+        content_text = first_chunk["content"].strip()
+        
+        # Extract lines / sentences containing real data from the user's file
+        raw_lines = [line.strip() for line in content_text.split("\n") if len(line.strip()) > 3]
+        if not raw_lines:
+            raw_lines = [s.strip() for s in content_text.split(".") if len(s.strip()) > 5]
+
+        bullet_points = "\n".join([f"• {pt}" for pt in raw_lines[:6]])
         
         local_answer = (
-            f"Dựa trên các tài liệu nội bộ đã được xác thực, tôi xin trả lời câu hỏi của bạn như sau:\n\n"
+            f"📄 **Nội Dung Trích Xuất Từ Văn Bản: {first_chunk.get('document_title', 'Tài liệu')}**\n\n"
+            f"Dựa trên tệp tin bạn đã tải lên, hệ thống đã đọc và trích xuất nguyên bản các dữ liệu sau:\n\n"
             f"{bullet_points}\n\n"
-            f"Thông tin chi tiết được trích dẫn trực tiếp từ **{first_chunk.get('document_title', 'Tài liệu gốc')}** [Nguồn 1]. "
-            f"Bạn có thể click vào nhãn nguồn bên dưới để kiểm chứng lại văn bản gốc."
+            f"Văn bản được kiểm định nguồn gốc: Trang {first_chunk.get('page_number') or 1} [Nguồn 1]."
         )
         return cls.apply_output_guardrail(local_answer), citations

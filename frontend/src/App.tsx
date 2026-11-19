@@ -69,6 +69,18 @@ export const App: React.FC = () => {
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [activeCitation, setActiveCitation] = useState<Citation | null>(null);
 
+  // Fetch latest documents and departments when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      ApiService.getDocuments(selectedDeptId || undefined, currentUser).then((docs) => {
+        setDocuments(docs);
+      });
+      ApiService.getDepartments().then((depts) => {
+        if (depts && depts.length > 0) setDepartments(depts);
+      });
+    }
+  }, [isAuthenticated, selectedDeptId, currentUser]);
+
   useEffect(() => {
     // Keyboard shortcut Ctrl+K / Cmd+K for Universal Hybrid Search
     const handleKeyDown = (e: KeyboardEvent) => {
