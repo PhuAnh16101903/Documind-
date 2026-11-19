@@ -336,6 +336,55 @@ ${
                   </div>
 
                   {/* ========================================================= */}
+                  {/* DIRECT JUMP LINK TO DOCUMENT SECTION */}
+                  {/* ========================================================= */}
+                  {msg.citations && msg.citations.length > 0 && (
+                    <div className="mt-3 pt-2.5 border-t border-slate-800/80 space-y-2">
+                      <div className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold flex items-center gap-1.5">
+                        <ExternalLink className="w-3 h-3 text-indigo-400" />
+                        <span>Đường dẫn trực tiếp đến vị trí trong tài liệu:</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        {msg.citations.map((cite) => (
+                          <button
+                            key={cite.citation_index}
+                            onClick={() => onCitationClick(cite)}
+                            className="w-full text-left p-2.5 rounded-xl bg-gradient-to-r from-indigo-950/70 via-slate-900 to-indigo-950/40 border border-indigo-500/40 hover:border-indigo-400 hover:bg-indigo-900/40 transition-all duration-200 group flex items-center justify-between cursor-pointer shadow-sm hover:shadow-indigo-500/20"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 group-hover:scale-105 transition-transform flex-shrink-0">
+                                {getCitationFileIcon(cite.file_type)}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="text-xs font-semibold text-slate-200 group-hover:text-indigo-200 truncate flex items-center gap-1.5">
+                                  <span>{cite.document_title}</span>
+                                  {cite.page_number && (
+                                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                      Trang {cite.page_number}
+                                    </span>
+                                  )}
+                                  {cite.heading && (
+                                    <span className="text-[10px] font-mono text-slate-400 truncate">
+                                      • {cite.heading}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-[10px] text-slate-400 truncate mt-0.5 italic group-hover:text-slate-300">
+                                  "{cite.exact_quoted_text}"
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 text-[11px] font-medium text-indigo-400 group-hover:text-indigo-300 flex-shrink-0 pl-2">
+                              <span>Mở xem</span>
+                              <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ========================================================= */}
                   {/* BEAUTIFULLY REVAMPED CITATION BENTO CARDS */}
                   {/* ========================================================= */}
                   {msg.citations && msg.citations.length > 0 && (

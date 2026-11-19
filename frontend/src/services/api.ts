@@ -407,12 +407,7 @@ export const ApiService = {
           q.includes('nằm ở đâu')
         ) {
           return {
-            answer: `📍 **Vị Trí Lưu Trữ Của Tài Liệu**:
-• **Tên tệp tin**: \`${matchedDoc.file_name}\`
-• **Phòng ban quản lý**: **${deptName}** [Nguồn 1]
-• **Đường dẫn thư mục**: \`/DoanhNghiep/${deptCode}/2026/${matchedDoc.file_name}\`
-• **Dung lượng**: ${(matchedDoc.file_size_bytes / 1024).toFixed(1)} KB • Phiên bản hiện hành: **v${matchedDoc.current_version}.0**
-• **Quyền truy cập**: ${matchedDoc.is_public ? 'Công khai toàn doanh nghiệp' : `Nội bộ ${deptName} & Ban Lãnh Đạo`}.`,
+            answer: `Tài liệu "${matchedDoc.title}" được lưu trữ tại thư mục \`/DoanhNghiep/${deptCode}/2026/${matchedDoc.file_name}\` do **${deptName}** quản trị (Dung lượng: ${(matchedDoc.file_size_bytes / 1024).toFixed(1)} KB, Phiên bản: v${matchedDoc.current_version}.0).`,
             citations: [
               {
                 citation_index: 1,
@@ -444,11 +439,7 @@ export const ApiService = {
             matchedDoc.chunks?.[1]?.text ||
             'Nội dung chi tiết được quy định tại các mục điều khoản của văn bản.';
           return {
-            answer: `📑 **Vị Trí Mục Lục & Cấu Trúc Điều Khoản**:
-Quy định trong tài liệu \`${matchedDoc.title}\` nằm tại:
-• **Phần / Chương**: **${heading}** [Nguồn 1]
-• **Vị trí trang**: **Trang 2** của tài liệu
-• **Trích dẫn điều khoản**: *"${text}"*`,
+            answer: `Nội dung này nằm tại **${heading}**, **Trang 2** của tài liệu "${matchedDoc.title}".`,
             citations: [
               {
                 citation_index: 1,
@@ -467,8 +458,8 @@ Quy định trong tài liệu \`${matchedDoc.title}\` nằm tại:
           };
         }
 
-        // Intent C: Content overview / What does the document contain / "file báo cáo có gì"
-        let sectionContent = '';
+        // Intent C: Direct answer based on actual document content
+        let directAnswer = '';
         let quotedExcerpt = '';
         let headingTitle = 'Mục 1. Dữ liệu trích xuất thực tế';
 
@@ -483,63 +474,54 @@ Quy định trong tài liệu \`${matchedDoc.title}\` nằm tại:
             .map((l) => l.trim())
             .filter((l) => l.length > 3);
 
-          // Check if question asks for specific terms (doanh thu, chi phí, nhân sự...)
+          const queryKeywords = qNorm
+            .split(/[\s,?.!]+/)
+            .filter((w) => w.length > 2 && !['file', 'trong', 'bao', 'cao', 'co', 'gi', 'la', 'nhu', 'the', 'nao', 'cho', 'hoi', 've'].includes(w));
+
           const relevantLines = lines.filter((l) => {
             const lNorm = removeVietnameseTones(l);
-            return qNorm.split(/\s+/).some((w) => w.length > 2 && lNorm.includes(w));
+            return queryKeywords.some((w) => lNorm.includes(w));
           });
 
-          const linesToShow = relevantLines.length > 0 ? relevantLines : lines;
-          sectionContent = linesToShow.slice(0, 8).map((l) => `• ${l}`).join('\n\n');
-          quotedExcerpt = linesToShow[0] || matchedDoc.content.slice(0, 180);
+          if (relevantLines.length > 0) {
+            directAnswer = relevantLines.slice(0, 3).join('\n\n');
+            quotedExcerpt = relevantLines[0];
+          } else {
+            directAnswer = lines.slice(0, 4).map((l) => `• ${l}`).join('\n');
+            quotedExcerpt = lines[0];
+          }
           headingTitle = 'Mục 1. Dữ liệu đối chiếu từ tệp tin';
         } else if (
           matchedDoc.chunks &&
           matchedDoc.chunks.length > 0 &&
           matchedDoc.chunks.some((c) => c.text && !c.text.includes('104.8%'))
         ) {
-          sectionContent = matchedDoc.chunks
-            .map((c) => `• **${c.heading}**: ${c.text}`)
-            .join('\n\n');
-          quotedExcerpt = matchedDoc.chunks[0]?.text || '';
-          headingTitle = matchedDoc.chunks[0]?.heading || 'Mục 1. Dữ liệu trích xuất thực tế';
+          const validChunks = matchedDoc.chunks.filter((c) => c.text && !c.text.includes('104.8%'));
+          directAnswer = validChunks.slice(0, 3).map((c) => `• **${c.heading}**: ${c.text}`).join('\n\n');
+          quotedExcerpt = validChunks[0]?.text || '';
+          headingTitle = validChunks[0]?.heading || 'Mục 1. Dữ liệu trích xuất thực tế';
         } else if (matchedDoc.id === 1) {
-          sectionContent = `• **Điều kiện áp dụng**: Dành cho nhân viên chính thức hoàn thành thời gian thử việc [Nguồn 1].\n• **Quy định thời gian**: Tối đa 02 ngày làm việc từ xa mỗi tuần; đăng ký qua cổng nội bộ trước 17:00 ngày Thứ Sáu.\n• **Tiêu chuẩn bảo mật**: Bắt buộc kết nối VPN doanh nghiệp, không sử dụng Wi-Fi công cộng không an toàn.\n• **Chấm công**: Check-in trên ứng dụng nội bộ trước 08:30 sáng.`;
+          directAnswer = 'Chế độ làm việc từ xa (Remote / Hybrid) áp dụng tối đa 02 ngày mỗi tuần cho nhân viên chính thức sau thời gian thử việc. Nhân viên đăng ký trước 17:00 Thứ Sáu, bắt buộc kết nối VPN nội bộ và check-in trước 08:30 sáng.';
           quotedExcerpt =
             'Cán bộ nhân viên được đăng ký làm việc linh hoạt Remote hoặc Hybrid tối đa 02 ngày trong tuần sau khi hoàn thành thời gian thử việc...';
           headingTitle = 'Điều 4. Chế độ làm việc linh hoạt';
         } else if (matchedDoc.id === 2) {
-          sectionContent = `• **Định mức lưu trú**: Khách sạn tại Hà Nội, TP.HCM tối đa 1.200.000 VNĐ/ngày theo hóa đơn VAT hợp lệ [Nguồn 1].\n• **Phụ cấp công tác**: 300.000 VNĐ/ngày lưu trú ngoại tỉnh.\n• **Tiếp khách**: Yêu cầu phê duyệt trước bằng phiếu dự trù chi tiêu từ cấp Trưởng phòng.`;
+          directAnswer = 'Định mức công tác phí lưu trú khách sạn tại Hà Nội, TP.HCM và Đà Nẵng tối đa là 1.200.000 VNĐ/ngày theo hóa đơn VAT hợp lệ; phụ cấp lưu trú ngoại tỉnh là 300.000 VNĐ/ngày.';
           quotedExcerpt =
             'Tiêu chuẩn lưu trú tại Hà Nội, TP.HCM và Đà Nẵng áp dụng mức trần thanh toán 1.200.000 VNĐ/ngày theo hóa đơn VAT hợp lệ...';
           headingTitle = 'Khoản 3. Tiêu chuẩn khách sạn';
         } else if (matchedDoc.id === 3) {
-          sectionContent = `• **Tiêu chuẩn vi dịch vụ**: Tách biệt cơ sở dữ liệu theo từng domain service [Nguồn 1].\n• **Giao thức**: Sử dụng gRPC cho giao tiếp nội bộ và REST API có chứng thực Bearer JWT cho cổng ngoài.\n• **Bảo mật**: Rate limiting tối đa 100 req/s trên mỗi IP client.`;
+          directAnswer = 'Kiến trúc hệ thống sử dụng mô hình Microservices tách biệt cơ sở dữ liệu theo từng service, giao tiếp nội bộ qua gRPC với mTLS và cổng giao tiếp ngoài qua REST API có xác thực Bearer JWT kèm Rate limiting 100 req/s.';
           quotedExcerpt = 'Mọi giao tiếp liên service bắt buộc phải qua mTLS và gRPC nội bộ...';
           headingTitle = 'Phần II. Tiêu chuẩn kiến trúc & Bảo mật';
         } else {
-          sectionContent = `• **Tên văn bản**: ${matchedDoc.title} (${matchedDoc.file_name})\n• **Định dạng & Dung lượng**: ${matchedDoc.file_type.toUpperCase()} • ${(matchedDoc.file_size_bytes / 1024).toFixed(1)} KB\n• **Phòng ban quản lý**: ${deptName}\n• **Trạng thái**: Tệp tin đã được lưu trữ và lập chỉ mục SHA-256 an toàn trong kho dữ liệu.`;
+          directAnswer = `Tài liệu "${matchedDoc.title}" (${matchedDoc.file_name}) thuộc quyền quản lý của ${deptName}, đã được lưu trữ và lập chỉ mục đầy đủ trong kho dữ liệu.`;
           quotedExcerpt = `Tài liệu ${matchedDoc.title} được lập chỉ mục và quản lý bởi ${deptName}.`;
           headingTitle = 'Hồ sơ văn bản';
         }
 
         return {
-          answer: `📄 **Báo Cáo Tổng Hợp Dữ Liệu: ${matchedDoc.title}**
-
-Dựa trên kết quả lập chỉ mục và phân tích nội dung văn bản \`${matchedDoc.file_name}\`, hệ thống tổng hợp các thông tin cốt lõi như sau:
-
-### 1. Tổng Quan & Phạm Vi Văn Bản
-• **Tên văn bản**: ${matchedDoc.title}
-• **Tệp nguồn**: \`${matchedDoc.file_name}\` (${matchedDoc.file_type.toUpperCase()} • ${(matchedDoc.file_size_bytes / 1024).toFixed(1)} KB)
-• **Đơn vị ban hành & quản lý**: **${deptName}**
-• **Trạng thái kiểm định**: Đã lập chỉ mục Hybrid BM25 & Gemini Embeddings 768D [Nguồn 1]
-
-### 2. Các Số Liệu & Nội Dung Trọng Yếu
-${sectionContent}
-
-### 3. Kết Luận & Đề Xuất Thực Thi
-• Hoàn tất nghiệm thu các chỉ số đã đạt chuẩn và lưu trữ văn bản vào kho tri thức doanh nghiệp.
-• Đề xuất tiếp tục theo dõi tiến độ và báo cáo cập nhật định kỳ theo quy định.`,
+          answer: directAnswer,
           citations: [
             {
               citation_index: 1,

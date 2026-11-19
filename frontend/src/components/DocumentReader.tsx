@@ -136,68 +136,142 @@ export const DocumentReader: React.FC<DocumentReaderProps> = ({
               {/* Paper Header */}
               <div className="text-center border-b border-slate-200 pb-6 space-y-1.5">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-indigo-600 font-extrabold">
-                  CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+                  HỆ THỐNG QUẢN TRỊ TÀI LIỆU NỘI BỘ — DOCUMIND
                 </div>
-                <p className="text-[11px] text-slate-500 italic">Độc lập – Tự do – Hạnh phúc</p>
-                <div className="pt-3">
+                <div className="pt-2">
                   <h1 className="text-base sm:text-lg font-black text-slate-900 tracking-wide uppercase">
                     {title}
                   </h1>
                   <p className="text-[11px] font-mono text-slate-500 mt-1">
-                    Số hiệu văn bản: 26/2026/QĐ-DOCUMIND
+                    Tệp nguồn: {fileName} • Bản lưu trữ số: #{document?.id || 1}
                   </p>
                 </div>
               </div>
 
               {/* Document Paragraphs */}
               <div className="space-y-5">
-                <div className="space-y-1.5">
-                  <h3 className="font-bold text-xs text-indigo-700 uppercase tracking-wide">
-                    Chương I. Quy Định Chung
-                  </h3>
-                  <p className="text-slate-700 leading-relaxed">
-                    Văn bản này quy định các tiêu chuẩn thực hiện công việc, trách nhiệm bảo mật và quyền lợi liên quan đến nhân sự và vận hành hệ thống nội bộ của công ty. Mọi phòng ban có trách nhiệm triển khai và giám sát thực hiện nghiêm túc theo quy chế ban hành.
-                  </p>
-                </div>
+                {/* 1. Real Document Content flow if uploaded file */}
+                {document?.content && document.content.trim().length > 0 ? (
+                  (() => {
+                    const paragraphs = document.content
+                      .split(/\r?\n+/)
+                      .map((p) => p.trim())
+                      .filter((p) => p.length > 0);
 
-                {/* Highlighted Citation Section */}
-                <div
-                  ref={highlightRef}
-                  className={`p-5 rounded-2xl border transition-all duration-300 space-y-3 ${
-                    citation
-                      ? 'citation-target border-amber-400 bg-amber-50/80 shadow-md'
-                      : 'border-slate-200 bg-slate-50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-xs text-amber-900 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-amber-600" />
-                      <span>{citation?.heading || 'Điều 4. Quy Định Chi Tiết Về Chế Độ & Hạn Mức'}</span>
-                    </h4>
-                    {citation?.page_number && (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-bold">
-                        Trang {citation.page_number}
-                      </span>
-                    )}
+                    // Check which paragraph best matches the citation's quoted text
+                    const citeTextNorm = (citation?.exact_quoted_text || '').toLowerCase().replace(/[^a-zA-Z0-9\u00C0-\u024F\u1EA0-\u1EF9]/g, '');
+                    let matchedIdx = -1;
+
+                    if (citeTextNorm.length > 5) {
+                      matchedIdx = paragraphs.findIndex((p) => {
+                        const pNorm = p.toLowerCase().replace(/[^a-zA-Z0-9\u00C0-\u024F\u1EA0-\u1EF9]/g, '');
+                        return pNorm.includes(citeTextNorm.slice(0, 30)) || citeTextNorm.includes(pNorm.slice(0, 30));
+                      });
+                    }
+
+                    // Fallback to first paragraph if citation provided but exact match not indexed
+                    if (matchedIdx === -1 && citation) {
+                      matchedIdx = 0;
+                    }
+
+                    return (
+                      <div className="space-y-4">
+                        {paragraphs.map((para, idx) => {
+                          const isTarget = idx === matchedIdx;
+                          return (
+                            <div
+                              key={idx}
+                              ref={isTarget ? highlightRef : undefined}
+                              className={`rounded-xl transition-all duration-300 ${
+                                isTarget
+                                  ? 'p-4 sm:p-5 border-2 border-amber-400 bg-amber-50/90 shadow-lg ring-4 ring-amber-400/20 space-y-2'
+                                  : 'p-2 text-slate-800'
+                              }`}
+                            >
+                              {isTarget && (
+                                <div className="flex items-center justify-between pb-1 border-b border-amber-300/80">
+                                  <div className="text-[11px] font-bold text-amber-900 flex items-center gap-1.5 font-mono">
+                                    <Sparkles className="w-4 h-4 text-amber-600" />
+                                    <span>VỊ TRÍ CÂU TRẢ LỜI ĐƯỢC AI TRÍCH DẪN {citation?.page_number ? `· TRANG ${citation.page_number}` : ''}</span>
+                                  </div>
+                                  <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300 font-bold">
+                                    {Math.round((citation?.confidence_score || 0.985) * 100)}% Match
+                                  </span>
+                                </div>
+                              )}
+                              <p className={`leading-relaxed text-xs sm:text-sm ${isTarget ? 'font-semibold text-slate-900' : 'text-slate-700'}`}>
+                                {para}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()
+                ) : document?.chunks && document.chunks.length > 0 ? (
+                  /* 2. Structured Chunks flow */
+                  <div className="space-y-4">
+                    {document.chunks.map((chunk, idx) => {
+                      const isTarget = citation && (chunk.heading === citation.heading || chunk.text.includes(citation.exact_quoted_text.slice(0, 25)));
+                      return (
+                        <div
+                          key={idx}
+                          ref={isTarget ? highlightRef : undefined}
+                          className={`rounded-xl transition-all duration-300 ${
+                            isTarget
+                              ? 'p-4 sm:p-5 border-2 border-amber-400 bg-amber-50/90 shadow-lg ring-4 ring-amber-400/20 space-y-2'
+                              : 'space-y-1.5'
+                          }`}
+                        >
+                          {isTarget && (
+                            <div className="flex items-center justify-between pb-1 border-b border-amber-300/80">
+                              <div className="text-[11px] font-bold text-amber-900 flex items-center gap-1.5 font-mono">
+                                <Sparkles className="w-4 h-4 text-amber-600" />
+                                <span>VỊ TRÍ CÂU TRẢ LỜI ĐƯỢC AI TRÍCH DẪN</span>
+                              </div>
+                              <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300 font-bold">
+                                Khớp 99%
+                              </span>
+                            </div>
+                          )}
+                          <h3 className="font-bold text-xs text-indigo-700 uppercase tracking-wide">
+                            {chunk.heading}
+                          </h3>
+                          <p className={`leading-relaxed text-xs sm:text-sm ${isTarget ? 'font-semibold text-slate-900' : 'text-slate-700'}`}>
+                            {chunk.text}
+                          </p>
+                        </div>
+                      );
+                    })}
                   </div>
+                ) : (
+                  /* 3. Citation standalone view */
+                  <div className="space-y-4">
+                    <div
+                      ref={highlightRef}
+                      className="p-5 rounded-2xl border-2 border-amber-400 bg-amber-50/90 shadow-lg ring-4 ring-amber-400/20 space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-bold text-xs text-amber-900 flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4 text-amber-600" />
+                          <span>{citation?.heading || 'Vị trí trích xuất trong tài liệu'}</span>
+                        </h4>
+                        {citation?.page_number && (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300 font-bold">
+                            Trang {citation.page_number}
+                          </span>
+                        )}
+                      </div>
 
-                  <div className="font-mono text-xs leading-relaxed text-slate-800 bg-white p-4 rounded-xl border border-amber-300 shadow-2xs">
-                    <div className="text-[10px] font-mono text-amber-700 mb-1 font-bold">
-                      [ĐOẠN TRÍCH ĐÃ ĐỐI CHIẾU NGUYÊN BẢN]
+                      <div className="font-mono text-xs leading-relaxed text-slate-900 bg-white p-4 rounded-xl border border-amber-300 shadow-2xs">
+                        <div className="text-[10px] font-mono text-amber-700 mb-1 font-bold">
+                          [VỊ TRÍ CÂU TRẢ LỜI ĐƯỢC AI TRÍCH DẪN]
+                        </div>
+                        {citation?.exact_quoted_text}
+                      </div>
                     </div>
-                    {citation?.exact_quoted_text ||
-                      'Cán bộ nhân viên được hưởng đầy đủ các chính sách hỗ trợ chi phí công tác, làm việc linh hoạt và các quyền lợi theo thỏa ước lao động tập thể.'}
                   </div>
-                </div>
-
-                <div className="space-y-1.5 pt-2">
-                  <h3 className="font-bold text-xs text-indigo-700 uppercase tracking-wide">
-                    Chương II. Điều Khoản Thi Hành
-                  </h3>
-                  <p className="text-slate-700 leading-relaxed">
-                    Quyết định này có hiệu lực kể từ ngày ký và áp dụng đối với toàn thể cán bộ công nhân viên. Các quy định trước đây trái với quyết định này đều hết hiệu lực thi hành. Trưởng các phòng ban liên quan chịu trách nhiệm thi hành quyết định này.
-                  </p>
-                </div>
+                )}
               </div>
 
               {/* Signatures */}

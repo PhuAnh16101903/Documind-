@@ -103,8 +103,14 @@ export const App: React.FC = () => {
   const [initialUploadFiles, setInitialUploadFiles] = useState<File[]>([]);
 
   const handleCitationClick = (citation: Citation) => {
+    const matchingDoc =
+      documents.find(
+        (d) =>
+          String(d.id) === String(citation.document_id) ||
+          d.title.trim().toLowerCase() === citation.document_title.trim().toLowerCase()
+      ) || null;
+    setSelectedDoc(matchingDoc);
     setActiveCitation(citation);
-    setSelectedDoc(null);
   };
 
   const handleSelectResult = (docId: number) => {
