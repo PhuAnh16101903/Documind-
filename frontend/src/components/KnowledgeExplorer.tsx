@@ -38,6 +38,7 @@ interface KnowledgeExplorerProps {
   documents: Document[];
   onSelectDocument: (doc: Document) => void;
   onOpenUpload: () => void;
+  onDropFiles?: (files: File[]) => void;
   onAskAI?: (doc: Document) => void;
   currentTheme?: UIThemeId;
   themeMode?: 'light' | 'dark';
@@ -48,6 +49,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
   documents,
   onSelectDocument,
   onOpenUpload,
+  onDropFiles,
   onAskAI,
   themeMode = 'light',
   lang = 'vi',
@@ -61,6 +63,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
   const [isDiffOpen, setIsDiffOpen] = useState(false);
   const [activeStep, setActiveStep] = useState<number>(1);
   const [showHolidayBanner, setShowHolidayBanner] = useState(true);
+  const [isDraggingZone, setIsDraggingZone] = useState(false);
 
   const isLight = themeMode === 'light';
 
@@ -352,8 +355,32 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
               {/* Drag & Drop Upload Zone */}
               <div
                 onClick={onOpenUpload}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDraggingZone(true);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDraggingZone(false);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDraggingZone(false);
+                  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    if (onDropFiles) {
+                      onDropFiles(Array.from(e.dataTransfer.files));
+                    } else {
+                      onOpenUpload();
+                    }
+                  }
+                }}
                 className={`border-2 border-dashed rounded-2xl p-7 flex flex-col items-center justify-center cursor-pointer transition-all group ${
-                  isLight
+                  isDraggingZone
+                    ? 'border-indigo-600 bg-indigo-50/70 scale-101 shadow-inner'
+                    : isLight
                     ? 'border-slate-300 hover:border-[#1461a4] bg-[#f8fafc] hover:bg-blue-50/30'
                     : 'border-slate-700 hover:border-blue-500 bg-slate-950/60 hover:bg-slate-900'
                 }`}
@@ -362,7 +389,7 @@ export const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({
                   <Upload className="w-6 h-6" />
                 </div>
                 <div className="font-bold text-sm text-slate-800 dark:text-slate-100 text-center">
-                  {t.dropzoneTitle}
+                  {isDraggingZone ? 'Thả tệp vào đây để tải lên ngay' : t.dropzoneTitle}
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 text-center">
                   {t.dropzoneSubtitle} · <span className="text-slate-400">{t.dropzoneFormats}</span>

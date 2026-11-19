@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   Upload,
@@ -12,37 +12,94 @@ import {
   FileCode,
   FileCheck,
   FolderOpen,
+  Image as ImageIcon,
 } from 'lucide-react';
-import { Department, Document } from '../types';
+import { Department, Document, User } from '../types';
 import { MockData, ApiService } from '../services/api';
 
 interface UploadModalProps {
   isOpen: boolean;
   departments: Department[];
+  currentUser?: User;
+  initialFiles?: File[];
   onClose: () => void;
-  onUploadSuccess: () => void;
+  onUploadSuccess: (count?: number, fileNames?: string[]) => void;
 }
 
 export const UploadModal: React.FC<UploadModalProps> = ({
   isOpen,
   departments,
+  currentUser,
+  initialFiles,
   onClose,
   onUploadSuccess,
 }) => {
   const [files, setFiles] = useState<File[]>([]);
-  const [deptId, setDeptId] = useState<number>(departments[0]?.id || 1);
+  const [deptId, setDeptId] = useState<number>(() => {
+    return currentUser?.department_id || departments[0]?.id || 1;
+  });
   const [effectiveDate, setEffectiveDate] = useState('2026-01-01');
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedCount, setProcessedCount] = useState(0);
   const [currentStepName, setCurrentStepName] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync initial files when passed from parent drag-and-drop
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      setFiles((prev) => {
+        const existingNames = new Set(prev.map((f) => f.name));
+        const newOnes = initialFiles.filter((f) => !existingNames.has(f.name));
+        return [...prev, ...newOnes];
+      });
+    }
+  }, [initialFiles]);
+
+  // Sync user department
+  useEffect(() => {
+    if (currentUser?.department_id) {
+      setDeptId(currentUser.department_id);
+    }
+  }, [currentUser]);
 
   if (!isOpen) return null;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const selected = Array.from(e.target.files);
-      setFiles((prev) => [...prev, ...selected]);
+      setFiles((prev) => {
+        const existingNames = new Set(prev.map((f) => f.name));
+        const newOnes = selected.filter((f) => !existingNames.has(f.name));
+        return [...prev, ...newOnes];
+      });
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const dropped = Array.from(e.dataTransfer.files);
+      setFiles((prev) => {
+        const existingNames = new Set(prev.map((f) => f.name));
+        const newOnes = dropped.filter((f) => !existingNames.has(f.name));
+        return [...prev, ...newOnes];
+      });
     }
   };
 
@@ -57,13 +114,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   };
 
   const getFileIcon = (fileName: string) => {
-    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      return <FileSpreadsheet className="w-4 h-4 text-emerald-600" />;
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    if (ext === 'xlsx' || ext === 'xls') {
+      return <FileSpreadsheet className="w-4 h-4 text-emerald-600 flex-shrink-0" />;
     }
-    if (fileName.endsWith('.json') || fileName.endsWith('.md')) {
-      return <FileCode className="w-4 h-4 text-purple-600" />;
+    if (ext === 'json' || ext === 'md' || ext === 'txt') {
+      return <FileCode className="w-4 h-4 text-purple-600 flex-shrink-0" />;
     }
-    return <FileText className="w-4 h-4 text-indigo-600" />;
+    if (ext === 'png' || ext === 'jpg' || ext === 'jpeg' || ext === 'webp') {
+      return <ImageIcon className="w-4 h-4 text-amber-600 flex-shrink-0" />;
+    }
+    return <FileText className="w-4 h-4 text-indigo-600 flex-shrink-0" />;
   };
 
   const pipelineSteps = [
@@ -79,11 +140,15 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     setIsProcessing(true);
     setProcessedCount(0);
 
+    const uploadedNames: string[] = [];
+
     for (let fIdx = 0; fIdx < files.length; fIdx++) {
       const currentFile = files[fIdx];
+      uploadedNames.push(currentFile.name);
+
       for (let sIdx = 0; sIdx < pipelineSteps.length; sIdx++) {
         setCurrentStepName(`[${fIdx + 1}/${files.length}] ${currentFile.name}: ${pipelineSteps[sIdx]}`);
-        await new Promise((r) => setTimeout(r, 200));
+        await new Promise((r) => setTimeout(r, 120));
       }
 
       // Read text content if plain text/markdown or simulate semantic content
@@ -161,9 +226,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       setProcessedCount(fIdx + 1);
     }
 
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 200));
     setIsProcessing(false);
-    onUploadSuccess();
+    setFiles([]);
+    onUploadSuccess(uploadedNames.length, uploadedNames);
     onClose();
   };
 
@@ -184,7 +250,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                 </span>
               </div>
               <p className="text-[11px] text-slate-500">
-                Cho phép chọn hoặc kéo thả nhiều tệp cùng lúc: PDF, Word, Excel, Markdown
+                Hỗ trợ kéo thả hoặc chọn nhiều tệp: PDF, Word, Excel, Markdown, Text, Hình ảnh
               </p>
             </div>
           </div>
@@ -200,24 +266,48 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         {!isProcessing ? (
           <div className="space-y-4 text-xs">
             {/* Multi-file Drag & Drop Zone */}
-            <label className="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-5 flex flex-col items-center justify-center cursor-pointer transition-all bg-slate-50/70 hover:bg-indigo-50/30 group">
-              <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform mb-2">
-                <FolderOpen className="w-6 h-6" />
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${
+                isDragging
+                  ? 'border-indigo-600 bg-indigo-50/70 scale-101 shadow-inner'
+                  : 'border-slate-300 hover:border-indigo-500 bg-slate-50/70 hover:bg-indigo-50/30'
+              }`}
+            >
+              <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 mb-2 transition-transform group-hover:scale-110">
+                <FolderOpen className="w-7 h-7 text-indigo-600" />
               </div>
-              <span className="font-semibold text-slate-800 text-center">
-                Nhấp để chọn hoặc kéo thả nhiều tài liệu vào đây
+              <span className="font-bold text-slate-900 text-center text-sm">
+                Kéo thả nhiều tài liệu vào đây hoặc nhấp để duyệt file
               </span>
-              <span className="text-[11px] text-slate-500 mt-1">
-                Hỗ trợ tải lên nhiều file cùng lúc • PDF, DOCX, XLSX, TXT, MD • Tối đa 100MB/tệp
+              <span className="text-[11px] text-slate-500 mt-1 text-center">
+                Hỗ trợ PDF, DOCX, XLSX, TXT, MD, JSON, PNG, JPG • Tối đa 100MB mỗi tệp
               </span>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                className="mt-3 px-4 py-1.5 rounded-xl bg-white border border-slate-300 hover:border-indigo-500 text-indigo-600 font-bold text-xs shadow-xs hover:bg-indigo-50 transition-all flex items-center gap-1.5"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>Chọn Tệp Từ Máy Tính</span>
+              </button>
+
               <input
+                ref={fileInputRef}
                 type="file"
                 multiple
-                accept=".pdf,.docx,.doc,.xlsx,.xls,.txt,.md"
+                accept=".pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.txt,.md,.json,.csv,.png,.jpg,.jpeg,.webp"
                 className="hidden"
                 onChange={handleFileChange}
               />
-            </label>
+            </div>
 
             {/* Selected Files List */}
             {files.length > 0 && (

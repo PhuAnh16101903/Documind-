@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { KnowledgeExplorer } from './components/KnowledgeExplorer';
@@ -86,6 +87,9 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const [uploadToast, setUploadToast] = useState<{ count: number; fileNames: string[] } | null>(null);
+  const [initialUploadFiles, setInitialUploadFiles] = useState<File[]>([]);
+
   const handleCitationClick = (citation: Citation) => {
     setActiveCitation(citation);
     setSelectedDoc(null);
@@ -96,9 +100,16 @@ export const App: React.FC = () => {
     if (doc) setSelectedDoc(doc);
   };
 
-  const handleUploadSuccess = async () => {
+  const handleUploadSuccess = async (count: number = 1, fileNames: string[] = []) => {
     const updatedDocs = await ApiService.getDocuments(selectedDeptId || undefined, currentUser);
     setDocuments(updatedDocs);
+    setUploadToast({ count, fileNames });
+    setTimeout(() => setUploadToast(null), 5000);
+  };
+
+  const handleWorkbenchDropFiles = (droppedFiles: File[]) => {
+    setInitialUploadFiles(droppedFiles);
+    setIsUploadOpen(true);
   };
 
   const handleLoginSuccess = (user: User) => {
@@ -211,6 +222,7 @@ export const App: React.FC = () => {
                 documents={filteredDocs}
                 onSelectDocument={(doc) => setSelectedDoc(doc)}
                 onOpenUpload={() => setIsUploadOpen(true)}
+                onDropFiles={handleWorkbenchDropFiles}
                 onAskAI={(doc) => {
                   setPresetAIPrompt(
                     lang === 'vi'
@@ -288,9 +300,33 @@ export const App: React.FC = () => {
       <UploadModal
         isOpen={isUploadOpen}
         departments={departments}
-        onClose={() => setIsUploadOpen(false)}
+        currentUser={currentUser}
+        initialFiles={initialUploadFiles}
+        onClose={() => {
+          setIsUploadOpen(false);
+          setInitialUploadFiles([]);
+        }}
         onUploadSuccess={handleUploadSuccess}
       />
+
+      {/* Upload Success Floating Notification Banner */}
+      {uploadToast && (
+        <div className="fixed top-20 right-6 z-50 p-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-2xl flex items-center gap-3 border border-emerald-400/50 animate-fade-in backdrop-blur-sm">
+          <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 shadow-xs">
+            <CheckCircle2 className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="font-bold text-xs tracking-wide">
+              {lang === 'vi' ? 'Lập Chỉ Mục Tài Liệu Thành Công!' : 'Ingestion Completed!'}
+            </div>
+            <div className="text-[11px] text-emerald-100 font-medium mt-0.5">
+              {lang === 'vi'
+                ? `Đã phân tích & đưa ${uploadToast.count} tài liệu vào kho tri thức doanh nghiệp.`
+                : `Successfully indexed ${uploadToast.count} document(s) into the knowledge base.`}
+            </div>
+          </div>
+        </div>
+      )}
 
       <HybridSearchBar
         isOpen={isSearchOpen}
