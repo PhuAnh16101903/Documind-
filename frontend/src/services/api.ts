@@ -15,6 +15,8 @@ api.interceptors.request.use((config) => {
   if (geminiKey && geminiKey.trim()) {
     config.headers['X-Gemini-Api-Key'] = geminiKey.trim();
   }
+  const geminiModel = localStorage.getItem('documind_gemini_model') || 'gemini-3.8-flash';
+  config.headers['X-Gemini-Model'] = geminiModel;
   return config;
 });
 

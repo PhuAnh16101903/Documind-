@@ -20,6 +20,7 @@ router = APIRouter(prefix="/api/copilot", tags=["AI Copilot & RAG"])
 async def query_copilot(
     req: ChatQueryRequest,
     x_gemini_api_key: Optional[str] = Header(None, alias="X-Gemini-Api-Key"),
+    x_gemini_model: Optional[str] = Header("gemini-3.8-flash", alias="X-Gemini-Model"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -79,7 +80,8 @@ async def query_copilot(
         last_document_id=last_doc_id,
         last_chunk_id=last_chunk_id,
         last_assistant_message=last_assistant_message,
-        api_key=x_gemini_api_key
+        api_key=x_gemini_api_key,
+        preferred_model=x_gemini_model
     )
 
     # 4. Save Session & Message to Database

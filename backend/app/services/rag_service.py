@@ -452,7 +452,8 @@ class RAGService:
         last_document_id: Optional[int] = None,
         last_chunk_id: Optional[int] = None,
         last_assistant_message: Optional[str] = None,
-        api_key: Optional[str] = None
+        api_key: Optional[str] = None,
+        preferred_model: Optional[str] = "gemini-3.8-flash"
     ) -> Tuple[str, List[Dict[str, Any]]]:
         if not retrieved_chunks and not all_candidates:
             return ("Tài liệu hiện không đề cập đến thông tin này.", [])
@@ -510,12 +511,26 @@ class RAGService:
                 client = genai.Client(api_key=effective_api_key)
                 context_xml = cls.construct_context(selected_chunks, last_assistant_message=last_assistant_message)
                 prompt = f"{STRICT_SYSTEM_PROMPT}\n\n{context_xml}\n\n<user_query>\n{question}\n</user_query>"
-                response = client.models.generate_content(
-                    model=settings.LLM_MODEL,
-                    contents=prompt
-                )
-                safe_text = cls.apply_output_guardrail(response.text.strip())
-                return safe_text, citations
+                default_chain = [
+                    "gemini-3.8-flash",
+                    "gemini-3-flash-preview",
+                    "gemini-2.5-flash",
+                    "gemini-3.1-pro-preview",
+                    "gemini-2.5-pro",
+                    "gemini-2.0-flash",
+                ]
+                model_chain = [preferred_model] + [m for m in default_chain if m != preferred_model] if preferred_model else default_chain
+                for model_name in model_chain:
+                    try:
+                        response = client.models.generate_content(
+                            model=model_name,
+                            contents=prompt
+                        )
+                        if response and response.text:
+                            safe_text = cls.apply_output_guardrail(response.text.strip())
+                            return safe_text, citations
+                    except Exception:
+                        continue
             except Exception:
                 pass
 

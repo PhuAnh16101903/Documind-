@@ -60,6 +60,27 @@ export const AICopilot: React.FC<AICopilotProps> = ({
   const [loading, setLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string>(
+    () => localStorage.getItem('documind_gemini_model') || 'gemini-3.8-flash'
+  );
+  const [showKeyInput, setShowKeyInput] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState<string>(
+    () => localStorage.getItem('documind_gemini_key') || ''
+  );
+
+  const handleModelChange = (model: string) => {
+    setSelectedModel(model);
+    localStorage.setItem('documind_gemini_model', model);
+  };
+
+  const handleSaveApiKey = () => {
+    if (apiKeyInput.trim()) {
+      localStorage.setItem('documind_gemini_key', apiKeyInput.trim());
+    } else {
+      localStorage.removeItem('documind_gemini_key');
+    }
+    setShowKeyInput(false);
+  };
 
   // Auto trigger preset prompts from Knowledge Explorer "Hỏi AI" buttons
   useEffect(() => {
@@ -226,31 +247,57 @@ ${
   return (
     <div className={containerClasses}>
       {/* Top Banner Toolbar with Vibrant Enterprise Gradient */}
-      <div className="h-14 border-b border-slate-800 px-4 flex items-center justify-between bg-gradient-to-r from-indigo-950 via-purple-950 to-[#0a0f1d] select-none z-10 shadow-md text-white">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+      <div className="h-14 border-b border-slate-800 px-3.5 flex items-center justify-between bg-gradient-to-r from-indigo-950 via-purple-950 to-[#0a0f1d] select-none z-10 shadow-md text-white">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/30 flex-shrink-0">
             <Bot className="w-4 h-4" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
               <span className="text-xs font-bold text-white tracking-wide">
                 AI Copilot
               </span>
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-mono font-bold">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>RAG 2.0</span>
-              </span>
+              <select
+                value={selectedModel}
+                onChange={(e) => handleModelChange(e.target.value)}
+                className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-mono font-bold focus:outline-none cursor-pointer"
+                title="Chọn phiên bản mô hình Gemini"
+              >
+                <option value="gemini-3.8-flash" className="bg-slate-900 text-emerald-300">
+                  Gemini 3.8 Flash ★
+                </option>
+                <option value="gemini-3-flash-preview" className="bg-slate-900 text-slate-200">
+                  Gemini 3.0 Flash
+                </option>
+                <option value="gemini-2.5-flash" className="bg-slate-900 text-slate-200">
+                  Gemini 2.5 Flash
+                </option>
+                <option value="gemini-3.1-pro-preview" className="bg-slate-900 text-amber-300">
+                  Gemini 3.1 Pro
+                </option>
+              </select>
             </div>
-            <p className="text-[10px] text-slate-400 font-mono">
-              Phân quyền: <span className="text-indigo-300 font-semibold">{currentUser?.department_code || currentUser?.role || 'SYSTEM'}</span>
+            <p className="text-[10px] text-slate-400 font-mono truncate">
+              {apiKeyInput.trim() ? '🟢 Gemini LLM Online' : '⚡ RAG 2.0 Hybrid Engine'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button
+            onClick={() => setShowKeyInput((v) => !v)}
+            className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+              apiKeyInput.trim()
+                ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-300 hover:bg-emerald-500/30'
+                : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white'
+            }`}
+            title="Cấu hình khóa Google Gemini API"
+          >
+            {apiKeyInput.trim() ? '🔑 Đã gắn Key' : '🔑 Gắn API Key'}
+          </button>
           <button
             onClick={handleResetChat}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer"
             title="Làm mới hội thoại"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -258,7 +305,7 @@ ${
           {isDocked && onClose && (
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer"
               title="Đóng bảng AI Copilot"
             >
               <X className="w-3.5 h-3.5" />
@@ -266,6 +313,38 @@ ${
           )}
         </div>
       </div>
+
+      {/* Quick Inline Gemini API Key Drawer */}
+      {showKeyInput && (
+        <div className="p-3 bg-slate-900 border-b border-slate-800 space-y-2 z-20 animate-fade-in">
+          <div className="flex items-center justify-between text-[11px] text-slate-300 font-medium">
+            <span>Nhập khóa Google Gemini API (AIzaSy...):</span>
+            <a
+              href="https://aistudio.google.com/apikey"
+              target="_blank"
+              rel="noreferrer"
+              className="text-indigo-400 hover:underline text-[10px] font-mono"
+            >
+              Lấy mã miễn phí ↗
+            </a>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="password"
+              value={apiKeyInput}
+              onChange={(e) => setApiKeyInput(e.target.value)}
+              placeholder="Dán mã AIzaSy... vào đây"
+              className="flex-1 h-8 px-2.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white font-mono focus:outline-none focus:border-indigo-500"
+            />
+            <button
+              onClick={handleSaveApiKey}
+              className="h-8 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold cursor-pointer"
+            >
+              Lưu
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-950/70 z-10">
