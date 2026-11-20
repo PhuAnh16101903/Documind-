@@ -444,6 +444,89 @@ class RAGService:
         return intents
 
     @classmethod
+    def _handle_greeting_or_chit_chat(cls, question: str) -> Optional[Tuple[str, List[Dict[str, Any]]]]:
+        """Detect and respond to greetings, chit-chat, pleasantries, and bot identity queries without triggering document retrieval."""
+        q_raw = question.strip().lower()
+        q_norm = remove_vietnamese_tones(q_raw)
+        clean = re.sub(r"[?!.,~`@#$%^&*()_+=\-\[\]{};:'\"\\/<>]+", " ", q_norm).strip()
+        tokens = clean.split()
+        if not tokens:
+            return ("Xin chào bạn! Tôi là DocuMind AI Copilot. Tôi có thể hỗ trợ gì cho bạn trong việc tra cứu các tài liệu và báo cáo?", [])
+
+        # Check explicit document inquiry phrases
+        doc_inquiry_phrases = [
+            "website", "tmdt", "ecofresh", "dich may", "de tai 51", "marianmt",
+            "bleu", "rouge", "beam search", "bao cao", "de tai", "quy che",
+            "ai lam de tai", "thanh vien nhom", "tac gia bao cao",
+            "swot", "doanh thu", "loi nhuan", "khach hang muc tieu",
+            "so sanh 2", "so sanh hai", "trong file", "trong tep", "trong tai lieu"
+        ]
+        has_doc_kw = any(p in q_norm for p in doc_inquiry_phrases)
+
+        # 1. Greetings & Pleasantries (only if not asking explicit document query)
+        greeting_words = {"helo", "hello", "hi", "hey", "chao", "alo", "alooo", "e", "yo"}
+        if len(tokens) <= 5 and not has_doc_kw:
+            is_greeting = tokens[0] in greeting_words or (len(tokens) >= 2 and tokens[0] == "xin" and tokens[1] == "chao")
+            if is_greeting:
+                return (
+                    "Xin chào bạn! Tôi là DocuMind AI Copilot, trợ lý hỗ trợ tra cứu và giải đáp thông tin từ các tài liệu đã tải lên. "
+                    "Bạn cần tìm hiểu thông tin gì về các báo cáo hoặc tài liệu hiện có?",
+                    []
+                )
+
+        # 2. Bot Identity / Capabilities / Introduction
+        if not has_doc_kw and any(p in clean for p in [
+            "ban la ai", "may la ai", "bot la ai", "ban ten gi", "gioi thieu ve ban", "who are you",
+            "ban co the lam gi", "ban lam duoc gi", "bot lam duoc gi", "ban giup duoc gi", "giup duoc gi",
+            "huong dan su dung", "cach dung", "ban co chuc nang gi"
+        ]):
+            return (
+                "Tôi là **DocuMind AI Copilot** — Trợ lý AI hỗ trợ tra cứu và phân tích tài liệu nội bộ doanh nghiệp.\n\n"
+                "Tôi có thể hỗ trợ bạn:\n"
+                "• **Tra cứu nội dung**: Trích xuất chính xác số liệu, điều khoản, kiến trúc và quy trình từ các file (.docx, .pdf, .xlsx) đã tải lên.\n"
+                "• **Đối chiếu & Trích dẫn**: Mọi câu trả lời đều được kiểm chứng và có liên kết cuộn trực tiếp tới từng đề mục, bảng biểu trong tài liệu gốc.\n"
+                "• **Phân tích tổng hợp**: Tóm tắt báo cáo, so sánh giữa các đề tài và giải thích chi tiết theo từng ý hỏi.\n\n"
+                "Bạn có thể gõ câu hỏi bất kỳ về nội dung tài liệu để tôi hỗ trợ ngay!",
+                []
+            )
+
+        # 3. Thanks / Gratitude
+        if not has_doc_kw and any(p in clean for p in ["cam on", "thank", "cam on ban", "cam on bot", "da ta"]):
+            return (
+                "Không có gì! Rất vui được hỗ trợ bạn. Nếu bạn cần tra cứu hay làm rõ nội dung nào khác trong tài liệu, cứ nhắn tôi nhé!",
+                []
+            )
+
+        # 4. Farewell / Goodbye
+        if not has_doc_kw and any(p in clean for p in ["tam biet", "bye", "hen gap lai", "chuc ngu ngon"]):
+            return (
+                "Tạm biệt bạn! Chúc bạn làm việc hiệu quả và thành công. Hẹn gặp lại khi bạn cần tra cứu tài liệu!",
+                []
+            )
+
+        # 5. Casual short agreements / nod
+        if len(tokens) <= 2 and not has_doc_kw and tokens[0] in {"ok", "oke", "oki", "da", "vang", "u", "uh", "uhm", "yes", "duoc"}:
+            return (
+                "Vâng! Nếu bạn có bất kỳ câu hỏi nào về các tài liệu và báo cáo đã tải lên, hãy nhắn cho tôi nhé.",
+                []
+            )
+
+        # 6. Unrelated / Out-of-scope daily trivia queries
+        if any(p in q_norm for p in [
+            "thoi tiet", "troi mua", "troi nang", "nhiet do",
+            "nau an", "nau pho", "mon an", "bong da", "world cup", "ngoai hang anh",
+            "bai hat", "ca si", "dien vien", "chuyen cuoi", "du lich", "tong thong"
+        ]):
+            return (
+                "Câu hỏi này nằm ngoài phạm vi tài liệu và báo cáo nội bộ đã tải lên. "
+                "DocuMind AI Copilot chỉ giải đáp và trích dẫn thông tin từ các văn bản trong hệ thống. "
+                "Bạn vui lòng đặt câu hỏi liên quan đến nội dung tài liệu nhé!",
+                []
+            )
+
+        return None
+
+    @classmethod
     async def generate_answer(
         cls,
         question: str,
@@ -455,6 +538,11 @@ class RAGService:
         api_key: Optional[str] = None,
         preferred_model: Optional[str] = "gemini-3.8-flash"
     ) -> Tuple[str, List[Dict[str, Any]]]:
+        # 0. Check Greetings, Chit-chat, or Bot Identity
+        greeting_res = cls._handle_greeting_or_chit_chat(question)
+        if greeting_res is not None:
+            return greeting_res
+
         if not retrieved_chunks and not all_candidates:
             return ("Tài liệu hiện không đề cập đến thông tin này.", [])
 
@@ -496,10 +584,15 @@ class RAGService:
 
         if not selected_chunks:
             ranked_in_doc = HybridSearchService.rank_hybrid(question, doc_chunks, top_k=2)
-            if ranked_in_doc:
+            if ranked_in_doc and (ranked_in_doc[0].get("score", 0) > 0.05 or (ranked_in_doc[0].get("term_match_ratio", 0) >= 0.5 and ranked_in_doc[0].get("score", 0) > 0.01)):
                 selected_chunks = [ranked_in_doc[0]]
             else:
-                selected_chunks = [doc_chunks[0]]
+                return (
+                    "Câu hỏi này hiện không có trong các tài liệu nội bộ đã tải lên. "
+                    "DocuMind AI Copilot hỗ trợ tra cứu, tóm tắt và đối chiếu thông tin từ các báo cáo, tài liệu của bạn. "
+                    "Bạn vui lòng đặt câu hỏi liên quan đến nội dung văn bản nhé!",
+                    []
+                )
 
         citations = [cls._make_citation(idx, c) for idx, c in enumerate(selected_chunks, start=1)]
 

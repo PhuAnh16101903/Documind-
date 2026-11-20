@@ -276,19 +276,73 @@ export const ApiService = {
         question,
         department_scope_id: currentUser?.department_id,
       });
-      if (
-        res.data &&
-        res.data.answer &&
-        !res.data.answer.includes('chưa tìm thấy nguồn đủ tin cậy') &&
-        res.data.citations &&
-        res.data.citations.length > 0
-      ) {
+      if (res.data && res.data.answer) {
         return res.data;
       }
       throw new Error('Use dynamic local knowledge matching');
     } catch {
-      const q = question.toLowerCase();
+      const q = question.toLowerCase().trim();
       const qNorm = removeVietnameseTones(q);
+
+      // ========================================================
+      // 0. GREETINGS & CHIT-CHAT CHECK FIRST
+      // ========================================================
+      const cleanTokens = qNorm.replace(/[^a-z0-9\s]/g, ' ').trim().split(/\s+/);
+      const greetingWords = ['helo', 'hello', 'hi', 'hey', 'chao', 'alo', 'alooo', 'e', 'yo'];
+      const docKeywords = [
+        'web', 'website', 'tmdt', 'ecofresh', 'dich', 'may', '51', 'marianmt',
+        'bleu', 'rouge', 'beam', 'search', 'bao', 'cao', 'de', 'tai', 'file',
+        'tep', 'tai', 'lieu', 'quy', 'che', 'chuc', 'nang', 'muc', 'dich', 'tieu'
+      ];
+      const hasDocKw = cleanTokens.some((t) => docKeywords.includes(t));
+
+      if (cleanTokens.length <= 5 && !hasDocKw) {
+        const isGreeting =
+          greetingWords.includes(cleanTokens[0]) ||
+          (cleanTokens.length >= 2 && cleanTokens[0] === 'xin' && cleanTokens[1] === 'chao');
+        if (isGreeting) {
+          return {
+            answer:
+              'Xin chào bạn! Tôi là DocuMind AI Copilot, trợ lý hỗ trợ tra cứu và giải đáp thông tin từ các tài liệu đã tải lên. Bạn cần tìm hiểu thông tin gì về các báo cáo hoặc tài liệu hiện có?',
+            citations: [],
+          };
+        }
+      }
+
+      if (!hasDocKw && (
+        qNorm.includes('ban la ai') ||
+        qNorm.includes('ban ten gi') ||
+        qNorm.includes('ban co the lam gi') ||
+        qNorm.includes('who are you') ||
+        qNorm.includes('giup duoc gi')
+      )) {
+        return {
+          answer:
+            'Tôi là **DocuMind AI Copilot** — Trợ lý AI hỗ trợ tra cứu và phân tích tài liệu nội bộ doanh nghiệp.\n\nTôi có thể hỗ trợ bạn:\n• **Tra cứu nội dung**: Trích xuất chính xác số liệu, điều khoản, kiến trúc và quy trình từ các file (.docx, .pdf, .xlsx) đã tải lên.\n• **Đối chiếu & Trích dẫn**: Mọi câu trả lời đều được kiểm chứng và có liên kết cuộn trực tiếp tới từng đề mục, bảng biểu trong tài liệu gốc.\n• **Phân tích tổng hợp**: Tóm tắt báo cáo, so sánh giữa các đề tài và giải thích chi tiết theo từng ý hỏi.\n\nBạn có thể gõ câu hỏi bất kỳ về nội dung tài liệu để tôi hỗ trợ ngay!',
+          citations: [],
+        };
+      }
+
+      if (!hasDocKw && (qNorm.includes('cam on') || qNorm.includes('thank'))) {
+        return {
+          answer: 'Không có gì! Rất vui được hỗ trợ bạn. Nếu bạn cần tra cứu hay làm rõ nội dung nào khác trong tài liệu, cứ nhắn tôi nhé!',
+          citations: [],
+        };
+      }
+
+      if (!hasDocKw && (qNorm.includes('tam biet') || qNorm.includes('bye'))) {
+        return {
+          answer: 'Tạm biệt bạn! Chúc bạn làm việc hiệu quả và thành công. Hẹn gặp lại khi bạn cần tra cứu tài liệu!',
+          citations: [],
+        };
+      }
+
+      if (cleanTokens.length <= 2 && !hasDocKw && ['ok', 'oke', 'oki', 'da', 'vang', 'u'].includes(cleanTokens[0])) {
+        return {
+          answer: 'Vâng! Nếu bạn có bất kỳ câu hỏi nào về các tài liệu và báo cáo đã tải lên, hãy nhắn cho tôi nhé.',
+          citations: [],
+        };
+      }
 
       // ========================================================
       // 1. AUTOMATIC RBAC SECURITY ENFORCEMENT CHECK
