@@ -340,7 +340,7 @@ ${
                   {/* ========================================================= */}
                   {msg.citations && msg.citations.length > 0 && (
                     <div className="mt-3 pt-2.5 border-t border-slate-800/80 space-y-1.5">
-                      {msg.citations.slice(0, 1).map((cite) => (
+                      {msg.citations.slice(0, 3).map((cite) => (
                         <button
                           key={cite.citation_index}
                           onClick={() => onCitationClick(cite)}

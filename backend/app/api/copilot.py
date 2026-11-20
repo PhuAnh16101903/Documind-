@@ -35,10 +35,11 @@ async def query_copilot(
     if req.department_scope_id:
         stmt = stmt.where((Document.department_id == req.department_scope_id) | (Document.is_public == True))
 
-    res = await db.execute(stmt)
+    res = await db.execute(stmt.order_by(Chunk.chunk_index.asc(), Chunk.id.asc()))
     candidates = [
         {
             "chunk_id": chunk.id,
+            "chunk_index": chunk.chunk_index,
             "document_id": doc.id,
             "document_title": doc.title,
             "content": chunk.content,
@@ -49,11 +50,22 @@ async def query_copilot(
         for chunk, doc in res.all()
     ]
 
+    # Look up most recently cited document_id for conversational follow-up pronouns ("nó nói về gì")
+    last_cite_res = await db.execute(
+        select(MessageCitation.document_id).order_by(MessageCitation.id.desc()).limit(1)
+    )
+    last_doc_id = last_cite_res.scalar_one_or_none()
+
     # 2. Retrieve top-k relevant chunks
     top_chunks = HybridSearchService.rank_hybrid(req.question, candidates, top_k=15)
 
-    # 3. Generate answer with Strict Grounding
-    answer_text, citations_data = await RAGService.generate_answer(req.question, top_chunks)
+    # 3. Generate answer with Strict Grounding & Multi-Intent Conversational Context
+    answer_text, citations_data = await RAGService.generate_answer(
+        req.question,
+        top_chunks,
+        all_candidates=candidates,
+        last_document_id=last_doc_id
+    )
 
     # 4. Save Session & Message to Database
     session_id = req.session_id
