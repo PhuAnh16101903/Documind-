@@ -277,24 +277,14 @@ ${
                 </option>
               </select>
             </div>
-            <p className="text-[10px] text-slate-400 font-mono truncate">
-              {apiKeyInput.trim() ? '🟢 Gemini LLM Online' : '⚡ RAG 2.0 Hybrid Engine'}
+            <p className="text-[10px] text-emerald-400 font-mono truncate flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Gemini 3.8 Flash • Đã kích hoạt</span>
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-1 flex-shrink-0">
-          <button
-            onClick={() => setShowKeyInput((v) => !v)}
-            className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-              apiKeyInput.trim()
-                ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-300 hover:bg-emerald-500/30'
-                : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white'
-            }`}
-            title="Cấu hình khóa Google Gemini API"
-          >
-            {apiKeyInput.trim() ? '🔑 Đã gắn Key' : '🔑 Gắn API Key'}
-          </button>
           <button
             onClick={handleResetChat}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer"
@@ -313,38 +303,6 @@ ${
           )}
         </div>
       </div>
-
-      {/* Quick Inline Gemini API Key Drawer */}
-      {showKeyInput && (
-        <div className="p-3 bg-slate-900 border-b border-slate-800 space-y-2 z-20 animate-fade-in">
-          <div className="flex items-center justify-between text-[11px] text-slate-300 font-medium">
-            <span>Nhập khóa Google Gemini API (AIzaSy...):</span>
-            <a
-              href="https://aistudio.google.com/apikey"
-              target="_blank"
-              rel="noreferrer"
-              className="text-indigo-400 hover:underline text-[10px] font-mono"
-            >
-              Lấy mã miễn phí ↗
-            </a>
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="password"
-              value={apiKeyInput}
-              onChange={(e) => setApiKeyInput(e.target.value)}
-              placeholder="Dán mã AIzaSy... vào đây"
-              className="flex-1 h-8 px-2.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white font-mono focus:outline-none focus:border-indigo-500"
-            />
-            <button
-              onClick={handleSaveApiKey}
-              className="h-8 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold cursor-pointer"
-            >
-              Lưu
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-950/70 z-10">

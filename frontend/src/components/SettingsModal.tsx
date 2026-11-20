@@ -247,22 +247,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </span>
           </div>
 
-          {/* Gemini API Key Configuration */}
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
-            <label className="block text-[11px] font-mono text-indigo-600 dark:text-indigo-400 font-bold">
-              {lang === 'vi'
-                ? 'KHÓA GOOGLE GEMINI API (TÙY CHỌN — KÍCH HOẠT LLM SUY LUẬN TRỰC TIẾP)'
-                : 'GOOGLE GEMINI API KEY (OPTIONAL — ENABLE LIVE LLM REASONING)'}
-            </label>
-            <input
-              type="password"
-              value={geminiApiKey}
-              onChange={(e) => setGeminiApiKey(e.target.value)}
-              placeholder="AIzaSy... (Để trống nếu dùng bộ suy luận nội bộ)"
-              className="w-full h-10 px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-mono"
-            />
-          </div>
-
           <div className="pt-2 flex justify-end">
             <button
               type="submit"
