@@ -33,7 +33,7 @@ async def list_documents(
         else:
             stmt = stmt.where(Document.is_public == True)
     elif department_id is not None:
-        stmt = stmt.where(Document.department_id == department_id)
+        stmt = stmt.where((Document.department_id == department_id) | (Document.is_public == True))
 
     res = await db.execute(stmt.order_by(Document.created_at.desc()))
     docs = res.scalars().all()

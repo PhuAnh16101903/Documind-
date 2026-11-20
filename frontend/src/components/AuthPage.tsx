@@ -206,6 +206,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       password: regPassword,
     };
 
+    if (newUser.token) {
+      localStorage.setItem('documind_token', newUser.token);
+    }
     onRegisterUser(newUser);
     setRegSuccess(
       lang === 'vi'

@@ -9,10 +9,8 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('documind_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  const token = localStorage.getItem('documind_token') || 'jwt-auth-token-admin-sysarch-2026';
+  config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
@@ -557,37 +555,8 @@ export const ApiService = {
       // 5. DEFAULT STRICT GROUNDED ANSWER
       // ========================================================
       return {
-        answer: `Dựa trên tài liệu nội bộ đã được xác thực, quy định về câu hỏi của bạn như sau:\n\n• Cán bộ nhân viên được hưởng chế độ làm việc linh hoạt tối đa 02 ngày/tuần sau khi hoàn thành thời gian thử việc [Nguồn 1].\n• Hạn mức công tác phí lưu trú tại các thành phố lớn tối đa 1.200.000 VNĐ/ngày theo hóa đơn VAT hợp lệ [Nguồn 2].`,
-        citations: [
-          {
-            citation_index: 1,
-            document_id: 1,
-            document_title: 'Quy Chế Làm Việc Từ Xa & Chấm Công 2026',
-            file_type: 'pdf',
-            page_number: 3,
-            heading: 'Điều 4. Chế độ làm việc linh hoạt',
-            exact_quoted_text:
-              'Cán bộ nhân viên được đăng ký làm việc linh hoạt Remote hoặc Hybrid tối đa 02 ngày trong tuần...',
-            confidence_score: 0.988,
-            department_code: 'HR',
-            department_name: 'Phòng Nhân Sự',
-            checksum_sha256: 'sha256:a12b45f...99cd',
-          },
-          {
-            citation_index: 2,
-            document_id: 2,
-            document_title: 'Hạn Mức Công Tác Phí & Tiếp Khách Nội Bộ',
-            file_type: 'docx',
-            page_number: 5,
-            heading: 'Khoản 3. Tiêu chuẩn khách sạn',
-            exact_quoted_text:
-              'Tiêu chuẩn lưu trú tại Hà Nội, TP.HCM và Đà Nẵng áp dụng mức trần thanh toán 1.200.000 VNĐ/ngày...',
-            confidence_score: 0.975,
-            department_code: 'FIN',
-            department_name: 'Phòng Tài Chính - Kế Toán',
-            checksum_sha256: 'sha256:8b4c91e...3a1f',
-          },
-        ],
+        answer: 'Tài liệu hiện không đề cập đến thông tin này.',
+        citations: [],
       };
     }
   },

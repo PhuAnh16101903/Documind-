@@ -33,7 +33,7 @@ async def query_copilot(
             stmt = stmt.where(Document.is_public == True)
 
     if req.department_scope_id:
-        stmt = stmt.where(Document.department_id == req.department_scope_id)
+        stmt = stmt.where((Document.department_id == req.department_scope_id) | (Document.is_public == True))
 
     res = await db.execute(stmt)
     candidates = [
