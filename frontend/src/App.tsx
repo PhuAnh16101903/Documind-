@@ -277,14 +277,14 @@ export const App: React.FC = () => {
           )}
 
           {activeTab === 'analytics' && (
-            <AdminDashboard currentTheme="harmonic" />
+            <AdminDashboard currentTheme="harmonic" themeMode={themeMode} lang={lang} />
           )}
         </main>
       </div>
 
       {/* Floating Shortcut Pill "Đi đến... Ctrl / ⌘ K" */}
       <div
-        className={`fixed bottom-5 z-40 transition-all duration-300 ${
+        className={`fixed bottom-5 z-40 transition-all duration-300 hidden sm:block ${
           isAIPanelOpen && activeTab === 'knowledge' ? 'right-[405px]' : 'right-6'
         }`}
       >
