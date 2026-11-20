@@ -363,9 +363,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
 
               {/* Subtext and Trend */}
-              <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] font-medium">
-                <span className="text-slate-500 dark:text-slate-400 truncate">{kpi.subtext}</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5 flex-shrink-0">
+              <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] font-medium">
+                <span className="text-slate-500 dark:text-slate-400">{kpi.subtext}</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 flex-shrink-0">
                   <TrendingUp className="w-3 h-3" />
                   <span>{kpi.trend}</span>
                 </span>

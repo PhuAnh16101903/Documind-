@@ -50,14 +50,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'knowledge' as const,
       label: t.navKnowledge,
       icon: FolderTree,
-      badge: 'RAG Ready',
+      badge: 'RAG',
       badgeColor: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-300/60 dark:border-blue-700/60',
     },
     {
       id: 'copilot' as const,
       label: t.navCopilot,
       icon: MessageSquareText,
-      badge: 'Gemini 3.8 ★',
+      badge: '3.8 ★',
       badgeColor: 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-300/60 dark:border-purple-700/60',
     },
     {
@@ -98,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       className={`border-r select-none z-20 flex flex-col justify-between transition-all duration-300 relative font-sans ${
-        isCollapsed ? 'w-16' : 'w-64'
+        isCollapsed ? 'w-16' : 'w-[270px]'
       } ${
         isLight
           ? 'bg-white/95 backdrop-blur-md border-slate-200/80 text-slate-800 shadow-sm'
