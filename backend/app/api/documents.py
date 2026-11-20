@@ -23,7 +23,7 @@ async def list_documents(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """List documents filtered by user permissions (Strict RBAC & Tenant Isolation)"""
+    """List documents filtered by user permissions with full real parsed chunks and content"""
     stmt = select(Document)
     
     # Non-admins can only see their department's docs or public docs
@@ -36,7 +36,49 @@ async def list_documents(
         stmt = stmt.where(Document.department_id == department_id)
 
     res = await db.execute(stmt.order_by(Document.created_at.desc()))
-    return [DocumentResponse.model_validate(d) for d in res.scalars().all()]
+    docs = res.scalars().all()
+    if not docs:
+        return []
+
+    doc_ids = [d.id for d in docs]
+    chunk_res = await db.execute(
+        select(Chunk).where(Chunk.document_id.in_(doc_ids)).order_by(Chunk.chunk_index.asc(), Chunk.id.asc())
+    )
+    all_chunks = chunk_res.scalars().all()
+
+    chunks_by_doc = {}
+    for ch in all_chunks:
+        chunks_by_doc.setdefault(ch.document_id, []).append({
+            "content": ch.content,
+            "heading": ch.heading,
+            "page_number": ch.page_number,
+            "sheet_name": ch.sheet_name
+        })
+
+    results = []
+    for d in docs:
+        doc_chunks = chunks_by_doc.get(d.id, [])
+        full_text = "\n\n".join(
+            [f"{c['heading']}\n{c['content']}" if c.get("heading") and c["heading"] != "General" else c["content"] for c in doc_chunks]
+        )
+        results.append(DocumentResponse(
+            id=d.id,
+            title=d.title,
+            file_name=d.file_name,
+            file_type=d.file_type,
+            file_size_bytes=d.file_size_bytes,
+            department_id=d.department_id,
+            folder_id=d.folder_id,
+            approval_status=d.approval_status,
+            ingestion_status=d.ingestion_status,
+            is_public=d.is_public,
+            current_version=d.current_version,
+            created_at=d.created_at,
+            updated_at=d.updated_at,
+            content=full_text,
+            parsed_chunks=doc_chunks
+        ))
+    return results
 
 @router.post("/upload", response_model=DocumentResponse)
 async def upload_document(

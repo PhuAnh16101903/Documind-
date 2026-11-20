@@ -50,7 +50,7 @@ async def query_copilot(
     ]
 
     # 2. Retrieve top-k relevant chunks
-    top_chunks = HybridSearchService.rank_hybrid(req.question, candidates, top_k=6)
+    top_chunks = HybridSearchService.rank_hybrid(req.question, candidates, top_k=15)
 
     # 3. Generate answer with Strict Grounding
     answer_text, citations_data = await RAGService.generate_answer(req.question, top_chunks)

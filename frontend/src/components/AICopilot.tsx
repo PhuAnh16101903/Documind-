@@ -336,142 +336,40 @@ ${
                   </div>
 
                   {/* ========================================================= */}
-                  {/* DIRECT JUMP LINK TO DOCUMENT SECTION */}
+                  {/* DIRECT JUMP LINK TO EXACT SECTION IN UPLOADED DOCUMENT */}
                   {/* ========================================================= */}
                   {msg.citations && msg.citations.length > 0 && (
-                    <div className="mt-3 pt-2.5 border-t border-slate-800/80 space-y-2">
-                      <div className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold flex items-center gap-1.5">
-                        <ExternalLink className="w-3 h-3 text-indigo-400" />
-                        <span>Đường dẫn trực tiếp đến vị trí trong tài liệu:</span>
-                      </div>
-                      <div className="space-y-1.5">
-                        {msg.citations.map((cite) => (
-                          <button
-                            key={cite.citation_index}
-                            onClick={() => onCitationClick(cite)}
-                            className="w-full text-left p-2.5 rounded-xl bg-gradient-to-r from-indigo-950/70 via-slate-900 to-indigo-950/40 border border-indigo-500/40 hover:border-indigo-400 hover:bg-indigo-900/40 transition-all duration-200 group flex items-center justify-between cursor-pointer shadow-sm hover:shadow-indigo-500/20"
-                          >
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 group-hover:scale-105 transition-transform flex-shrink-0">
-                                {getCitationFileIcon(cite.file_type)}
-                              </div>
-                              <div className="min-w-0">
-                                <div className="text-xs font-semibold text-slate-200 group-hover:text-indigo-200 truncate flex items-center gap-1.5">
-                                  <span>{cite.document_title}</span>
-                                  {cite.page_number && (
-                                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                      Trang {cite.page_number}
-                                    </span>
-                                  )}
-                                  {cite.heading && (
-                                    <span className="text-[10px] font-mono text-slate-400 truncate">
-                                      • {cite.heading}
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="text-[10px] text-slate-400 truncate mt-0.5 italic group-hover:text-slate-300">
-                                  "{cite.exact_quoted_text}"
-                                </div>
-                              </div>
+                    <div className="mt-3 pt-2.5 border-t border-slate-800/80 space-y-1.5">
+                      {msg.citations.slice(0, 1).map((cite) => (
+                        <button
+                          key={cite.citation_index}
+                          onClick={() => onCitationClick(cite)}
+                          className="w-full text-left p-2.5 rounded-xl bg-gradient-to-r from-indigo-950/70 via-slate-900 to-indigo-950/40 border border-indigo-500/40 hover:border-amber-400 hover:bg-indigo-900/40 transition-all duration-200 group flex items-center justify-between cursor-pointer shadow-sm hover:shadow-indigo-500/20"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 group-hover:scale-105 transition-transform flex-shrink-0">
+                              {getCitationFileIcon(cite.file_type)}
                             </div>
-                            <div className="flex items-center gap-1 text-[11px] font-medium text-indigo-400 group-hover:text-indigo-300 flex-shrink-0 pl-2">
-                              <span>Mở xem</span>
-                              <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ========================================================= */}
-                  {/* BEAUTIFULLY REVAMPED CITATION BENTO CARDS */}
-                  {/* ========================================================= */}
-                  {msg.citations && msg.citations.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-slate-800/80 space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <div className="text-[10px] uppercase font-mono tracking-wider text-amber-400 font-bold flex items-center gap-1.5">
-                          <FileCheck2 className="w-3.5 h-3.5 text-amber-400" />
-                          <span>{t.citationsHeader} · {msg.citations.length}</span>
-                        </div>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 font-semibold">
-                          <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                          <span>{t.groundedBadge}</span>
-                        </span>
-                      </div>
-
-                      <div className="space-y-2">
-                        {msg.citations.map((cite) => (
-                          <div
-                            key={cite.citation_index}
-                            className="rounded-xl bg-gradient-to-b from-[#131d36] to-[#0c1222] border border-amber-500/30 hover:border-amber-400/80 shadow-md hover:shadow-amber-500/10 transition-all duration-300 p-3 group relative overflow-hidden"
-                          >
-                            {/* Decorative top micro-glow stripe */}
-                            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 opacity-70 group-hover:opacity-100 transition-opacity" />
-
-                            {/* Header row: Index pill + File type + Page indicator + Confidence score */}
-                            <div className="flex items-center justify-between gap-1 mb-2">
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-xs">
-                                  Nguồn [{cite.citation_index}]
-                                </span>
-                                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-800/80 border border-slate-700 text-[9px] font-mono text-slate-300">
-                                  {getCitationFileIcon(cite.file_type)}
-                                  <span className="uppercase">{cite.file_type || 'PDF'}</span>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center gap-2">
-                                {cite.page_number && (
-                                  <span className="text-[10px] font-mono text-slate-300 bg-slate-800/90 px-1.5 py-0.5 rounded border border-slate-700">
-                                    Trang {cite.page_number}
+                            <div className="min-w-0">
+                              <div className="text-xs font-semibold text-slate-100 group-hover:text-amber-300 truncate flex items-center gap-1.5">
+                                <span>{cite.document_title}</span>
+                                {cite.heading && cite.heading !== 'General' && (
+                                  <span className="text-[10px] font-mono text-indigo-300 truncate">
+                                    • {cite.heading}
                                   </span>
                                 )}
-                                <span className="text-[9px] font-mono text-emerald-400 flex items-center gap-1 bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                  <span>{Math.round((cite.confidence_score || 0.985) * 100)}% Match</span>
-                                </span>
                               </div>
-                            </div>
-
-                            {/* Document Title & Heading */}
-                            <div className="font-bold text-slate-100 text-xs line-clamp-1 group-hover:text-amber-300 transition-colors">
-                              {cite.document_title}
-                            </div>
-                            {cite.heading && (
-                              <div className="text-[10px] text-indigo-300 font-mono mt-0.5 line-clamp-1 flex items-center gap-1">
-                                <span>§ {cite.heading}</span>
+                              <div className="text-[10px] text-slate-400 truncate mt-0.5">
+                                Bấm để mở toàn bộ báo cáo gốc & cuộn thẳng tới đoạn này
                               </div>
-                            )}
-
-                            {/* Stylized Quoted Text Excerpt */}
-                            {cite.exact_quoted_text && (
-                              <div className="my-2 p-2 rounded-lg bg-black/40 border-l-2 border-amber-400 text-[11px] text-amber-100/90 italic font-sans flex items-start gap-1.5">
-                                <Quote className="w-3 h-3 text-amber-400 flex-shrink-0 mt-0.5" />
-                                <span className="line-clamp-3">"{cite.exact_quoted_text}"</span>
-                              </div>
-                            )}
-
-                            {/* Footer: SHA-256 verification + Click to read button */}
-                            <div className="mt-2 pt-2 border-t border-slate-800/70 flex items-center justify-between text-[9px] font-mono">
-                              <span className="text-slate-500 flex items-center gap-1">
-                                <Shield className="w-2.5 h-2.5 text-emerald-500" />
-                                <span className="truncate max-w-[130px]">
-                                  {cite.checksum_sha256 || 'sha256:verified'}
-                                </span>
-                              </span>
-
-                              <button
-                                onClick={() => onCitationClick(cite)}
-                                className="px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-400 text-amber-300 flex items-center gap-1 transition-all group-hover:scale-105"
-                              >
-                                <span>{t.viewOriginal}</span>
-                                <ExternalLink className="w-2.5 h-2.5" />
-                              </button>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                          <div className="flex items-center gap-1 text-[11px] font-semibold text-amber-400 group-hover:text-amber-300 flex-shrink-0 pl-2">
+                            <span>Xem trong file gốc</span>
+                            <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                          </div>
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>

@@ -182,12 +182,25 @@ export const ApiService = {
   async getDocuments(deptId?: number, user?: User): Promise<Document[]> {
     try {
       const res = await api.get('/documents', { params: { department_id: deptId } });
-      const serverDocs: Document[] = res.data;
+      const rawServerDocs: any[] = res.data || [];
+      const serverDocs: Document[] = rawServerDocs.map((d) => ({
+        ...d,
+        content: d.content || '',
+        chunks: Array.isArray(d.parsed_chunks)
+          ? d.parsed_chunks.map((c: any, idx: number) => ({
+              page_number: c.page_number || idx + 1,
+              heading: c.heading || '',
+              text: c.content || c.text || '',
+            }))
+          : d.chunks,
+      }));
+      const serverIds = new Set(serverDocs.map((d) => d.id));
       const serverTitles = new Set(serverDocs.map((d) => d.title.toLowerCase()));
-      // Combine server documents with mock documents so both appear seamlessly
       const combined = [
         ...serverDocs,
-        ...MockData.documents.filter((d) => !serverTitles.has(d.title.toLowerCase())),
+        ...MockData.documents.filter(
+          (d) => !serverIds.has(d.id) && !serverTitles.has(d.title.toLowerCase())
+        ),
       ];
       return combined;
     } catch {
