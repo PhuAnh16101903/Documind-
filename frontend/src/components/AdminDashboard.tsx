@@ -309,7 +309,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       </div>
 
       {/* Luxury Tet Festive Status Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 border border-amber-300/80 dark:border-amber-700/60 shadow-xs backdrop-blur-xs">
+      <button
+        onClick={handleRefresh}
+        className="w-full text-left flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 border border-amber-300/80 dark:border-amber-700/60 shadow-xs backdrop-blur-xs hover:border-amber-400 hover:scale-[1.005] active:scale-98 transition-all cursor-pointer"
+        title="Bấm để kiểm tra và đồng bộ trạng thái trực ban khai thác tri thức"
+      >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center text-white text-lg shadow-md shadow-red-500/20 flex-shrink-0">
             🌸
@@ -332,20 +336,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <span>•</span>
           <span className="text-amber-600 dark:text-amber-400">NEU 2026</span>
         </div>
-      </div>
+      </button>
 
-      {/* Bento Grid Top KPIs */}
+      {/* Bento Grid Top KPIs - Interactive Click to Filter */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
-            <div
+            <button
               key={idx}
-              className={`p-5 rounded-2xl border transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden ${
+              onClick={() => {
+                if (idx === 0) setFilterAction('UPLOAD_DOCUMENT');
+                else if (idx === 1) setFilterAction('COPILOT_QUERY');
+                else if (idx === 2) setFilterAction('SEARCH_HYBRID');
+                else setFilterAction('ALL');
+              }}
+              className={`p-5 rounded-2xl border text-left transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden cursor-pointer ${
                 isLight
-                  ? 'bg-white border-slate-200/80 shadow-xs hover:shadow-lg hover:border-blue-300'
-                  : 'bg-slate-900/90 border-slate-800 shadow-lg hover:border-slate-700'
+                  ? 'bg-white border-slate-200/80 shadow-xs hover:shadow-lg hover:border-blue-400'
+                  : 'bg-slate-900/90 border-slate-800 shadow-lg hover:border-blue-500'
               }`}
+              title={`Bấm để lọc nhật ký kiểm toán theo nhóm: ${kpi.label}`}
             >
               {/* Top Row */}
               <div className="flex items-center justify-between">
@@ -370,7 +381,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <span>{kpi.trend}</span>
                 </span>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -461,11 +472,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </div>
 
-      {/* Security Defenses Overview Grid */}
+      {/* Security Defenses Overview Grid - Interactive Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className={`p-4.5 rounded-2xl border space-y-2 ${
-          isLight ? 'bg-white border-slate-200/80 shadow-2xs' : 'bg-slate-900/90 border-slate-800'
-        }`}>
+        <button
+          onClick={() => setFilterAction('SEARCH_HYBRID')}
+          className={`p-4.5 rounded-2xl border space-y-2 text-left cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-98 ${
+            isLight
+              ? 'bg-white border-slate-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-md'
+              : 'bg-slate-900/90 border-slate-800 hover:border-emerald-500'
+          }`}
+          title="Bấm để lọc nhật ký truy xuất RBAC"
+        >
           <div className="flex items-center justify-between text-xs font-bold text-slate-900 dark:text-white">
             <span className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
@@ -478,11 +495,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <p className="text-[11px] text-slate-500 leading-relaxed">
             Kiểm tra quyền truy cập ở cấp độ thư mục và tài liệu trước mọi truy vấn Hybrid Search. Ngăn chặn triệt để rò rỉ dữ liệu chéo bộ phận.
           </p>
-        </div>
+        </button>
 
-        <div className={`p-4.5 rounded-2xl border space-y-2 ${
-          isLight ? 'bg-white border-slate-200/80 shadow-2xs' : 'bg-slate-900/90 border-slate-800'
-        }`}>
+        <button
+          onClick={() => setFilterAction('COPILOT_QUERY')}
+          className={`p-4.5 rounded-2xl border space-y-2 text-left cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-98 ${
+            isLight
+              ? 'bg-white border-slate-200/80 shadow-2xs hover:border-indigo-400 hover:shadow-md'
+              : 'bg-slate-900/90 border-slate-800 hover:border-indigo-500'
+          }`}
+          title="Bấm để lọc nhật ký truy vấn AI Copilot"
+        >
           <div className="flex items-center justify-between text-xs font-bold text-slate-900 dark:text-white">
             <span className="flex items-center gap-2">
               <Lock className="w-4 h-4 text-indigo-600" />
@@ -495,11 +518,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <p className="text-[11px] text-slate-500 leading-relaxed">
             Cô lập context với delimiter XML &lt;untrusted_retrieved_context&gt; và Output Guardrail regex. Loại bỏ hoàn toàn mã độc gián tiếp.
           </p>
-        </div>
+        </button>
 
-        <div className={`p-4.5 rounded-2xl border space-y-2 ${
-          isLight ? 'bg-white border-slate-200/80 shadow-2xs' : 'bg-slate-900/90 border-slate-800'
-        }`}>
+        <button
+          onClick={() => setFilterAction('ALL')}
+          className={`p-4.5 rounded-2xl border space-y-2 text-left cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-98 ${
+            isLight
+              ? 'bg-white border-slate-200/80 shadow-2xs hover:border-blue-400 hover:shadow-md'
+              : 'bg-slate-900/90 border-slate-800 hover:border-blue-500'
+          }`}
+          title="Bấm để xem tất cả nhật ký kiểm toán hiệu lực"
+        >
           <div className="flex items-center justify-between text-xs font-bold text-slate-900 dark:text-white">
             <span className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-blue-600" />
@@ -512,7 +541,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <p className="text-[11px] text-slate-500 leading-relaxed">
             Tự động loại bỏ các văn bản đã hết hiệu lực hoặc bị thay thế khỏi ngữ cảnh truy xuất RAG để đảm bảo tính pháp lý cao nhất.
           </p>
-        </div>
+        </button>
       </div>
 
       {/* Audit Logs Table Section */}

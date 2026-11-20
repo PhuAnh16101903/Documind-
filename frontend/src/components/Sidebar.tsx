@@ -27,6 +27,7 @@ interface SidebarProps {
   currentTheme?: UIThemeId;
   themeMode?: 'light' | 'dark';
   lang?: Language;
+  onGoHome?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -40,10 +41,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onLogout,
   themeMode = 'light',
   lang = 'vi',
+  onGoHome,
 }) => {
   const t = translations[lang];
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [tetWishToast, setTetWishToast] = useState(false);
   const isLight = themeMode === 'light';
+
+  const triggerTetWish = () => {
+    setTetWishToast(true);
+    setTimeout(() => setTetWishToast(false), 3000);
+  };
 
   const navItems = [
     {
@@ -118,14 +126,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
       </button>
 
-      {/* Top Brand Logo with Authentic Circular NEU Emblem */}
+      {/* Top Brand Logo with Authentic Circular NEU Emblem - Click to Go Home */}
       <div className="p-4 pb-3 border-b border-slate-100 dark:border-slate-800/80">
-        <Brand isCollapsed={isCollapsed} lang={lang} />
+        <Brand isCollapsed={isCollapsed} lang={lang} onClick={onGoHome} />
       </div>
 
-      {/* Luxury Tet Holiday Badge in Sidebar */}
+      {/* Luxury Tet Holiday Badge in Sidebar - Interactive Click */}
       {!isCollapsed && (
-        <div className="mx-3 mt-2.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 border border-amber-300/80 dark:border-amber-700/60 flex items-center justify-between text-[11px] font-extrabold text-red-700 dark:text-red-400 shadow-xs hover:border-amber-400 transition-all">
+        <button
+          onClick={triggerTetWish}
+          className="mx-3 mt-2.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 border border-amber-300/80 dark:border-amber-700/60 flex items-center justify-between text-[11px] font-extrabold text-red-700 dark:text-red-400 shadow-xs hover:border-amber-400 hover:scale-[1.02] active:scale-98 transition-all cursor-pointer w-[calc(100%-24px)]"
+          title="Bấm để nhận lời chúc Xuân Bính Ngọ 2026!"
+        >
           <span className="flex items-center gap-1.5">
             <span className="text-sm">🌸</span>
             <span>Xuân Bính Ngọ</span>
@@ -134,6 +146,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span>2026</span>
             <span>🇻🇳</span>
           </span>
+        </button>
+      )}
+
+      {/* Tet Toast Notification */}
+      {tetWishToast && (
+        <div className="mx-3 mt-1.5 p-2 rounded-xl bg-gradient-to-r from-red-600 to-amber-600 text-white text-[10px] font-bold shadow-lg animate-fade-in text-center border border-amber-300">
+          🧧 Chúc Mừng Năm Mới 2026! Vạn Sự Như Ý, Tấn Tài Tấn Lộc!
         </div>
       )}
 
@@ -268,16 +287,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {!isCollapsed && <span>{t.settings}</span>}
         </button>
 
-        {/* User Card with glowing status */}
-        <div
-          className={`p-2.5 rounded-2xl flex items-center gap-2.5 transition-all border ${
+        {/* User Card with glowing status - Click to Open Settings */}
+        <button
+          onClick={onOpenSettings}
+          className={`w-full p-2.5 rounded-2xl flex items-center gap-2.5 transition-all border text-left cursor-pointer group hover:scale-[1.01] active:scale-98 ${
             isLight
-              ? 'bg-slate-50/90 border-slate-200/80 shadow-2xs'
-              : 'bg-slate-800/80 border-slate-700/60 shadow-md'
+              ? 'bg-slate-50/90 border-slate-200/80 shadow-2xs hover:border-blue-300 hover:bg-blue-50/40'
+              : 'bg-slate-800/80 border-slate-700/60 shadow-md hover:border-slate-600 hover:bg-slate-750'
           }`}
+          title="Bấm để xem và chỉnh sửa thông tin tài khoản"
         >
           <div className="relative flex-shrink-0">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm ring-2 ring-white dark:ring-slate-800">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm ring-2 ring-white dark:ring-slate-800 group-hover:scale-105 transition-transform">
               {user.full_name ? user.full_name[0].toUpperCase() : 'P'}
             </div>
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-800 animate-pulse" />
@@ -285,7 +306,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {!isCollapsed && (
             <div className="min-w-0 flex-1">
-              <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+              <div className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {user.full_name}
               </div>
               <div className="text-[10px] text-slate-500 font-mono truncate flex items-center gap-1 mt-0.5">
@@ -300,7 +321,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
           )}
-        </div>
+        </button>
 
         {/* Logout button in Red */}
         <button

@@ -147,6 +147,16 @@ export const App: React.FC = () => {
     setIsSettingsOpen(false);
   };
 
+  const handleGoHome = () => {
+    setActiveTab('knowledge');
+    setSelectedDeptId(null);
+    setSelectedDoc(null);
+    setActiveCitation(null);
+    setIsUploadOpen(false);
+    setIsSearchOpen(false);
+    setIsSettingsOpen(false);
+  };
+
   const handleRegisterUser = (newUser: User) => {
     setRegisteredUsers((prev) => [...prev, newUser]);
   };
@@ -210,6 +220,7 @@ export const App: React.FC = () => {
         onToggleTheme={toggleTheme}
         lang={lang}
         onToggleLang={toggleLang}
+        onGoHome={handleGoHome}
       />
 
       {/* Main Layout Body */}
@@ -226,6 +237,7 @@ export const App: React.FC = () => {
           onLogout={handleLogout}
           themeMode={themeMode}
           lang={lang}
+          onGoHome={handleGoHome}
         />
 
         {/* Active View Screen */}

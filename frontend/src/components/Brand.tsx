@@ -7,17 +7,29 @@ interface BrandProps {
   isCollapsed?: boolean;
   lang?: Language;
   variant?: 'light' | 'dark' | 'auto';
+  onClick?: () => void;
 }
 
 export const Brand: React.FC<BrandProps> = ({
   className = '',
   isCollapsed = false,
   lang = 'vi',
+  onClick,
 }) => {
   const t = translations[lang];
 
   return (
-    <div className={`flex items-center gap-3 select-none ${className}`}>
+    <div
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      className={`flex items-center gap-3 select-none ${
+        onClick
+          ? 'cursor-pointer group hover:opacity-95 active:scale-98 transition-all'
+          : ''
+      } ${className}`}
+      title={onClick ? 'Về trang chủ DocuMind' : undefined}
+    >
       {/* Authentic Circular NEU Emblem with sleek glowing ring */}
       <div className="relative group flex-shrink-0">
         <div className="w-10 h-10 rounded-2xl flex items-center justify-center overflow-hidden bg-white shadow-md shadow-blue-900/10 border border-blue-100 dark:border-slate-700/80 transition-all duration-300 group-hover:scale-105 group-hover:shadow-blue-500/20">

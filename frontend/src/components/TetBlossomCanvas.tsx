@@ -1,40 +1,38 @@
 import React, { useEffect, useRef } from 'react';
 
-interface Petal {
+interface RealisticPetal {
   x: number;
   y: number;
+  z: number; // 0 (far background) to 1 (close foreground)
+  size: number;
   vx: number;
   vy: number;
-  size: number;
-  type: 'mai' | 'dao' | 'single_mai' | 'single_dao';
-  rotation: number;
-  rotSpeed: number;
+  type: 'dao' | 'mai' | 'dao_flower' | 'mai_flower';
+  // 3D rotation angles
+  pitch: number;      // tip forward/backward (squash Y)
+  pitchSpeed: number;
+  yaw: number;        // rotate along surface
+  yawSpeed: number;
+  roll: number;       // tumble angle
+  rollSpeed: number;
   swayPhase: number;
   swaySpeed: number;
+  swayAmp: number;
   opacity: number;
-}
-
-interface Spark {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  alpha: number;
-  color: string;
-  size: number;
 }
 
 interface TetBlossomCanvasProps {
   variant?: 'hero' | 'subtle';
   className?: string;
+  enableInteractiveWind?: boolean;
 }
 
 export const TetBlossomCanvas: React.FC<TetBlossomCanvasProps> = ({
-  variant = 'hero',
+  variant = 'subtle',
   className = '',
+  enableInteractiveWind = true,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const isSubtle = variant === 'subtle';
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -54,231 +52,267 @@ export const TetBlossomCanvas: React.FC<TetBlossomCanvasProps> = ({
     window.addEventListener('resize', handleResize);
 
     const isSubtle = variant === 'subtle';
-    const petalCount = isSubtle ? 16 : 40;
+    // Realistic density: rich yet not distracting
+    const petalCount = isSubtle ? 32 : 55;
 
-    // Initialize festive petals
-    const petals: Petal[] = Array.from({ length: petalCount }, () => {
-      const types: Petal['type'][] = ['mai', 'dao', 'single_mai', 'single_dao'];
-      const chosenType = types[Math.floor(Math.random() * types.length)];
-      return {
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: -0.3 + Math.random() * 0.6,
-        vy: isSubtle ? 0.4 + Math.random() * 0.6 : 0.7 + Math.random() * 1.2,
-        size: isSubtle ? 8 + Math.random() * 9 : 10 + Math.random() * 14,
-        type: chosenType,
-        rotation: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * 0.03,
-        swayPhase: Math.random() * Math.PI * 2,
-        swaySpeed: 0.015 + Math.random() * 0.025,
-        opacity: isSubtle ? 0.35 + Math.random() * 0.35 : 0.75 + Math.random() * 0.25,
-      };
-    });
+    // Mouse / Cursor wind interaction
+    let mouseX = -1000;
+    let mouseY = -1000;
+    let mouseVx = 0;
+    let mouseVy = 0;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
 
-    // Fireworks sparks burst array
-    let sparks: Spark[] = [];
-    let fireworkTimer = 0;
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const curX = e.clientX - rect.left;
+      const curY = e.clientY - rect.top;
+      mouseVx = curX - lastMouseX;
+      mouseVy = curY - lastMouseY;
+      lastMouseX = mouseX = curX;
+      lastMouseY = mouseY = curY;
+    };
 
-    const createFirework = (bx: number, by: number) => {
-      const colors = ['#f59e0b', '#ef4444', '#fbbf24', '#f43f5e', '#fef08a'];
-      for (let i = 0; i < 28; i++) {
+    const handleClick = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      // Spawn a gentle swirl of 6 fresh petals near the click
+      for (let i = 0; i < 6; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = 1.2 + Math.random() * 3.2;
-        sparks.push({
-          x: bx,
-          y: by,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          alpha: 1,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          size: 1.5 + Math.random() * 2,
-        });
+        const dist = 10 + Math.random() * 40;
+        petals.push(createPetal(clickX + Math.cos(angle) * dist, clickY + Math.sin(angle) * dist, false));
       }
     };
 
-    // Draw single 5-petal Hoa Mai (Yellow Apricot)
-    const drawHoaMai = (x: number, y: number, size: number, rot: number, alpha: number) => {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(rot);
-      ctx.globalAlpha = alpha;
+    if (enableInteractiveWind) {
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+      window.addEventListener('click', handleClick, { passive: true });
+    }
 
-      // 5 Rounded Golden Petals
-      for (let i = 0; i < 5; i++) {
-        ctx.save();
-        ctx.rotate((i * Math.PI * 2) / 5);
-        ctx.beginPath();
-        ctx.ellipse(0, -size * 0.5, size * 0.35, size * 0.55, 0, 0, Math.PI * 2);
-        const petalGrad = ctx.createRadialGradient(0, -size * 0.5, 1, 0, -size * 0.5, size * 0.55);
-        petalGrad.addColorStop(0, '#fef08a');
-        petalGrad.addColorStop(0.65, '#facc15');
-        petalGrad.addColorStop(1, '#eab308');
-        ctx.fillStyle = petalGrad;
-        ctx.shadowColor = 'rgba(234, 179, 8, 0.4)';
-        ctx.shadowBlur = 4;
-        ctx.fill();
-        ctx.restore();
+    const createPetal = (startX?: number, startY?: number, randomizeY = true): RealisticPetal => {
+      const z = Math.random(); // depth: 0 = far, 1 = near
+      const isMai = Math.random() > 0.65; // 65% Hoa Đào (Pink), 35% Hoa Mai (Gold)
+      const isWholeFlower = Math.random() < 0.12; // 12% chance for full 5-petal flower
+
+      let type: RealisticPetal['type'] = isMai ? 'mai' : 'dao';
+      if (isWholeFlower) {
+        type = isMai ? 'mai_flower' : 'dao_flower';
       }
 
-      // Red-orange pistil center with stamens
-      ctx.beginPath();
-      ctx.arc(0, 0, size * 0.22, 0, Math.PI * 2);
-      ctx.fillStyle = '#ea580c';
-      ctx.fill();
+      const baseSize = isSubtle ? 9 + z * 10 : 12 + z * 14;
 
-      // Gold stamen dots
-      for (let j = 0; j < 5; j++) {
-        const a = (j * Math.PI * 2) / 5;
-        ctx.beginPath();
-        ctx.arc(Math.cos(a) * (size * 0.2), Math.sin(a) * (size * 0.2), size * 0.06, 0, Math.PI * 2);
-        ctx.fillStyle = '#fef08a';
-        ctx.fill();
-      }
-
-      ctx.restore();
+      return {
+        x: startX !== undefined ? startX : Math.random() * width,
+        y: startY !== undefined ? startY : (randomizeY ? Math.random() * height : -30 - Math.random() * 40),
+        z,
+        size: baseSize,
+        vx: (-0.3 + Math.random() * 0.6) * (0.8 + z * 0.6),
+        vy: (0.45 + Math.random() * 0.75) * (0.7 + z * 0.7),
+        type,
+        pitch: Math.random() * Math.PI * 2,
+        pitchSpeed: 0.015 + Math.random() * 0.03,
+        yaw: Math.random() * Math.PI * 2,
+        yawSpeed: (Math.random() - 0.5) * 0.025,
+        roll: Math.random() * Math.PI * 2,
+        rollSpeed: 0.01 + Math.random() * 0.02,
+        swayPhase: Math.random() * Math.PI * 2,
+        swaySpeed: 0.018 + Math.random() * 0.025,
+        swayAmp: 0.8 + z * 1.4,
+        opacity: isSubtle ? 0.35 + z * 0.45 : 0.6 + z * 0.38,
+      };
     };
 
-    // Draw 5-petal Hoa Đào (Pink Peach Blossom)
-    const drawHoaDao = (x: number, y: number, size: number, rot: number, alpha: number) => {
+    const petals: RealisticPetal[] = Array.from({ length: petalCount }, () => createPetal());
+
+    // Draw Realistic Single Petal with True 3D Tumbling & Shading
+    const drawPetal = (p: RealisticPetal) => {
       ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(rot);
-      ctx.globalAlpha = alpha;
+      ctx.translate(p.x, p.y);
 
-      for (let i = 0; i < 5; i++) {
-        ctx.save();
-        ctx.rotate((i * Math.PI * 2) / 5);
-        ctx.beginPath();
-        ctx.ellipse(0, -size * 0.5, size * 0.34, size * 0.56, 0, 0, Math.PI * 2);
-        const petalGrad = ctx.createRadialGradient(0, -size * 0.5, 1, 0, -size * 0.5, size * 0.56);
-        petalGrad.addColorStop(0, '#fce7f3');
-        petalGrad.addColorStop(0.6, '#f472b6');
-        petalGrad.addColorStop(1, '#db2777');
-        ctx.fillStyle = petalGrad;
-        ctx.shadowColor = 'rgba(219, 39, 119, 0.35)';
-        ctx.shadowBlur = 4;
-        ctx.fill();
-        ctx.restore();
-      }
+      // 3D Pitch (tumbling over on horizontal axis)
+      const cosPitch = Math.cos(p.pitch);
+      const sinPitch = Math.sin(p.pitch);
+      const isFrontFace = cosPitch >= 0;
+      const squashY = Math.max(0.08, Math.abs(cosPitch)); // edge-on perspective squash
 
-      // Center crimson pistil
+      ctx.rotate(p.yaw);
+      ctx.scale(1, squashY);
+      ctx.rotate(p.roll * 0.3);
+
+      ctx.globalAlpha = p.opacity;
+
+      const s = p.size;
+      const isMai = p.type === 'mai';
+
+      // Authentic Curved Petal Path with Notch at Crown
       ctx.beginPath();
-      ctx.arc(0, 0, size * 0.2, 0, Math.PI * 2);
-      ctx.fillStyle = '#be123c';
-      ctx.fill();
-
-      // Delicate yellow stamen dots
-      for (let j = 0; j < 5; j++) {
-        const a = (j * Math.PI * 2) / 5;
-        ctx.beginPath();
-        ctx.arc(Math.cos(a) * (size * 0.18), Math.sin(a) * (size * 0.18), size * 0.05, 0, Math.PI * 2);
-        ctx.fillStyle = '#fef08a';
-        ctx.fill();
-      }
-
-      ctx.restore();
-    };
-
-    // Draw single petal fluttering in 3D
-    const drawSinglePetal = (x: number, y: number, size: number, rot: number, alpha: number, isMai: boolean) => {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(rot);
-      ctx.globalAlpha = alpha;
-
-      // 3D tilt perspective squash
-      const tiltScaleY = Math.abs(Math.sin(rot * 2)) * 0.6 + 0.4;
-      ctx.scale(1, tiltScaleY);
-
-      ctx.beginPath();
-      ctx.moveTo(0, -size * 0.7);
-      ctx.bezierCurveTo(size * 0.4, -size * 0.4, size * 0.5, size * 0.3, 0, size * 0.6);
-      ctx.bezierCurveTo(-size * 0.5, size * 0.3, -size * 0.4, -size * 0.4, 0, -size * 0.7);
+      ctx.moveTo(0, s * 0.65); // base / stem point
+      // Left contour with natural bulge
+      ctx.bezierCurveTo(-s * 0.45, s * 0.25, -s * 0.52, -s * 0.2, -s * 0.28, -s * 0.6);
+      // Gentle notch at petal apex
+      ctx.bezierCurveTo(-s * 0.1, -s * 0.68, 0, -s * 0.55, 0, -s * 0.55);
+      ctx.bezierCurveTo(0, -s * 0.55, s * 0.1, -s * 0.68, s * 0.28, -s * 0.6);
+      // Right contour
+      ctx.bezierCurveTo(s * 0.52, -s * 0.2, s * 0.45, s * 0.25, 0, s * 0.65);
       ctx.closePath();
 
+      // Shading based on Front vs Back face of petal
       if (isMai) {
-        const grad = ctx.createLinearGradient(0, -size * 0.7, 0, size * 0.6);
-        grad.addColorStop(0, '#fef08a');
-        grad.addColorStop(0.5, '#facc15');
-        grad.addColorStop(1, '#ca8a04');
+        // Vietnamese Hoa Mai (Golden Apricot)
+        const grad = ctx.createLinearGradient(0, -s * 0.65, 0, s * 0.65);
+        if (isFrontFace) {
+          grad.addColorStop(0, '#fef08a');   // Soft luminous yellow tip
+          grad.addColorStop(0.45, '#facc15'); // Rich golden yellow
+          grad.addColorStop(0.85, '#eab308'); // Amber gold
+          grad.addColorStop(1, '#ca8a04');   // Warm orange base
+        } else {
+          // Back face slightly paler
+          grad.addColorStop(0, '#fef9c3');
+          grad.addColorStop(0.5, '#fde047');
+          grad.addColorStop(1, '#d97706');
+        }
         ctx.fillStyle = grad;
+        ctx.shadowColor = 'rgba(234, 179, 8, 0.25)';
+        ctx.shadowBlur = 3;
       } else {
-        const grad = ctx.createLinearGradient(0, -size * 0.7, 0, size * 0.6);
-        grad.addColorStop(0, '#fce7f3');
-        grad.addColorStop(0.5, '#f472b6');
-        grad.addColorStop(1, '#e11d48');
+        // Vietnamese Hoa Đào (Pink Peach Blossom)
+        const grad = ctx.createLinearGradient(0, -s * 0.65, 0, s * 0.65);
+        if (isFrontFace) {
+          grad.addColorStop(0, '#fff1f2');   // Translucent white-pink apex
+          grad.addColorStop(0.35, '#fbcfe8'); // Delicate peach pink
+          grad.addColorStop(0.75, '#f43f5e'); // Rich vivid rose
+          grad.addColorStop(1, '#be123c');   // Crimson stem attachment
+        } else {
+          // Back face softer pastel
+          grad.addColorStop(0, '#fff5f7');
+          grad.addColorStop(0.4, '#f9a8d4');
+          grad.addColorStop(1, '#e11d48');
+        }
         ctx.fillStyle = grad;
+        ctx.shadowColor = 'rgba(244, 63, 94, 0.25)';
+        ctx.shadowBlur = 3;
       }
+
       ctx.fill();
+
+      // Delicate Central Vein highlight
+      ctx.beginPath();
+      ctx.moveTo(0, s * 0.5);
+      ctx.quadraticCurveTo(s * 0.05, 0, 0, -s * 0.35);
+      ctx.strokeStyle = isMai ? 'rgba(254, 240, 138, 0.45)' : 'rgba(255, 255, 255, 0.5)';
+      ctx.lineWidth = Math.max(0.6, s * 0.05);
+      ctx.stroke();
+
       ctx.restore();
     };
 
-    let step = 0;
+    // Draw Realistic 5-Petal Whole Blossom
+    const drawWholeFlower = (p: RealisticPetal) => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.yaw);
+      ctx.globalAlpha = p.opacity;
 
-    const render = () => {
-      step++;
-      ctx.clearRect(0, 0, width, height);
+      const s = p.size * 0.9;
+      const isMai = p.type === 'mai_flower';
 
-      // Random gentle firework burst (only in hero mode)
-      if (!isSubtle) {
-        fireworkTimer++;
-        if (fireworkTimer > 180) {
-          fireworkTimer = 0;
-          const fx = width * 0.3 + Math.random() * (width * 0.6);
-          const fy = height * 0.15 + Math.random() * (height * 0.35);
-          createFirework(fx, fy);
-        }
-      }
-
-      // Update & render fireworks sparks
-      for (let i = sparks.length - 1; i >= 0; i--) {
-        const s = sparks[i];
-        s.x += s.vx;
-        s.y += s.vy;
-        s.vy += 0.04; // subtle gravity
-        s.alpha -= 0.016;
-
-        if (s.alpha <= 0) {
-          sparks.splice(i, 1);
-          continue;
-        }
-
+      for (let i = 0; i < 5; i++) {
         ctx.save();
-        ctx.globalAlpha = s.alpha;
+        ctx.rotate((i * Math.PI * 2) / 5);
+
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        ctx.fillStyle = s.color;
-        ctx.shadowColor = s.color;
-        ctx.shadowBlur = 6;
+        ctx.ellipse(0, -s * 0.5, s * 0.32, s * 0.52, 0, 0, Math.PI * 2);
+
+        if (isMai) {
+          const grad = ctx.createRadialGradient(0, -s * 0.5, 1, 0, -s * 0.5, s * 0.52);
+          grad.addColorStop(0, '#fef08a');
+          grad.addColorStop(0.6, '#facc15');
+          grad.addColorStop(1, '#ca8a04');
+          ctx.fillStyle = grad;
+        } else {
+          const grad = ctx.createRadialGradient(0, -s * 0.5, 1, 0, -s * 0.5, s * 0.52);
+          grad.addColorStop(0, '#fce7f3');
+          grad.addColorStop(0.55, '#f472b6');
+          grad.addColorStop(1, '#db2777');
+          ctx.fillStyle = grad;
+        }
         ctx.fill();
         ctx.restore();
       }
 
-      // Update and render petals
-      petals.forEach((p) => {
+      // Center Pistil and Stamens
+      ctx.beginPath();
+      ctx.arc(0, 0, s * 0.18, 0, Math.PI * 2);
+      ctx.fillStyle = isMai ? '#ea580c' : '#9f1239';
+      ctx.fill();
+
+      // 5 Gold Stamen tips
+      for (let j = 0; j < 5; j++) {
+        const a = (j * Math.PI * 2) / 5;
+        ctx.beginPath();
+        ctx.arc(Math.cos(a) * (s * 0.18), Math.sin(a) * (s * 0.18), s * 0.045, 0, Math.PI * 2);
+        ctx.fillStyle = '#fef08a';
+        ctx.fill();
+      }
+
+      ctx.restore();
+    };
+
+    let globalWindTime = 0;
+
+    const render = () => {
+      globalWindTime += 0.008;
+      // Gentle natural breeze vector oscillating smoothly
+      const globalWind = Math.sin(globalWindTime) * 0.5 + Math.cos(globalWindTime * 0.5) * 0.3;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Sort by depth (Z) so background petals render behind foreground petals
+      petals.sort((a, b) => a.z - b.z);
+
+      for (let i = 0; i < petals.length; i++) {
+        const p = petals[i];
+
+        // 3D physics updates
+        p.pitch += p.pitchSpeed;
+        p.yaw += p.yawSpeed;
+        p.roll += p.rollSpeed;
         p.swayPhase += p.swaySpeed;
-        p.rotation += p.rotSpeed;
-        p.x += p.vx + Math.sin(p.swayPhase) * 0.8;
+
+        // Aerodynamic sway + global wind
+        const sway = Math.sin(p.swayPhase) * p.swayAmp;
+        p.x += p.vx + sway + globalWind * (0.6 + p.z * 0.6);
         p.y += p.vy;
 
-        // Wrap around smoothly
+        // Interactive mouse wind repulsion
+        if (enableInteractiveWind && mouseX > 0 && mouseY > 0) {
+          const dx = p.x - mouseX;
+          const dy = p.y - mouseY;
+          const distSq = dx * dx + dy * dy;
+          if (distSq < 16000 && distSq > 1) { // 125px radius
+            const dist = Math.sqrt(distSq);
+            const force = (1 - dist / 125) * 2.2;
+            p.x += (dx / dist) * force * (1 + p.z);
+            p.y += (dy / dist) * force * 0.5;
+            p.pitchSpeed += 0.01;
+          }
+        }
+
+        // Screen boundary recycling
         if (p.y > height + 40) {
-          p.y = -30;
-          p.x = Math.random() * width;
+          Object.assign(p, createPetal(undefined, undefined, false));
         }
         if (p.x < -40) p.x = width + 30;
         if (p.x > width + 40) p.x = -30;
 
-        if (p.type === 'mai') {
-          drawHoaMai(p.x, p.y, p.size, p.rotation, p.opacity);
-        } else if (p.type === 'dao') {
-          drawHoaDao(p.x, p.y, p.size, p.rotation, p.opacity);
-        } else if (p.type === 'single_mai') {
-          drawSinglePetal(p.x, p.y, p.size, p.rotation, p.opacity, true);
+        // Render appropriate form
+        if (p.type === 'mai_flower' || p.type === 'dao_flower') {
+          drawWholeFlower(p);
         } else {
-          drawSinglePetal(p.x, p.y, p.size, p.rotation, p.opacity, false);
+          drawPetal(p);
         }
-      });
+      }
 
       animId = requestAnimationFrame(render);
     };
@@ -288,13 +322,17 @@ export const TetBlossomCanvas: React.FC<TetBlossomCanvasProps> = ({
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);
+      if (enableInteractiveWind) {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('click', handleClick);
+      }
     };
-  }, []);
+  }, [variant, enableInteractiveWind]);
 
   return (
     <canvas
       ref={canvasRef}
-      className={`absolute inset-0 pointer-events-none ${isSubtle ? 'z-0' : 'z-10'} ${className}`}
+      className={`absolute inset-0 pointer-events-none ${variant === 'subtle' ? 'z-0' : 'z-10'} ${className}`}
       style={{ mixBlendMode: 'normal' }}
     />
   );

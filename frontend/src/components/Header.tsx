@@ -25,6 +25,7 @@ interface HeaderProps {
   onToggleTheme?: () => void;
   lang?: Language;
   onToggleLang?: () => void;
+  onGoHome?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -33,10 +34,12 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSearch,
   isAIPanelOpen,
   onToggleAIPanel,
+  onOpenSettings,
   themeMode = 'light',
   onToggleTheme,
   lang = 'vi',
   onToggleLang,
+  onGoHome,
 }) => {
   const t = translations[lang];
   const isLight = themeMode === 'light';
@@ -49,37 +52,57 @@ export const Header: React.FC<HeaderProps> = ({
           : 'bg-[#0a0f1d] border-slate-800 text-slate-200 shadow-md'
       }`}
     >
-      {/* Breadcrumb Navigation matching neu_career_ai topbar */}
+      {/* Breadcrumb Navigation matching neu_career_ai topbar - Clickable Home */}
       <div className="flex items-center gap-1.5 text-xs font-semibold">
-        <span className="text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer">
-          {t.knowledgeSpace}
-        </span>
+        <button
+          onClick={onGoHome}
+          className="text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer flex items-center gap-1"
+          title="Về trang chủ DocuMind"
+        >
+          <span>{t.knowledgeSpace}</span>
+        </button>
         <span className="text-slate-400 font-normal mx-1">/</span>
-        <span className="text-slate-900 dark:text-white font-bold">
+        <button
+          onClick={onGoHome}
+          className="text-slate-900 dark:text-white font-bold hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+          title="Kho quy chế và điều khoản"
+        >
           {t.regulationsQuery}
-        </span>
+        </button>
 
-        {/* Security badge without parentheses */}
+        {/* Security badge clickable */}
         {user.role === 'ADMIN' ? (
-          <span className="ml-2 hidden sm:inline-flex items-center gap-1 text-[9px] font-mono px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-bold">
+          <button
+            onClick={onOpenSettings}
+            className="ml-2 hidden sm:inline-flex items-center gap-1 text-[9px] font-mono px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-bold hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+            title="Nhấp để xem cấu hình phân quyền bảo mật Zero-Trust"
+          >
             <Shield className="w-2.5 h-2.5 text-rose-500" />
             <span>{t.adminFull}</span>
-          </span>
+          </button>
         ) : (
-          <span className="ml-2 hidden sm:inline-flex items-center gap-1 text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-bold">
+          <button
+            onClick={onOpenSettings}
+            className="ml-2 hidden sm:inline-flex items-center gap-1 text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-bold hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+            title="Nhấp để xem cấu hình phân quyền phòng ban"
+          >
             <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" />
             <span>{t.rbacBadge} {user.department_code || 'STAFF'}</span>
-          </span>
+          </button>
         )}
       </div>
 
       {/* Right Tools Area */}
       <div className="flex items-center space-x-2 sm:space-x-2.5">
-        {/* Festive Tet Holiday Badge in Workspace Header */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 text-red-700 dark:text-red-400 border border-red-300/80 dark:border-red-900/60 font-bold text-xs shadow-xs select-none">
+        {/* Festive Tet Holiday Badge in Workspace Header - Clickable */}
+        <button
+          onClick={onGoHome}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-gradient-to-r from-red-600/10 via-amber-500/15 to-rose-600/10 text-red-700 dark:text-red-400 border border-red-300/80 dark:border-red-900/60 font-bold text-xs shadow-xs hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          title="Chào mừng Xuân Bính Ngọ 2026 - Bấm để về trang chủ"
+        >
           <span>🌸</span>
           <span className="hidden sm:inline">{t.tetBadge}</span>
-        </div>
+        </button>
 
         {/* Quick Search Bar trigger */}
         <button
