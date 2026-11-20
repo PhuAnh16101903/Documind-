@@ -11,7 +11,6 @@ import { DocumentReader } from './components/DocumentReader';
 import { SettingsModal } from './components/SettingsModal';
 import { AuthPage } from './components/AuthPage';
 import { TetBlossomCanvas } from './components/TetBlossomCanvas';
-import { TetMusicPlayer } from './components/TetMusicPlayer';
 import { ApiService, MockCorporateUsers, MockData } from './services/api';
 import { Department, Document, Citation, User } from './types';
 import { Language, translations } from './services/i18n';
@@ -363,9 +362,6 @@ export const App: React.FC = () => {
           }}
         />
       )}
-
-      {/* Tet Holiday Background Music Player inside workspace */}
-      <TetMusicPlayer lang={lang} />
     </div>
   );
 };

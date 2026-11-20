@@ -54,6 +54,8 @@ export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
     audio.addEventListener('timeupdate', handleTimeUpdate);
 
     // Attempt autoplay immediately
+    let interactionCleanup: (() => void) | null = null;
+
     const startAudio = () => {
       audio
         .play()
@@ -77,6 +79,10 @@ export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
                 })
                 .catch(() => {});
             }
+            if (interactionCleanup) interactionCleanup();
+          };
+
+          interactionCleanup = () => {
             window.removeEventListener('click', onFirstInteraction);
             window.removeEventListener('keydown', onFirstInteraction);
             window.removeEventListener('touchstart', onFirstInteraction);
@@ -91,9 +97,12 @@ export const TetMusicPlayer: React.FC<TetMusicPlayerProps> = ({
     startAudio();
 
     return () => {
+      if (interactionCleanup) interactionCleanup();
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.pause();
+      audio.currentTime = 0;
+      audio.src = '';
       audioRef.current = null;
     };
   }, []);
