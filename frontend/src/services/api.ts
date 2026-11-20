@@ -11,6 +11,10 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('documind_token') || 'jwt-auth-token-admin-sysarch-2026';
   config.headers.Authorization = `Bearer ${token}`;
+  const geminiKey = localStorage.getItem('documind_gemini_key');
+  if (geminiKey && geminiKey.trim()) {
+    config.headers['X-Gemini-Api-Key'] = geminiKey.trim();
+  }
   return config;
 });
 
@@ -217,6 +221,15 @@ export const ApiService = {
       }
 
       return docs;
+    }
+  },
+
+  async getDocumentRichView(docId: number): Promise<any | null> {
+    try {
+      const res = await api.get(`/documents/${docId}/rich_view`);
+      return res.data;
+    } catch {
+      return null;
     }
   },
 

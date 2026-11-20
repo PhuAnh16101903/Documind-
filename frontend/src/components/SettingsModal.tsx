@@ -45,12 +45,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [workplace, setWorkplace] = useState(
     lang === 'vi' ? 'Tòa nhà điều hành Hà Nội' : 'Hanoi Headquarters Tower'
   );
+  const [geminiApiKey, setGeminiApiKey] = useState(
+    () => localStorage.getItem('documind_gemini_key') || ''
+  );
   const [isSaved, setIsSaved] = useState(false);
 
   if (!isOpen) return null;
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
+    if (geminiApiKey.trim()) {
+      localStorage.setItem('documind_gemini_key', geminiApiKey.trim());
+    } else {
+      localStorage.removeItem('documind_gemini_key');
+    }
     onUpdateUser({
       ...currentUser,
       full_name: fullName,
@@ -237,6 +245,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-indigo-600 text-white shadow-xs">
               {currentUser.role === 'ADMIN' ? 'LEVEL 3' : 'LEVEL 1'}
             </span>
+          </div>
+
+          {/* Gemini API Key Configuration */}
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+            <label className="block text-[11px] font-mono text-indigo-600 dark:text-indigo-400 font-bold">
+              {lang === 'vi'
+                ? 'KHÓA GOOGLE GEMINI API (TÙY CHỌN — KÍCH HOẠT LLM SUY LUẬN TRỰC TIẾP)'
+                : 'GOOGLE GEMINI API KEY (OPTIONAL — ENABLE LIVE LLM REASONING)'}
+            </label>
+            <input
+              type="password"
+              value={geminiApiKey}
+              onChange={(e) => setGeminiApiKey(e.target.value)}
+              placeholder="AIzaSy... (Để trống nếu dùng bộ suy luận nội bộ)"
+              className="w-full h-10 px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-mono"
+            />
           </div>
 
           <div className="pt-2 flex justify-end">

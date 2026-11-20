@@ -173,3 +173,104 @@ async def upload_document(
         content=full_text,
         parsed_chunks=raw_chunks
     )
+
+@router.get("/{doc_id}/rich_view")
+async def get_document_rich_view(
+    doc_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Parse original DOCX/PDF/TXT file into sequential rich blocks:
+    - headings
+    - paragraphs
+    - real HTML-ready 2D tables (in exact document position)
+    - embedded base64 images (in exact document position)
+    """
+    import base64
+    import re
+    from docx import Document as DocxDocument
+    from docx.text.paragraph import Paragraph
+    from docx.table import Table
+
+    res = await db.execute(select(Document).where(Document.id == doc_id))
+    doc = res.scalar_one_or_none()
+    if not doc or not os.path.exists(doc.file_path):
+        raise HTTPException(status_code=404, detail="Không tìm thấy tệp gốc")
+
+    ext = (doc.file_type or "").lower()
+    blocks = []
+    current_heading = "General"
+
+    if ext == "docx":
+        docx = DocxDocument(doc.file_path)
+
+        def is_heading(text: str, style_name: str) -> bool:
+            if style_name.startswith("Heading"):
+                return True
+            if re.match(r"^(PHẦN \d+|CHƯƠNG [IVX\d]+|Chương \d+|\d+\.\d+(\.\d+)?\.?|\d+\. |\bMục \d+)", text) and len(text) < 140:
+                if "\tTrang " not in text:
+                    return True
+            return False
+
+        for child in docx.element.body.iterchildren():
+            if child.tag.endswith("p"):
+                p = Paragraph(child, docx)
+                txt = p.text.strip()
+                if txt:
+                    if is_heading(txt, p.style.name):
+                        current_heading = txt
+                        blocks.append({
+                            "type": "heading",
+                            "text": txt,
+                            "heading": current_heading
+                        })
+                    else:
+                        blocks.append({
+                            "type": "paragraph",
+                            "text": txt,
+                            "heading": current_heading
+                        })
+
+                # Extract any embedded images inside this paragraph
+                blips = child.xpath(".//a:blip")
+                for blip in blips:
+                    rId = blip.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed")
+                    if rId and rId in docx.part.rels:
+                        part = docx.part.rels[rId].target_part
+                        b64 = base64.b64encode(part.blob).decode("ascii")
+                        blocks.append({
+                            "type": "image",
+                            "src": f"data:{part.content_type};base64,{b64}",
+                            "heading": current_heading
+                        })
+
+            elif child.tag.endswith("tbl"):
+                t = Table(child, docx)
+                rows = []
+                for row in t.rows:
+                    cells = [cell.text.strip() for cell in row.cells]
+                    if any(cells):
+                        rows.append(cells)
+                if rows:
+                    blocks.append({
+                        "type": "table",
+                        "rows": rows,
+                        "heading": current_heading,
+                        "text": " | ".join([" ".join(r) for r in rows])
+                    })
+    else:
+        chunk_res = await db.execute(
+            select(Chunk).where(Chunk.document_id == doc_id).order_by(Chunk.chunk_index.asc())
+        )
+        for ch in chunk_res.scalars().all():
+            if ch.heading and ch.heading != current_heading:
+                current_heading = ch.heading
+                blocks.append({"type": "heading", "text": ch.heading, "heading": current_heading})
+            blocks.append({"type": "paragraph", "text": ch.content, "heading": current_heading})
+
+    return {
+        "document_id": doc.id,
+        "title": doc.title,
+        "file_name": doc.file_name,
+        "blocks": blocks
+    }

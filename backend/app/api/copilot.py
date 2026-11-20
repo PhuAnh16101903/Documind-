@@ -1,5 +1,6 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends
+from typing import Optional
+from fastapi import APIRouter, Depends, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
@@ -18,6 +19,7 @@ router = APIRouter(prefix="/api/copilot", tags=["AI Copilot & RAG"])
 @router.post("/query", response_model=ChatAnswerResponse)
 async def query_copilot(
     req: ChatQueryRequest,
+    x_gemini_api_key: Optional[str] = Header(None, alias="X-Gemini-Api-Key"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -50,21 +52,34 @@ async def query_copilot(
         for chunk, doc in res.all()
     ]
 
-    # Look up most recently cited document_id for conversational follow-up pronouns ("nó nói về gì")
+    # Look up most recent citation and assistant message for deep multi-turn conversational memory
     last_cite_res = await db.execute(
-        select(MessageCitation.document_id).order_by(MessageCitation.id.desc()).limit(1)
+        select(MessageCitation).order_by(MessageCitation.id.desc()).limit(1)
     )
-    last_doc_id = last_cite_res.scalar_one_or_none()
+    last_cite = last_cite_res.scalar_one_or_none()
+    last_doc_id = last_cite.document_id if last_cite else None
+    last_chunk_id = last_cite.chunk_id if last_cite else None
+
+    last_msg_res = await db.execute(
+        select(ChatMessage.content)
+        .where(ChatMessage.role == "assistant")
+        .order_by(ChatMessage.id.desc())
+        .limit(1)
+    )
+    last_assistant_message = last_msg_res.scalar_one_or_none()
 
     # 2. Retrieve top-k relevant chunks
     top_chunks = HybridSearchService.rank_hybrid(req.question, candidates, top_k=15)
 
-    # 3. Generate answer with Strict Grounding & Multi-Intent Conversational Context
+    # 3. Generate answer with Deep Multi-Turn Memory & Natural Conversational Synthesis
     answer_text, citations_data = await RAGService.generate_answer(
         req.question,
         top_chunks,
         all_candidates=candidates,
-        last_document_id=last_doc_id
+        last_document_id=last_doc_id,
+        last_chunk_id=last_chunk_id,
+        last_assistant_message=last_assistant_message,
+        api_key=x_gemini_api_key
     )
 
     # 4. Save Session & Message to Database
